@@ -32,7 +32,7 @@ struct ScheduleWorkOut: View {
             }
             GeneralButton(text: "Make recurring", color: Theme.Colors.Primary1, image: "repeat", hollow: true)
                 .onTapGesture {
-                    recurring = true
+                    recurring = !recurring
                 }
             if recurring {
                 VStack() {
@@ -40,18 +40,21 @@ struct ScheduleWorkOut: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Start date")
                                 .font(Theme.Fonts.Body6)
+                                .padding(.leading, 20)
                             DatePicker("Start date", selection: $selectedDate, displayedComponents: .date)
                                 .datePickerStyle(.compact)
                                 .labelsHidden()
                                 .padding(10)
                                 .frame(width: .infinity)
                                 .background(RoundedRectangle(cornerRadius: 8).stroke(Color.green))
-                                .scaleEffect(0.6)
+                                .scaleEffect(0.7)
+                                .edgesIgnoringSafeArea(.all)
                         }.frame(width: .infinity)
-                        
+                            .padding(.vertical, -20)
                         VStack(alignment: .leading, spacing: 8) {
                             Text("End date")
                                 .font(Theme.Fonts.Body6)
+                                .padding(.leading, 20)
                             DatePicker("End date", selection: $endDate, displayedComponents: .date)
                                 .datePickerStyle(CompactDatePickerStyle())
                                 .labelsHidden()
@@ -59,11 +62,16 @@ struct ScheduleWorkOut: View {
                                 .font(Theme.Fonts.Body7)
                                 .frame(width: .infinity)
                                 .background(RoundedRectangle(cornerRadius: 8).stroke(Color.green))
-                                .scaleEffect(0.6)
+                                .scaleEffect(0.7)
+                                .edgesIgnoringSafeArea(.all)
                         }.frame(width: .infinity)
+                            .padding(.vertical, -20)
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Repeat every")
                                 .font(Theme.Fonts.Body6)
+                                .padding(.leading, 15)
+                                .edgesIgnoringSafeArea(.all)
+                                .frame(width: 100)
                             Picker("Repeat every", selection: $repeatInterval) {
                                 ForEach(["Day", "2 days", "3 days", "Week", "Month"], id: \.self) { interval in
                                     Text(interval).tag(interval)
@@ -73,12 +81,15 @@ struct ScheduleWorkOut: View {
                             .padding(10)
                             .frame(width: 130)
                             .background(RoundedRectangle(cornerRadius:  8).stroke(Color.green))
-                            .scaleEffect(0.6)
+                            .scaleEffect(0.7)
+                            .edgesIgnoringSafeArea(.all)
                         }.frame(width: .infinity)
+                            .padding(.vertical, -20)
                     }
                     .padding(.horizontal)
                 }
                 .padding(.horizontal)
+                .padding(.top, 23)
             }
 
             HStack {
