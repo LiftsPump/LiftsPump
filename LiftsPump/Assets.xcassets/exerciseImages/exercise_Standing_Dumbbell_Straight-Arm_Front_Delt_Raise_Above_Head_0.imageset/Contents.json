@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "exercise_Standing_Dumbbell_Straight-Arm_Front_Delt_Raise_Above_Head_0.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

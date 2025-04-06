@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "exercise_Calf-Machine_Shoulder_Shrug_0.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

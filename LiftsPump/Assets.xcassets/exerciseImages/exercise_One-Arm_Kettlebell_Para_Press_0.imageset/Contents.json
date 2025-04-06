@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "exercise_One-Arm_Kettlebell_Para_Press_0.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

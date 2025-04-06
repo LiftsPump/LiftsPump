@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "exercise_Chest_And_Front_Of_Shoulder_Stretch_0.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "data" : [
+    {
+      "filename" : "ci.yaml",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

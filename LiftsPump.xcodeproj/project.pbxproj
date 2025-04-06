@@ -1,0 +1,718 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E28286612D5069B200CBBCEA /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = E28286602D5069B200CBBCEA /* Auth */; };
+		E28286632D5069B200CBBCEA /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = E28286622D5069B200CBBCEA /* Functions */; };
+		E28286652D5069B200CBBCEA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = E28286642D5069B200CBBCEA /* PostgREST */; };
+		E28286672D5069B200CBBCEA /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = E28286662D5069B200CBBCEA /* Realtime */; };
+		E28286692D5069B200CBBCEA /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = E28286682D5069B200CBBCEA /* Storage */; };
+		E282866B2D5069B200CBBCEA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = E282866A2D5069B200CBBCEA /* Supabase */; };
+		E292C6EF2D533B1E007C82BC /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E292C6EE2D533B1E007C82BC /* GoogleSignIn */; };
+		E292C6F32D533E49007C82BC /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E292C6F22D533E49007C82BC /* GoogleSignInSwift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E2F99EAE2C8D1CFD004D683F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2F99E942C8D1CFB004D683F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2F99E9B2C8D1CFB004D683F;
+			remoteInfo = MyFitrack;
+		};
+		E2F99EB82C8D1CFD004D683F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2F99E942C8D1CFB004D683F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2F99E9B2C8D1CFB004D683F;
+			remoteInfo = MyFitrack;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftsPump.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2F99EB72C8D1CFD004D683F /* LiftsPumpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E2DE23152C97BB8E00B97A27 /* Exceptions for "LiftsPump" folder in "LiftsPump" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E2F99E9B2C8D1CFB004D683F /* LiftsPump */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E2F99E9E2C8D1CFB004D683F /* LiftsPump */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E2DE23152C97BB8E00B97A27 /* Exceptions for "LiftsPump" folder in "LiftsPump" target */,
+			);
+			path = LiftsPump;
+			sourceTree = "<group>";
+		};
+		E2F99EB02C8D1CFD004D683F /* LiftsPumpTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LiftsPumpTests;
+			sourceTree = "<group>";
+		};
+		E2F99EBA2C8D1CFD004D683F /* LiftsPumpUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LiftsPumpUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E2F99E992C8D1CFB004D683F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E28286652D5069B200CBBCEA /* PostgREST in Frameworks */,
+				E28286632D5069B200CBBCEA /* Functions in Frameworks */,
+				E282866B2D5069B200CBBCEA /* Supabase in Frameworks */,
+				E292C6F32D533E49007C82BC /* GoogleSignInSwift in Frameworks */,
+				E28286612D5069B200CBBCEA /* Auth in Frameworks */,
+				E28286692D5069B200CBBCEA /* Storage in Frameworks */,
+				E28286672D5069B200CBBCEA /* Realtime in Frameworks */,
+				E292C6EF2D533B1E007C82BC /* GoogleSignIn in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2F99EAA2C8D1CFD004D683F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2F99EB42C8D1CFD004D683F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E2F99E932C8D1CFB004D683F = {
+			isa = PBXGroup;
+			children = (
+				E2F99E9E2C8D1CFB004D683F /* LiftsPump */,
+				E2F99EB02C8D1CFD004D683F /* LiftsPumpTests */,
+				E2F99EBA2C8D1CFD004D683F /* LiftsPumpUITests */,
+				E2F99E9D2C8D1CFB004D683F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E2F99E9D2C8D1CFB004D683F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */,
+				E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */,
+				E2F99EB72C8D1CFD004D683F /* LiftsPumpUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E2F99E9B2C8D1CFB004D683F /* LiftsPump */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2F99EC12C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPump" */;
+			buildPhases = (
+				E2F99E982C8D1CFB004D683F /* Sources */,
+				E2F99E992C8D1CFB004D683F /* Frameworks */,
+				E2F99E9A2C8D1CFB004D683F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E2F99E9E2C8D1CFB004D683F /* LiftsPump */,
+			);
+			name = LiftsPump;
+			packageProductDependencies = (
+				E28286602D5069B200CBBCEA /* Auth */,
+				E28286622D5069B200CBBCEA /* Functions */,
+				E28286642D5069B200CBBCEA /* PostgREST */,
+				E28286662D5069B200CBBCEA /* Realtime */,
+				E28286682D5069B200CBBCEA /* Storage */,
+				E282866A2D5069B200CBBCEA /* Supabase */,
+				E292C6EE2D533B1E007C82BC /* GoogleSignIn */,
+				E292C6F22D533E49007C82BC /* GoogleSignInSwift */,
+			);
+			productName = MyFitrack;
+			productReference = E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E2F99EAC2C8D1CFD004D683F /* LiftsPumpTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2F99EC42C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPumpTests" */;
+			buildPhases = (
+				E2F99EA92C8D1CFD004D683F /* Sources */,
+				E2F99EAA2C8D1CFD004D683F /* Frameworks */,
+				E2F99EAB2C8D1CFD004D683F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2F99EAF2C8D1CFD004D683F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E2F99EB02C8D1CFD004D683F /* LiftsPumpTests */,
+			);
+			name = LiftsPumpTests;
+			packageProductDependencies = (
+			);
+			productName = MyFitrackTests;
+			productReference = E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E2F99EB62C8D1CFD004D683F /* LiftsPumpUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2F99EC72C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPumpUITests" */;
+			buildPhases = (
+				E2F99EB32C8D1CFD004D683F /* Sources */,
+				E2F99EB42C8D1CFD004D683F /* Frameworks */,
+				E2F99EB52C8D1CFD004D683F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2F99EB92C8D1CFD004D683F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E2F99EBA2C8D1CFD004D683F /* LiftsPumpUITests */,
+			);
+			name = LiftsPumpUITests;
+			packageProductDependencies = (
+			);
+			productName = MyFitrackUITests;
+			productReference = E2F99EB72C8D1CFD004D683F /* LiftsPumpUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E2F99E942C8D1CFB004D683F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					E2F99E9B2C8D1CFB004D683F = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					E2F99EAC2C8D1CFD004D683F = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = E2F99E9B2C8D1CFB004D683F;
+					};
+					E2F99EB62C8D1CFD004D683F = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = E2F99E9B2C8D1CFB004D683F;
+					};
+				};
+			};
+			buildConfigurationList = E2F99E972C8D1CFB004D683F /* Build configuration list for PBXProject "LiftsPump" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E2F99E932C8D1CFB004D683F;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				E292C6ED2D533B1E007C82BC /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E2F99E9D2C8D1CFB004D683F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E2F99E9B2C8D1CFB004D683F /* LiftsPump */,
+				E2F99EAC2C8D1CFD004D683F /* LiftsPumpTests */,
+				E2F99EB62C8D1CFD004D683F /* LiftsPumpUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E2F99E9A2C8D1CFB004D683F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2F99EAB2C8D1CFD004D683F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2F99EB52C8D1CFD004D683F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E2F99E982C8D1CFB004D683F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2F99EA92C8D1CFD004D683F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2F99EB32C8D1CFD004D683F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E2F99EAF2C8D1CFD004D683F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2F99E9B2C8D1CFB004D683F /* LiftsPump */;
+			targetProxy = E2F99EAE2C8D1CFD004D683F /* PBXContainerItemProxy */;
+		};
+		E2F99EB92C8D1CFD004D683F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2F99E9B2C8D1CFB004D683F /* LiftsPump */;
+			targetProxy = E2F99EB82C8D1CFD004D683F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E2F99EBF2C8D1CFD004D683F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E2F99EC02C8D1CFD004D683F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		E2F99EC22C8D1CFD004D683F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LiftsPump/LiftsPump.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"LiftsPump/Preview Content\"";
+				DEVELOPMENT_TEAM = 2NB9TDH6D4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LiftsPump/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = liftspump.LiftsPump;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		E2F99EC32C8D1CFD004D683F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LiftsPump/LiftsPump.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"LiftsPump/Preview Content\"";
+				DEVELOPMENT_TEAM = 2NB9TDH6D4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LiftsPump/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = liftspump.LiftsPump;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		E2F99EC52C8D1CFD004D683F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = myfitrack.MyFitrackTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LiftsPump.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LiftsPump";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		E2F99EC62C8D1CFD004D683F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = myfitrack.MyFitrackTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LiftsPump.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LiftsPump";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		E2F99EC82C8D1CFD004D683F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = myfitrack.MyFitrackUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = MyFitrack;
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		E2F99EC92C8D1CFD004D683F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = myfitrack.MyFitrackUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = MyFitrack;
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E2F99E972C8D1CFB004D683F /* Build configuration list for PBXProject "LiftsPump" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2F99EBF2C8D1CFD004D683F /* Debug */,
+				E2F99EC02C8D1CFD004D683F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2F99EC12C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPump" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2F99EC22C8D1CFD004D683F /* Debug */,
+				E2F99EC32C8D1CFD004D683F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2F99EC42C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPumpTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2F99EC52C8D1CFD004D683F /* Debug */,
+				E2F99EC62C8D1CFD004D683F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2F99EC72C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPumpUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2F99EC82C8D1CFD004D683F /* Debug */,
+				E2F99EC92C8D1CFD004D683F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+		E292C6ED2D533B1E007C82BC /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E28286602D5069B200CBBCEA /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		E28286622D5069B200CBBCEA /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		E28286642D5069B200CBBCEA /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		E28286662D5069B200CBBCEA /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		E28286682D5069B200CBBCEA /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		E282866A2D5069B200CBBCEA /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		E292C6EE2D533B1E007C82BC /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E292C6ED2D533B1E007C82BC /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		E292C6F22D533E49007C82BC /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E292C6ED2D533B1E007C82BC /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = E2F99E942C8D1CFB004D683F /* Project object */;
+}
