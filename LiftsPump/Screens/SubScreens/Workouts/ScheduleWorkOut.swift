@@ -14,6 +14,7 @@ struct ScheduleWorkOut: View {
     @State var recurring: Bool = false
     @State var endDate: Date = Date()
     @State var repeatInterval: String = "Day"
+    
     var body: some View {
         VStack {
             HStack {
@@ -27,6 +28,7 @@ struct ScheduleWorkOut: View {
                     .foregroundStyle(Theme.Colors.NeutralLight1)
                     .font(.system(size: 16))
                     .onTapGesture {
+                        selectedDate = Date()
                         dismiss()
                     }
             }
@@ -126,6 +128,9 @@ struct ScheduleWorkOut: View {
                 Spacer()
             }
             GeneralButton(text: "Schedule workout", color: Theme.Colors.Primary1, image: "calendar")
+                .onTapGesture {
+                    dismiss()
+                }
             Spacer()
         } .background(Theme.Colors.NeutralDark)
     }
