@@ -151,6 +151,9 @@ struct HomeScreen: View {
                 HStack{Spacer()
                     PlusButton(date: .constant(Date()))
                     .onTapGesture {showAccessory.toggle()}}}})
+            .onAppear() {
+                SupaBaseManager.initSync()
+            }
     }
 }
 

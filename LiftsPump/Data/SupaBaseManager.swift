@@ -14,6 +14,21 @@ let supabase = SupabaseClient(
 )
         
 public class SupaBaseManager {
+    static func initSync() /*async throws -> [Routine]*/ {
+        Task {
+            do {
+                let response = try await supabase
+                    .from("routines")
+                    .select("*, exercises(*, sets(*))")
+                    .execute()
+                if response != nil {
+                    print(response)
+                } else {
+                    throw NSError(domain: "FetchError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not decode data"])
+                }
+            }
+        }
+    }
     static func saveRoutine(routine: Routine) {
         Task {
             do {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		90C8510A2DA55E4200872CC2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C851092DA55E4200872CC2 /* WidgetKit.framework */; };
+		90C8510C2DA55E4200872CC2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C8510B2DA55E4200872CC2 /* SwiftUI.framework */; };
+		90C8511D2DA55E4400872CC2 /* WorkoutExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 90C851072DA55E4200872CC2 /* WorkoutExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E28286612D5069B200CBBCEA /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = E28286602D5069B200CBBCEA /* Auth */; };
 		E28286632D5069B200CBBCEA /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = E28286622D5069B200CBBCEA /* Functions */; };
 		E28286652D5069B200CBBCEA /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = E28286642D5069B200CBBCEA /* PostgREST */; };
@@ -18,6 +21,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		90C8511B2DA55E4400872CC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2F99E942C8D1CFB004D683F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 90C851062DA55E4200872CC2;
+			remoteInfo = WorkoutExtension;
+		};
 		E2F99EAE2C8D1CFD004D683F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E2F99E942C8D1CFB004D683F /* Project object */;
@@ -34,13 +44,37 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		90C8511E2DA55E4400872CC2 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				90C8511D2DA55E4400872CC2 /* WorkoutExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		90C851072DA55E4200872CC2 /* WorkoutExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		90C851092DA55E4200872CC2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		90C8510B2DA55E4200872CC2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftsPump.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2F99EB72C8D1CFD004D683F /* LiftsPumpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		90C851222DA55E4400872CC2 /* Exceptions for "Workout" folder in "WorkoutExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 90C851062DA55E4200872CC2 /* WorkoutExtension */;
+		};
 		E2DE23152C97BB8E00B97A27 /* Exceptions for "LiftsPump" folder in "LiftsPump" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -51,6 +85,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		90C8510D2DA55E4200872CC2 /* Workout */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				90C851222DA55E4400872CC2 /* Exceptions for "Workout" folder in "WorkoutExtension" target */,
+			);
+			path = Workout;
+			sourceTree = "<group>";
+		};
 		E2F99E9E2C8D1CFB004D683F /* LiftsPump */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -72,6 +114,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		90C851042DA55E4200872CC2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90C8510C2DA55E4200872CC2 /* SwiftUI.framework in Frameworks */,
+				90C8510A2DA55E4200872CC2 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2F99E992C8D1CFB004D683F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -104,12 +155,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		90C851082DA55E4200872CC2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				90C851092DA55E4200872CC2 /* WidgetKit.framework */,
+				90C8510B2DA55E4200872CC2 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		E2F99E932C8D1CFB004D683F = {
 			isa = PBXGroup;
 			children = (
 				E2F99E9E2C8D1CFB004D683F /* LiftsPump */,
 				E2F99EB02C8D1CFD004D683F /* LiftsPumpTests */,
 				E2F99EBA2C8D1CFD004D683F /* LiftsPumpUITests */,
+				90C8510D2DA55E4200872CC2 /* Workout */,
+				90C851082DA55E4200872CC2 /* Frameworks */,
 				E2F99E9D2C8D1CFB004D683F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -120,6 +182,7 @@
 				E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */,
 				E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */,
 				E2F99EB72C8D1CFD004D683F /* LiftsPumpUITests.xctest */,
+				90C851072DA55E4200872CC2 /* WorkoutExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -127,6 +190,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		90C851062DA55E4200872CC2 /* WorkoutExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90C851212DA55E4400872CC2 /* Build configuration list for PBXNativeTarget "WorkoutExtension" */;
+			buildPhases = (
+				90C851032DA55E4200872CC2 /* Sources */,
+				90C851042DA55E4200872CC2 /* Frameworks */,
+				90C851052DA55E4200872CC2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				90C8510D2DA55E4200872CC2 /* Workout */,
+			);
+			name = WorkoutExtension;
+			packageProductDependencies = (
+			);
+			productName = WorkoutExtension;
+			productReference = 90C851072DA55E4200872CC2 /* WorkoutExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		E2F99E9B2C8D1CFB004D683F /* LiftsPump */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2F99EC12C8D1CFD004D683F /* Build configuration list for PBXNativeTarget "LiftsPump" */;
@@ -134,10 +219,12 @@
 				E2F99E982C8D1CFB004D683F /* Sources */,
 				E2F99E992C8D1CFB004D683F /* Frameworks */,
 				E2F99E9A2C8D1CFB004D683F /* Resources */,
+				90C8511E2DA55E4400872CC2 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				90C8511C2DA55E4400872CC2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				E2F99E9E2C8D1CFB004D683F /* LiftsPump */,
@@ -213,6 +300,9 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					90C851062DA55E4200872CC2 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					E2F99E9B2C8D1CFB004D683F = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -247,11 +337,19 @@
 				E2F99E9B2C8D1CFB004D683F /* LiftsPump */,
 				E2F99EAC2C8D1CFD004D683F /* LiftsPumpTests */,
 				E2F99EB62C8D1CFD004D683F /* LiftsPumpUITests */,
+				90C851062DA55E4200872CC2 /* WorkoutExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		90C851052DA55E4200872CC2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2F99E9A2C8D1CFB004D683F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -276,6 +374,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		90C851032DA55E4200872CC2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2F99E982C8D1CFB004D683F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -300,6 +405,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		90C8511C2DA55E4400872CC2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 90C851062DA55E4200872CC2 /* WorkoutExtension */;
+			targetProxy = 90C8511B2DA55E4400872CC2 /* PBXContainerItemProxy */;
+		};
 		E2F99EAF2C8D1CFD004D683F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E2F99E9B2C8D1CFB004D683F /* LiftsPump */;
@@ -313,6 +423,67 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		90C8511F2DA55E4400872CC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2NB9TDH6D4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Workout/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Workout;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = liftspump.LiftsPump.Workout;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		90C851202DA55E4400872CC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2NB9TDH6D4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Workout/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Workout;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = liftspump.LiftsPump.Workout;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		E2F99EBF2C8D1CFD004D683F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -614,6 +785,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		90C851212DA55E4400872CC2 /* Build configuration list for PBXNativeTarget "WorkoutExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90C8511F2DA55E4400872CC2 /* Debug */,
+				90C851202DA55E4400872CC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2F99E972C8D1CFB004D683F /* Build configuration list for PBXProject "LiftsPump" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
