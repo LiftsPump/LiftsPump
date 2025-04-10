@@ -7,6 +7,7 @@ struct PlusButton: View {
     @State private var isPresented: Bool = false
     @State private var isPresented2: Bool = false
     @State private var newRoutine: Routine = Routine(name: "New Routine", type: .preset)
+    @State private var cancelled: Bool = false
     @Binding var date: Date
     let calendar = Calendar.current
 
@@ -17,15 +18,9 @@ struct PlusButton: View {
                 .frame(width: 46)
                 .shadow(color: Color(red: 1, green: 1, blue: 1, opacity: 0.4), radius: 10)
                 .onTapGesture {
-                    if !calendar.isDate(date, inSameDayAs: Date()) {
-                        newRoutine.type = .date
-                        newRoutine.date = date
-                        isPresented2 = true
-                    } else {
-                        modelContext.insert(newRoutine)
-                        SupaBaseManager.saveRoutine(routine: newRoutine)
-                        isPresented = true
-                    }
+                    newRoutine.type = .date
+                    newRoutine.date = date
+                    isPresented2 = true
                 }
             Image(systemName: "plus")
                 .font(.system(size: 30, weight: .bold))
@@ -36,14 +31,16 @@ struct PlusButton: View {
             WorkoutCompleted(externalRoutine: $newRoutine, plusButton: true)
         }
         .sheet(isPresented: $isPresented2, onDismiss: {
-            if date != Date() {
+            if cancelled == false {
                 modelContext.insert(newRoutine)
                 newRoutine.date = date
                 SupaBaseManager.saveRoutine(routine: newRoutine)
                 isPresented = true
+            } else {
+                cancelled = false
             }
         }){
-            ScheduleWorkOut(selectedDate: $date)
+            ScheduleWorkOut(selectedDate: $date, isDismissed: $cancelled)
         }
     }
 }

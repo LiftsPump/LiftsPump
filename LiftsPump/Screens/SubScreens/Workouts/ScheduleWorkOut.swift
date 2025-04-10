@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ScheduleWorkOut: View {
     @Binding var selectedDate: Date
+    @Binding var isDismissed: Bool
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) var dismiss
     @State var recurring: Bool = false
@@ -28,7 +29,7 @@ struct ScheduleWorkOut: View {
                     .foregroundStyle(Theme.Colors.NeutralLight1)
                     .font(.system(size: 16))
                     .onTapGesture {
-                        selectedDate = Date()
+                        isDismissed = true
                         dismiss()
                     }
             }
@@ -137,5 +138,5 @@ struct ScheduleWorkOut: View {
 }
 
 #Preview {
-    ScheduleWorkOut(selectedDate: .constant(Date()))
+    ScheduleWorkOut(selectedDate: .constant(Date()), isDismissed: .constant(false))
 }
