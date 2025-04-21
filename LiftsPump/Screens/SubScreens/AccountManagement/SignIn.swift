@@ -9,6 +9,7 @@ struct SignIn: View {
     @State var password: String = ""
     @State private var isSignInSuccessful = false
     @State private var errorMessage: String?
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         VStack {
@@ -127,6 +128,8 @@ struct SignIn: View {
               _ = try await supabase.auth.session
               result = .success(())
               isSignInSuccessful = true
+              let supaManager = SupaBaseManager(context: modelContext)
+              await supaManager.initSync()
               print(supabase.auth.user)
           } catch {
               result = .failure(error)

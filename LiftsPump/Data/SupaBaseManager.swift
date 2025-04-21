@@ -7,28 +7,68 @@
 
 import Foundation
 import Supabase
+import SwiftData
+import SwiftUI
 
 let supabase = SupabaseClient(
   supabaseURL: URL(string: "https://dupuztvhoifyczvqyjbk.supabase.co")!,
   supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1cHV6dHZob2lmeWN6dnF5amJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1MzM2OTYsImV4cCI6MjA1NDEwOTY5Nn0.eXwBsJA33-aPiz_I1Q4sQEX2Z7yxMg0Q7ERMuT-BRtQ"
 )
-        
+
 public class SupaBaseManager {
-    static func initSync() /*async throws -> [Routine]*/ {
-        Task {
+    private var modelContext: ModelContext
+
+        public init(context: ModelContext) {
+            self.modelContext = context
+        }
+
+        public func initSync() async {
             do {
-                let response = try await supabase
-                    .from("routines")
-                    .select("*, exercises(*, sets(*))")
-                    .execute()
-                if response != nil {
-                    print(response)
-                } else {
-                    throw NSError(domain: "FetchError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not decode data"])
+                let responseR = try await supabase.from("routines").select("*").execute()
+                let responseE = try await supabase.from("exercises").select("*").execute()
+                let responseS = try await supabase.from("sets").select("*").execute()
+
+                let decoder = JSONDecoder()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                decoder.dateDecodingStrategy = .formatted(formatter)
+
+                var routines = try decoder.decode([Routine].self, from: responseR.data)
+                let exercises = try decoder.decode([Exercise].self, from: responseE.data)
+                let sets = try decoder.decode([ESet].self, from: responseS.data)
+
+                // Merge data
+                for routine in routines {
+                    for exercise in exercises {
+                        if exercise.routine_id == routine.id {
+                            exercise.routine = routine
+                            for set in sets {
+                                if set.exercise_id == exercise.id {
+                                    set.exercise = exercise
+                                    exercise.sets.append(set)
+                                }
+                            }
+                            routine.exercises.append(exercise)
+                        }
+                    }
                 }
+
+                // Clear old data
+                let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
+                for routine in currentRoutines {
+                    modelContext.delete(routine)
+                }
+
+                // Save new routines
+                for routine in routines {
+                    modelContext.insert(routine)
+                }
+
+                try modelContext.save()
+            } catch {
+                print("❌ Supabase sync error: \(error)")
             }
         }
-    }
     static func saveRoutine(routine: Routine) {
         Task {
             do {
