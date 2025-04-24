@@ -20,7 +20,7 @@ struct Person: View {
             Text("\(text)")
                 .padding()
                 .font(Theme.Fonts.Body3)
-                .frame(width: UIScreen.screenWidth * 0.55)
+                .frame(width: UIScreen.screenWidth * 0.55, alignment: .leading)
             Button(action: {
                             
                         }) {

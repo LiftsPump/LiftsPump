@@ -23,6 +23,7 @@ struct Theme {
         static let SubHeading6 = Font.custom("SourceSans3-SemiBold", size: 18)
         static let SubHeading7 = Font.custom("SourceSans3-SemiBold", size: 20)
         static let SubHeading8 = Font.custom("SourceSans3-Regular", size: 22)
+        static let SubHeading9 = Font.custom("SourceSans3-Regular", size: 18)
         static let Body1 = Font.custom("SourceSans3-Regular", size: 16)
         static let Body2 = Font.custom("SourceSans3-Light", size: 16)
         static let Body3 = Font.custom("SourceSans3-Regular", size: 15)

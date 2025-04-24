@@ -13,6 +13,7 @@ struct WorkoutCompleted: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @State private var isPresented: Bool = false
+    @State private var isPresented2: Bool = false
     @State private var type = 1
     @State private var selExercise: [ExerciseTemplate]?
     @State private var showAccessory = false
