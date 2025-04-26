@@ -7,16 +7,29 @@
 
 import SwiftUI
 
+enum ModalPopUp: Identifiable {
+    case Exercise, Ellipsis, Schedule, Friends
+
+    var id: Int {
+        switch self {
+        case .Exercise: return 0
+        case .Ellipsis: return 1
+        case .Schedule: return 2
+        case .Friends: return 3
+        }
+    }
+}
+
 struct WorkoutCompleted: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @State private var isPresented: Bool = false
-    @State private var isPresented2: Bool = false
     @State private var type = 1
     @State private var selExercise: [ExerciseTemplate]?
     @State private var showAccessory = false
+    @State private var modalType: ModalPopUp?
     @StateObject private var timerthing = TimerManager()
     @State private var routine: Routine
     @Binding var externalRoutine: Routine
@@ -98,6 +111,11 @@ struct WorkoutCompleted: View {
                             }
                     }
                     Image(systemName: "ellipsis")
+                        .onTapGesture {
+                            showAccessory.toggle()
+                            modalType = .Ellipsis
+                            isPresented.toggle()
+                        }
                     
                 } .padding(.horizontal, 10)
                 .padding(.top)
@@ -236,15 +254,28 @@ struct WorkoutCompleted: View {
                             .padding()
                             .onTapGesture {
                                 showAccessory.toggle()
-                                isPresented = true
+                                modalType = .Exercise
+                                isPresented.toggle()
                             }
-                            .sheet(isPresented: $isPresented, onDismiss: {
+                            .sheet(item: $modalType, onDismiss: {
                                 addSelectedExercises()
-                                }) {
+                            }) { type in
+                                switch type {
+                                case .Exercise:
                                     ExerciseScreen(selectedExercises: Binding(
                                         get: { selExercise ?? [] },
                                         set: { selExercise = $0 }
                                     ), fromWorkout: true)
+
+                                case .Ellipsis:
+                                    EllipsisView(modalType: $modalType)
+                                        .presentationDetents([.fraction(0.5)])
+
+                                case .Friends:
+                                    Friends()
+                                case .Schedule:
+                                    Friends()
+                                }
                             }
                         Spacer()
                     }
