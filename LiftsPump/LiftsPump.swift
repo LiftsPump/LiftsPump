@@ -27,7 +27,12 @@ struct LiftsPump: App {
                 .modelContainer(sharedModelContainer)
                 .task {
                     let supaManager = SupaBaseManager(context: sharedModelContainer.mainContext)
-                    await supaManager.initSync()
+                    do {
+                        await supaManager.initSync()
+                    } catch {
+                        print("Failed to initialize SupaBaseManager: \(error)")
+                        // Optional: You can add fallback handling or logging here
+                    }
                 }
         }
     }

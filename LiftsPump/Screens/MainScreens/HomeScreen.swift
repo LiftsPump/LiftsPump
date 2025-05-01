@@ -127,12 +127,12 @@ struct HomeScreen: View {
                 ForEach(routines) { routine in
                     if routine.type == .ai {
                         NavigationLink {
-                            WorkoutCompleted(externalRoutine: Binding(
+                            /*WorkoutCompleted(externalRoutine: Binding(
                                                 get: { routine },
                                                 set: { updatedRoutine in
                                                     modelContext.insert(updatedRoutine)
                                                 }
-                                            ), plusButton: false).navigationBarBackButtonHidden(true)
+                                            ), plusButton: false).navigationBarBackButtonHidden(true)*/
                         } label: {
                             WorkoutComponent(title: routine.name, image: "figure.run", description: DataMethods.summarizer(routine: routine))
                                 .padding(.horizontal)

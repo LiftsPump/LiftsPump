@@ -28,6 +28,11 @@ struct PRRecord: Identifiable {
     var eCode: String
     let realDate: Date
 }
+struct PRSupa: Codable {
+    let eCode: String
+    let date: Date  
+    let value: Int
+}
 
 @Model
 class PRData {

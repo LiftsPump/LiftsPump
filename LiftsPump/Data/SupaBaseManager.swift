@@ -98,6 +98,19 @@ public class SupaBaseManager {
             }
         }
     }
+    static func savePR(eCode: String, prdata: PR) {
+        Task {
+            do {
+                let prSupa = PRSupa(eCode: eCode, date: prdata.date, value: prdata.value)
+                try await supabase
+                    .from("prdata")
+                    .insert(prSupa)
+                    .execute()
+            } catch {
+                print("Error inserting data: \(error)")
+            }
+        }
+    }
     static func updateRoutine(routine: Routine, id: UUID) {
         Task {
             do {

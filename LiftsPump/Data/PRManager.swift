@@ -53,12 +53,14 @@ public class PRManager {
                 if let latestPR = exercisePRs.last {
                     if newWeight > latestPR.value {
                         let newPR = PR(date: currentDate, value: newWeight)
+                        SupaBaseManager.savePR(eCode: exerciseName, prdata: newPR)
                         exercisePRs.append(newPR)
                         prData.dictionary[exerciseName] = exercisePRs
                         maxSet.pr = true
                     }
                 } else {
                     let newPR = PR(date: currentDate, value: newWeight)
+                    SupaBaseManager.savePR(eCode: exerciseName, prdata: newPR)
                     exercisePRs.append(newPR)
                     prData.dictionary[exerciseName] = exercisePRs
                     maxSet.pr = true
