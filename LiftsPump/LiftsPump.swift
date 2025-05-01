@@ -14,7 +14,8 @@ struct LiftsPump: App {
             let schema = Schema([
                 Routine.self,
                 Exercise.self,
-                ESet.self
+                ESet.self,
+                PRData.self
             ])
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             return try! ModelContainer(for: schema, configurations: [config])
