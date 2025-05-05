@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSContactsUsageDescription</key>
-	<string>This app needs access to your contacts to add workout collaborators.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -11,6 +9,8 @@
 	</dict>
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app requires access to your contacts to find friends.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Play-Bold.ttf</string>

@@ -37,10 +37,9 @@ struct ProfileScreen: View {
                 NavigationLink(destination: MyInfoScreen()) {
                     Selectors(text: "My info", image: "person.fill")
                 }
-                Selectors(text: "My friends", image: "person.2.fill")
-                    .onTapGesture {
-                        showAccessory.toggle()
-                    }
+                NavigationLink(destination: Friends().navigationBarBackButtonHidden(true)) {
+                    Selectors(text: "My friends", image: "person.2.fill")
+                }
                 Selectors(text: "Settings", image: "gearshape.fill")
                     .onTapGesture {
                         showAccessory.toggle()

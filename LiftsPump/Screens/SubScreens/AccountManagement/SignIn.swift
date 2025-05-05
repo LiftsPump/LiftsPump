@@ -129,7 +129,7 @@ struct SignIn: View {
               result = .success(())
               isSignInSuccessful = true
               let supaManager = SupaBaseManager(context: modelContext)
-              await supaManager.initSync()
+              try await supaManager.initSync()
               print(supabase.auth.user)
           } catch {
               result = .failure(error)

@@ -29,6 +29,13 @@ struct ExcerciseInfoCard: View {
                 .cornerRadius(4)
             VStack {
                 HStack {
+                    let imageName = "exercise_\(exercise.eCode)_0"
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 35, height: 35)
+                        .background(Theme.Colors.NeutralDark2)
+                        .clipShape(Circle())
                     Text("\(exercise.name)")
                         .font(Theme.Fonts.SubHeading5)
                     Spacer()

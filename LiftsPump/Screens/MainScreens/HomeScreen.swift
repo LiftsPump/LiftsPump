@@ -147,6 +147,15 @@ struct HomeScreen: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.Colors.NeutralDark)
             .sensoryFeedback(.selection, trigger: showAccessory)
+            .task {
+                let supaManager = SupaBaseManager(context: modelContext)
+                do {
+                    try await supaManager.initSync()
+                } catch {
+                    print("Failed to initialize SupaBaseManager: \(error)")
+                    // Optional: You can add fallback handling or logging here
+                }
+            }
             .overlay(content: {VStack{Spacer()
                 HStack{Spacer()
                     PlusButton(date: .constant(Date()))

@@ -18,57 +18,70 @@ let supabase = SupabaseClient(
 public class SupaBaseManager {
     private var modelContext: ModelContext
 
-        public init(context: ModelContext) {
-            self.modelContext = context
-        }
+    public init(context: ModelContext) {
+        self.modelContext = context
+    }
 
-        public func initSync() async {
-            do {
-                let responseR = try await supabase.from("routines").select("*").execute()
-                let responseE = try await supabase.from("exercises").select("*").execute()
-                let responseS = try await supabase.from("sets").select("*").execute()
+    @MainActor public func initSync() async throws {
+        let responseR = try await supabase.from("routines").select("*").execute()
+        let responseE = try await supabase.from("exercises").select("*").execute()
+        let responseS = try await supabase.from("sets").select("*").execute()
+        let responseP = try await supabase.from("prdata").select("*").execute()
 
-                let decoder = JSONDecoder()
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                decoder.dateDecodingStrategy = .formatted(formatter)
+        let decoder = JSONDecoder()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        decoder.dateDecodingStrategy = .formatted(formatter)
 
-                var routines = try decoder.decode([Routine].self, from: responseR.data)
-                let exercises = try decoder.decode([Exercise].self, from: responseE.data)
-                let sets = try decoder.decode([ESet].self, from: responseS.data)
+        let routines = try decoder.decode([Routine].self, from: responseR.data)
+        let exercises = try decoder.decode([Exercise].self, from: responseE.data)
+        let sets = try decoder.decode([ESet].self, from: responseS.data)
+        formatter.dateFormat = "yyyy-MM-dd"
+        decoder.dateDecodingStrategy = .formatted(formatter)
+        let prs = try decoder.decode([PRSupa].self, from: responseP.data)
 
-                // Merge data
-                for routine in routines {
-                    for exercise in exercises {
-                        if exercise.routine_id == routine.id {
-                            exercise.routine = routine
-                            for set in sets {
-                                if set.exercise_id == exercise.id {
-                                    set.exercise = exercise
-                                    exercise.sets.append(set)
-                                }
-                            }
-                            routine.exercises.append(exercise)
+        // Merge data
+        for routine in routines {
+            for exercise in exercises {
+                if exercise.routine_id == routine.id {
+                    exercise.routine = routine
+                    for set in sets {
+                        if set.exercise_id == exercise.id {
+                            set.exercise = exercise
+                            exercise.sets.append(set)
                         }
                     }
+                    routine.exercises.append(exercise)
                 }
-
-                // Clear old data
-                let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-                for routine in currentRoutines {
-                    modelContext.delete(routine)
-                }
-
-                // Save new routines
-                for routine in routines {
-                    modelContext.insert(routine)
-                }
-
-                try modelContext.save()
-            } catch {
-                print("❌ Supabase sync error: \(error)")
             }
         }
+
+        // Clear old data
+        let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
+        let currentPRData = try modelContext.fetch(FetchDescriptor<PRData>())
+        for routine in currentRoutines {
+            modelContext.delete(routine)
+        }
+        for PRData in currentPRData {
+            modelContext.delete(PRData)
+        }
+
+        // Save new routines
+        for routine in routines {
+            modelContext.insert(routine)
+        }
+        let prd: PRData = PRData(dictionary: [:])
+        for prsup in prs {
+            var exercisePRs = prd.dictionary[prsup.eCode] ?? []
+            let newPR = PR(date: prsup.date, value: prsup.value)
+            exercisePRs.append(newPR)
+            prd.dictionary[prsup.eCode] = exercisePRs
+        }
+        print(prd.dictionary)
+                
+        modelContext.insert(prd)
+        try modelContext.save()
+    }
     static func saveRoutine(routine: Routine) {
         Task {
             do {
