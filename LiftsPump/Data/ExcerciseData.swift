@@ -106,7 +106,7 @@ class Exercise: Identifiable, Codable {
     }
     @Attribute(.unique) var id: UUID = UUID()
     var name: String
-    var eCode: String?
+    var eCode: String
     var text: String?
     
     // Relationships
@@ -116,7 +116,7 @@ class Exercise: Identifiable, Codable {
     var routine_id: UUID?
 
     init(name: String,
-         eCode: String? = nil,
+         eCode: String = "",
          text: String? = nil,
          routine: Routine? = nil,
          routine_id: UUID? = nil,
@@ -145,7 +145,7 @@ class Exercise: Identifiable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
-        eCode = try container.decodeIfPresent(String.self, forKey: .eCode)
+        eCode = try container.decode(String.self, forKey: .eCode)
         text = try container.decodeIfPresent(String.self, forKey: .text)
         //sets = try container.decode([ESet].self, forKey: .sets)
         routine_id = try container.decodeIfPresent(UUID.self, forKey: .routine_id)

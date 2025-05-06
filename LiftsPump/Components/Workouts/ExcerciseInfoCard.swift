@@ -10,6 +10,7 @@ import SwiftData
 struct ExcerciseInfoCard: View {
     var editMode: Bool
     @State private var showAccessory = false
+    @State private var workoutModal = false
     @Environment(\.modelContext) private var modelContext
     @Binding var exercise: Exercise
     @Binding var active: Int
@@ -46,6 +47,16 @@ struct ExcerciseInfoCard: View {
                                 modelContext.delete(exercise)
                                 showAccessory.toggle()
                             }
+                    } else {
+                        Image(systemName: ("chevron.down"))
+                            .font(.system(size: 25))
+                            .rotationEffect(.degrees(workoutModal ? 180 : 0))
+                                .animation(.easeInOut, value: workoutModal)
+                            .onTapGesture {
+                                workoutModal.toggle()
+                            }
+                            .padding(10)
+                            .contentShape(Circle())
                     }
                 } .padding([.top, .trailing])
                     .padding(.top, -20)
@@ -170,6 +181,9 @@ struct ExcerciseInfoCard: View {
                 }
             }
             .padding() // Padding for content within the ZStack
+            .frame(height: workoutModal ? 57 : .infinity, alignment: .top)
+                .clipped()
+                .animation(.snappy(duration: 0.3), value: workoutModal)
         }
         .padding(.top)
         .padding(.horizontal)
@@ -181,5 +195,5 @@ struct ExcerciseInfoCard: View {
     @Previewable @State var exerc = Exercise(name: "Becnh Press", eCode: "911", text: "I Am Conf8used", routine: Routine(name: "", picture: "", text: "", exercises: [], type: RoutineType.preset, days: 1, weekly: 1), sets: [
         ESet(weight: 180, reps: 10, pr: true, completed: false, exercise: Exercise(name: "Becnh Press", eCode: "911", text: "I Am Conf8used", routine: Routine(name: "", picture: "", text: "", exercises: [], type: RoutineType.preset, days: 1, weekly: 1)))
     ])
-    ExcerciseInfoCard(editMode: true, exercise: $exerc, active: .constant(3))
+    ExcerciseInfoCard(editMode: false, exercise: $exerc, active: .constant(3))
 }
