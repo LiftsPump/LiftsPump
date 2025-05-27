@@ -16,6 +16,8 @@ struct WorkoutScreen: View {
     @State private var calorlist: Bool
     @State private var showAccessory = false
     @State private var selectedTab: WorkoutTab
+    @State private var previousTab: WorkoutTab = .history
+    @State private var flipTab: Bool
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     init(defaultTab: WorkoutTab) {
@@ -23,6 +25,14 @@ struct WorkoutScreen: View {
         _selectedTab = State(initialValue: defaultTab)
         self.tab = false
         self.calorlist = false
+        self.flipTab = false
+    }
+    func selectedTabIndex(for tab: WorkoutTab) -> Int {
+        switch tab {
+        case .history: return 0
+        case .created: return 1
+        case .prs: return 2
+        }
     }
     
     var body: some View {
@@ -37,14 +47,26 @@ struct WorkoutScreen: View {
             
             HStack {
                 WorkoutTabs(color: selectedTab == .history ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Workout History", textColor: selectedTab == .history ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture { selectedTab = .history
-                        showAccessory.toggle()}
+                    .onTapGesture {
+                        flipTab = selectedTabIndex(for: .history) < selectedTabIndex(for: selectedTab)
+                        previousTab = selectedTab
+                        selectedTab = .history
+                        showAccessory.toggle()
+                    }
                 WorkoutTabs(color: selectedTab == .created ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Created Workouts", textColor: selectedTab == .created ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture { selectedTab = .created
-                        showAccessory.toggle()}
+                    .onTapGesture {
+                        flipTab = selectedTabIndex(for: .created) < selectedTabIndex(for: selectedTab)
+                        previousTab = selectedTab
+                        selectedTab = .created
+                        showAccessory.toggle()
+                    }
                 WorkoutTabs(color: selectedTab == .prs ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal Records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture { selectedTab = .prs
-                        showAccessory.toggle() }
+                    .onTapGesture {
+                        flipTab = selectedTabIndex(for: .prs) < selectedTabIndex(for: selectedTab)
+                        previousTab = selectedTab
+                        selectedTab = .prs
+                        showAccessory.toggle()
+                    }
             }
             .padding(.horizontal)
             
@@ -61,19 +83,24 @@ struct WorkoutScreen: View {
                 }
                 if calorlist {
                     CompletedScreen()
+                        .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
                 } else {
                     CalendarScreen(selectedDate: $selectedDate)
                         .onChange(of: selectedDate) { newDate in
                             print("Date selected from CalendarScreen: \(newDate)")
                         }
+                        .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
                 }
             } else if selectedTab == .created {
                 CreatedScreen()
+                    .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
             } else if selectedTab == .prs {
                 PRScreen()
+                    .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
             }
             Spacer()
         }
+        .animation(.snappy(duration: 0.2), value: selectedTab)
         .sensoryFeedback(.selection, trigger: showAccessory)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.Colors.NeutralDark)

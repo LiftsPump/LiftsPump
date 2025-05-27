@@ -12,6 +12,10 @@ struct MyInfoScreen: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @AppStorage("LASTNAME_KEY") var lastName: String = ""
     @AppStorage("EMAIL_KEY") var email: String = ""
+    @AppStorage("HEIGHT_KEY") var height: String = ""
+    @AppStorage("WEIGHT_KEY") var weight: String = ""
+    @AppStorage("DOB_KEY") var dob: String = ""
+    
     var body: some View {
         ScrollView {
             HStack {
@@ -32,9 +36,13 @@ struct MyInfoScreen: View {
                 InfoTextboxes(title: "Country/Region", placeHolder: "United States", info: $randomString)
                 HStack{
                     InfoTextboxes(title: "Date of Birth", placeHolder: "12/01/1999", info: $randomString)
-                    InfoTextboxes(title: "Height", placeHolder: "6'2\"", info: $randomString)
-                    InfoTextboxes(title: "Weight", placeHolder: "170", info: $randomString)
+                    InfoTextboxes(title: "Height (In)", placeHolder: "74\"", info: $randomString)
+                    InfoTextboxes(title: "Weight (Lb)", placeHolder: "170", info: $randomString)
                 }
+                GeneralButton(text: "Save profile data", color: Theme.Colors.Primary1, image: "square.and.arrow.down")
+                    .padding(.vertical)
+                    .onTapGesture {
+                    }
             }
         } .background(Theme.Colors.NeutralDark)
             .navigationBarBackButtonHidden(true)

@@ -139,7 +139,8 @@ struct SignUp: View {
                 let response = try await withTimeout(seconds: 10) {
                     try await supabase.auth.signUp(
                         email: email,
-                        password: password)
+                        password: password
+                    )
                 }
                 print("User created: \(response.user.id)")
                 isSignInSuccessful = true
