@@ -15,7 +15,30 @@ let supabase = SupabaseClient(
   supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1cHV6dHZob2lmeWN6dnF5amJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1MzM2OTYsImV4cCI6MjA1NDEwOTY5Nn0.eXwBsJA33-aPiz_I1Q4sQEX2Z7yxMg0Q7ERMuT-BRtQ"
 )
 
+extension DateFormatter {
+    static let dobFormat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+}
+
 public class SupaBaseManager {
+    @AppStorage("FIRSTNAME_KEY") private var firstName: String = ""
+    @AppStorage("LASTNAME_KEY") private var lastName: String = ""
+    @AppStorage("EMAIL_KEY") private var email: String = ""
+    @AppStorage("HEIGHT_KEY") private var height: Int = 0
+    @AppStorage("WEIGHT_KEY") private var weight: Int = 0
+    //@AppStorage("DOB_KEY") private var dob: String = ""
+
+    private func applyProfile(_ profile: Profile) {
+        firstName = profile.first_name
+        lastName = profile.last_name
+        email = profile.phone_number // Assuming phone_number is stored in EMAIL_KEY
+        height = profile.height
+        weight = profile.weight
+        //dob = DateFormatter.dobFormat.string(from: profile.dob)
+    }
     private var modelContext: ModelContext
 
     public init(context: ModelContext) {
@@ -27,6 +50,7 @@ public class SupaBaseManager {
         let responseE = try await supabase.from("exercises").select("*").execute()
         let responseS = try await supabase.from("sets").select("*").execute()
         let responseP = try await supabase.from("prdata").select("*").execute()
+        let responseProfile = try await supabase.from("profile").select("*").execute()
 
         let decoder = JSONDecoder()
         let formatter = DateFormatter()
@@ -39,6 +63,12 @@ public class SupaBaseManager {
         formatter.dateFormat = "yyyy-MM-dd"
         decoder.dateDecodingStrategy = .formatted(formatter)
         let prs = try decoder.decode([PRSupa].self, from: responseP.data)
+        let profiles = try decoder.decode([Profile].self, from: responseProfile.data)
+        guard let profile = profiles.first else {
+            print("No profile found in Supabase.")
+            return
+        }
+        applyProfile(profile)
 
         // Merge data
         for routine in routines {
@@ -118,6 +148,19 @@ public class SupaBaseManager {
                 try await supabase
                     .from("prdata")
                     .insert(prSupa)
+                    .execute()
+            } catch {
+                print("Error inserting data: \(error)")
+            }
+        }
+    }
+    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0) {
+        Task {
+            do {
+                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type)
+                try await supabase
+                    .from("profile")
+                    .upsert(profileData)
                     .execute()
             } catch {
                 print("Error inserting data: \(error)")

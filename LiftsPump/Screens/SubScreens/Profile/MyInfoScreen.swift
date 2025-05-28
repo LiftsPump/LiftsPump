@@ -12,8 +12,8 @@ struct MyInfoScreen: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @AppStorage("LASTNAME_KEY") var lastName: String = ""
     @AppStorage("EMAIL_KEY") var email: String = ""
-    @AppStorage("HEIGHT_KEY") var height: String = ""
-    @AppStorage("WEIGHT_KEY") var weight: String = ""
+    @AppStorage("HEIGHT_KEY") var height: Int = 0
+    @AppStorage("WEIGHT_KEY") var weight: Int = 0
     @AppStorage("DOB_KEY") var dob: String = ""
     
     var body: some View {
@@ -35,13 +35,14 @@ struct MyInfoScreen: View {
                 InfoTextboxes(title: "Password", placeHolder: "Password", info: $randomString)
                 InfoTextboxes(title: "Country/Region", placeHolder: "United States", info: $randomString)
                 HStack{
-                    InfoTextboxes(title: "Date of Birth", placeHolder: "12/01/1999", info: $randomString)
-                    InfoTextboxes(title: "Height (In)", placeHolder: "74\"", info: $randomString)
-                    InfoTextboxes(title: "Weight (Lb)", placeHolder: "170", info: $randomString)
+                    InfoTextboxes(title: "Date of Birth", placeHolder: "12/01/1999", info: $dob)
+                    NumberTextbox(title: "Height (In)", placeHolder: "74\"", info: $height)
+                    NumberTextbox(title: "Weight (Lb)", placeHolder: "170", info: $weight)
                 }
                 GeneralButton(text: "Save profile data", color: Theme.Colors.Primary1, image: "square.and.arrow.down")
                     .padding(.vertical)
                     .onTapGesture {
+                        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight)
                     }
             }
         } .background(Theme.Colors.NeutralDark)

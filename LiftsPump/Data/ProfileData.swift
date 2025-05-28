@@ -6,3 +6,14 @@
 //
 
 import Foundation
+import SwiftData
+
+struct Profile: Codable {
+    let first_name: String
+    let last_name: String
+    let phone_number: String
+    let height: Int
+    let weight: Int
+    let dob: Date
+    let type: Int
+}
