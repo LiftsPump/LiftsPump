@@ -127,12 +127,12 @@ struct HomeScreen: View {
                 ForEach(routines) { routine in
                     if routine.type == .ai {
                         NavigationLink {
-                            /*WorkoutCompleted(externalRoutine: Binding(
+                            WorkoutCompleted(externalRoutine: Binding(
                                                 get: { routine },
                                                 set: { updatedRoutine in
                                                     modelContext.insert(updatedRoutine)
                                                 }
-                                            ), plusButton: false).navigationBarBackButtonHidden(true)*/
+                                            ), plusButton: false).navigationBarBackButtonHidden(true)
                         } label: {
                             WorkoutComponent(title: routine.name, image: "figure.run", description: DataMethods.summarizer(routine: routine))
                                 .padding(.horizontal)
@@ -141,21 +141,20 @@ struct HomeScreen: View {
                             .padding(3)
                     }
                 }
-                Spacer()
-                    .padding(-3)
-            }
+            Spacer()
+                .padding(-3)
+        }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.Colors.NeutralDark)
             .sensoryFeedback(.selection, trigger: showAccessory)
             .task {
                 let supaManager = SupaBaseManager(context: modelContext)
-                let gpt = GPTManager(routines: routines)
+                let gpt = GPTManager(routines: routines, context: modelContext)
                 do {
-                    gpt.generateWorkouts()
                     try await supaManager.initSync()
+                    try await gpt.generateWorkouts()
                 } catch {
                     print("Failed to initialize SupaBaseManager: \(error)")
-                    // Optional: You can add fallback handling or logging here
                 }
             }
             .overlay(content: {VStack{Spacer()

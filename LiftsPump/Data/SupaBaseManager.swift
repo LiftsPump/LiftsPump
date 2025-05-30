@@ -29,7 +29,7 @@ public class SupaBaseManager {
     @AppStorage("EMAIL_KEY") private var email: String = ""
     @AppStorage("HEIGHT_KEY") private var height: Int = 0
     @AppStorage("WEIGHT_KEY") private var weight: Int = 0
-    //@AppStorage("DOB_KEY") private var dob: String = ""
+    @AppStorage("DOB_KEY") private var dob: Double = Date().timeIntervalSince1970
 
     private func applyProfile(_ profile: Profile) {
         firstName = profile.first_name
@@ -37,7 +37,7 @@ public class SupaBaseManager {
         email = profile.phone_number // Assuming phone_number is stored in EMAIL_KEY
         height = profile.height
         weight = profile.weight
-        //dob = DateFormatter.dobFormat.string(from: profile.dob)
+        dob = profile.dob.timeIntervalSince1970
     }
     private var modelContext: ModelContext
 
@@ -90,7 +90,9 @@ public class SupaBaseManager {
         let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
         let currentPRData = try modelContext.fetch(FetchDescriptor<PRData>())
         for routine in currentRoutines {
-            modelContext.delete(routine)
+            if routine.type != .ai {
+                modelContext.delete(routine)
+            }
         }
         for PRData in currentPRData {
             modelContext.delete(PRData)

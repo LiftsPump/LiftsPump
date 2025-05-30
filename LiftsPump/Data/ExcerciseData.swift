@@ -73,11 +73,11 @@ class Routine: Identifiable, Codable {
     }
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         name = try container.decode(String.self, forKey: .name)
         picture = try container.decodeIfPresent(String.self, forKey: .picture)
         text = try container.decodeIfPresent(String.self, forKey: .text)
-        type = try container.decode(RoutineType.self, forKey: .type)
+        type = try container.decodeIfPresent(RoutineType.self, forKey: .type) ?? .ai
         days = try container.decodeIfPresent(Int.self, forKey: .days)
         weekly = try container.decodeIfPresent(Int.self, forKey: .weekly)
         date = try container.decodeIfPresent(Date.self, forKey: .date)
