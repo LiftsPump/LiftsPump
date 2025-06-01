@@ -149,10 +149,8 @@ struct HomeScreen: View {
             .sensoryFeedback(.selection, trigger: showAccessory)
             .task {
                 let supaManager = SupaBaseManager(context: modelContext)
-                let gpt = GPTManager(routines: routines, context: modelContext)
                 do {
                     try await supaManager.initSync()
-                    try await gpt.generateWorkouts()
                 } catch {
                     print("Failed to initialize SupaBaseManager: \(error)")
                 }

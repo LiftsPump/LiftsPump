@@ -30,6 +30,7 @@ public class SupaBaseManager {
     @AppStorage("HEIGHT_KEY") private var height: Int = 0
     @AppStorage("WEIGHT_KEY") private var weight: Int = 0
     @AppStorage("DOB_KEY") private var dob: Double = Date().timeIntervalSince1970
+    @AppStorage("LS_KEY") private var last_synced: Double = Date().timeIntervalSince1970
 
     private func applyProfile(_ profile: Profile) {
         firstName = profile.first_name
@@ -38,6 +39,7 @@ public class SupaBaseManager {
         height = profile.height
         weight = profile.weight
         dob = profile.dob.timeIntervalSince1970
+        last_synced = profile.last_synced?.timeIntervalSince1970 ?? 1
     }
     private var modelContext: ModelContext
 
@@ -57,17 +59,47 @@ public class SupaBaseManager {
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         decoder.dateDecodingStrategy = .formatted(formatter)
 
-        let routines = try decoder.decode([Routine].self, from: responseR.data)
-        let exercises = try decoder.decode([Exercise].self, from: responseE.data)
-        let sets = try decoder.decode([ESet].self, from: responseS.data)
+        var routines = try decoder.decode([Routine].self, from: responseR.data)
+        var exercises = try decoder.decode([Exercise].self, from: responseE.data)
+        var sets = try decoder.decode([ESet].self, from: responseS.data)
         formatter.dateFormat = "yyyy-MM-dd"
         decoder.dateDecodingStrategy = .formatted(formatter)
         let prs = try decoder.decode([PRSupa].self, from: responseP.data)
         let profiles = try decoder.decode([Profile].self, from: responseProfile.data)
-        guard let profile = profiles.first else {
+        guard var profile = profiles.first else {
             print("No profile found in Supabase.")
             return
         }
+        if !Calendar.current.isDateInToday(profile.last_synced ?? Date(timeIntervalSince1970: 1)) {
+            print("Yurrp")
+            routines.removeAll { $0.type == .ai }
+            let options = FunctionInvokeOptions(body: profile)
+            let airesponse: Response = try await supabase.functions
+                .invoke(
+                  "AiRoutines",
+                  options: options
+                )
+            var rawValue = (airesponse.message)
+            rawValue = rawValue
+                .replacingOccurrences(of: "```json", with: "")
+                .replacingOccurrences(of: "```", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
+            for routine in aiDecoded {
+                routine.type = .ai
+                routines.append(routine)
+                for exercise in routine.exercises {
+                    exercise.routine_id = routine.id
+                    exercises.append(exercise)
+                    for set in exercise.sets {
+                        set.exercise_id = exercise.id
+                        sets.append(set)
+                    }
+                }
+            }
+        }
+        profile.last_synced = Date()
+        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(timeIntervalSince1970: last_synced))
         applyProfile(profile)
 
         // Merge data
@@ -156,10 +188,10 @@ public class SupaBaseManager {
             }
         }
     }
-    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0) {
+    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0, last_synced: Date = Date()) {
         Task {
             do {
-                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type)
+                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type, last_synced: last_synced)
                 try await supabase
                     .from("profile")
                     .upsert(profileData)

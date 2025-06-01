@@ -15,7 +15,10 @@ enum RoutineType: String, Codable {
     case custom
     case ai
 }
-
+class Response: Decodable {
+    var message: String
+    var status: String
+}
 @Model
 class Routine: Identifiable, Codable {
     @Attribute(.unique) var id: UUID = UUID()
@@ -82,7 +85,7 @@ class Routine: Identifiable, Codable {
         weekly = try container.decodeIfPresent(Int.self, forKey: .weekly)
         date = try container.decodeIfPresent(Date.self, forKey: .date)
         duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
-        //exercises = try container.decode([Exercise].self, forKey: .exercises)
+        exercises = try container.decodeIfPresent([Exercise].self, forKey: .exercises) ?? []
     }
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -143,11 +146,11 @@ class Exercise: Identifiable, Codable {
     }
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         name = try container.decode(String.self, forKey: .name)
         eCode = try container.decode(String.self, forKey: .eCode)
         text = try container.decodeIfPresent(String.self, forKey: .text)
-        //sets = try container.decode([ESet].self, forKey: .sets)
+        sets = try container.decodeIfPresent([ESet].self, forKey: .sets) ?? []
         routine_id = try container.decodeIfPresent(UUID.self, forKey: .routine_id)
     }
     func encode(to encoder: Encoder) throws {
@@ -204,7 +207,7 @@ class ESet: Identifiable, Codable {
     }
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         weight = try container.decodeIfPresent(Int.self, forKey: .weight)
         reps = try container.decodeIfPresent(Int.self, forKey: .reps)
         pr = try container.decode(Bool.self, forKey: .pr)

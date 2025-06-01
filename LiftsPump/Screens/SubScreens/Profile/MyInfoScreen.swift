@@ -15,6 +15,7 @@ struct MyInfoScreen: View {
     @AppStorage("HEIGHT_KEY") var height: Int = 0
     @AppStorage("WEIGHT_KEY") var weight: Int = 0
     @AppStorage("DOB_KEY") var dob: Double = Date().timeIntervalSince1970
+    @AppStorage("LS_KEY") private var last_synced: Double = Date().timeIntervalSince1970
     
     var body: some View {
         ScrollView {
@@ -58,7 +59,7 @@ struct MyInfoScreen: View {
                 GeneralButton(text: "Save profile data", color: Theme.Colors.Primary1, image: "square.and.arrow.down")
                     .padding(.vertical)
                     .onTapGesture {
-                        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob))
+                        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), last_synced: Date(timeIntervalSince1970: last_synced))
                     }
             }
         } .background(Theme.Colors.NeutralDark)

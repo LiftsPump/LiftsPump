@@ -16,4 +16,5 @@ struct Profile: Codable {
     let weight: Int
     let dob: Date
     let type: Int
+    var last_synced: Date?
 }
