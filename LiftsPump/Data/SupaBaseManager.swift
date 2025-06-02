@@ -70,9 +70,15 @@ public class SupaBaseManager {
             print("No profile found in Supabase.")
             return
         }
-        if !Calendar.current.isDateInToday(profile.last_synced ?? Date(timeIntervalSince1970: 1)) {
+        let synced = profile.last_synced ?? Date(timeIntervalSince1970: 1)
+        if (Date().timeIntervalSince1970-synced.timeIntervalSince1970) > 86400 {
             print("Yurrp")
-            routines.removeAll { $0.type == .ai }
+            let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
+            for routine in currentRoutines {
+                if routine.type == .ai {
+                    modelContext.delete(routine)
+                }
+            }
             let options = FunctionInvokeOptions(body: profile)
             let airesponse: Response = try await supabase.functions
                 .invoke(
@@ -106,17 +112,22 @@ public class SupaBaseManager {
         for routine in routines {
             for exercise in exercises {
                 if exercise.routine_id == routine.id {
-                    exercise.routine = routine
+                    let copyE = exercise.copy()
+                    copyE.routine = routine
+
                     for set in sets {
                         if set.exercise_id == exercise.id {
-                            set.exercise = exercise
-                            exercise.sets.append(set)
+                            let copy = set.copy()
+                            copy.exercise = copyE  // should be copyE, not exercise
+                            copyE.sets.append(copy)
                         }
                     }
-                    routine.exercises.append(exercise)
+
+                    routine.exercises.append(copyE)  // append only once
                 }
             }
         }
+
 
         // Clear old data
         let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())

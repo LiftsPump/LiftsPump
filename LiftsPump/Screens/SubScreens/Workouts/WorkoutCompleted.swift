@@ -102,13 +102,29 @@ struct WorkoutCompleted: View {
                             }
                     }
                     if (type == 2 || type == 3) {
-                        Image(systemName: "pencil")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(Theme.Colors.NeutralLight1)
-                            .onTapGesture {
-                                type = 1
-                                showAccessory.toggle()
-                            }
+                        if routine.type == .ai {
+                            GeneralButton(text: "Add", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
+                                .frame(width: 100)
+                                .onTapGesture {
+                                    let newRoutine = routine.copy()
+                                    newRoutine.type = .preset
+                                    modelContext.insert(newRoutine)
+                                    routine = newRoutine
+                                    externalRoutine = newRoutine
+                                    SupaBaseManager.saveRoutine(routine: newRoutine)
+                                    try? modelContext.save()
+                                    type = 2
+                                    showAccessory.toggle()
+                                }
+                        } else {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(Theme.Colors.NeutralLight1)
+                                .onTapGesture {
+                                    type = 1
+                                    showAccessory.toggle()
+                                }
+                        }
                     }
                     Image(systemName: "ellipsis")
                         .onTapGesture {
@@ -198,7 +214,7 @@ struct WorkoutCompleted: View {
                                     timerView
                                 }
                             }
-                        } else if (type == 2) {
+                        } else if (type == 2 && routine.type != .ai) {
                             VStack {
                                 HStack {
                                     Spacer()
