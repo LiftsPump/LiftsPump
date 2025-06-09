@@ -11,12 +11,16 @@ struct CreatedScreen: View {
     }
     
     func deleteRoutine(at offsets: IndexSet) {
+        var routineToDelete: Routine?
         for index in offsets {
-            let routineToDelete = routines[index]
-            modelContext.delete(routineToDelete)
+            routineToDelete = routines[index]
+            modelContext.delete(routineToDelete!)
         }
         do {
             try modelContext.save()
+            if let routine = routineToDelete {
+                SupaBaseManager.deleteRoutine(routine: routine)
+            }
         } catch {
             print("Failed to save context after deletion: \(error)")
         }

@@ -199,6 +199,19 @@ public class SupaBaseManager {
             }
         }
     }
+    static func deleteRoutine(routine: Routine) {
+        Task {
+            do {
+                try await supabase
+                    .from("routines")
+                    .delete()
+                    .eq("id", value: routine.id)
+                    .execute()
+            } catch {
+                print("Error inserting data: \(error)")
+            }
+        }
+    }
     static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0, last_synced: Date = Date()) {
         Task {
             do {
