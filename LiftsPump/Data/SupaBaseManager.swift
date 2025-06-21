@@ -110,6 +110,7 @@ public class SupaBaseManager {
 
         // Merge data
         for routine in routines {
+            if routine.type == .ai { continue }
             for exercise in exercises {
                 if exercise.routine_id == routine.id {
                     let copyE = exercise.copy()

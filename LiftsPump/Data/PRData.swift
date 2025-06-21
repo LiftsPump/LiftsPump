@@ -29,6 +29,7 @@ struct PRRecord: Identifiable {
     let realDate: Date
 }
 struct PRSupa: Codable {
+    var id = UUID()
     let eCode: String
     let date: Date  
     let value: Int

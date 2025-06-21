@@ -46,7 +46,7 @@ public class PRManager {
         for exercise in routine.exercises {
             guard !exercise.sets.isEmpty else { continue }
             if let maxSet = exercise.sets.filter({ $0.completed && $0.weight != nil }).max(by: { ($0.weight ?? 0) < ($1.weight ?? 0) }) {
-                let exerciseName = exercise.eCode ?? ""
+                let exerciseName = exercise.eCode
                 let newWeight = maxSet.weight ?? 0
                 let currentDate = Date()
                 var exercisePRs = prData.dictionary[exerciseName] ?? []
