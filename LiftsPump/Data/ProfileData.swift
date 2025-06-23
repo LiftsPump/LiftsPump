@@ -17,4 +17,6 @@ struct Profile: Codable {
     let dob: Date
     let type: Int
     var last_synced: Date?
+    let username: String
+    let email: String
 }

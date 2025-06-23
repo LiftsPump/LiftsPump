@@ -6,6 +6,14 @@
 //
 
 import Foundation
+extension String {
+    func normalizedSearchText() -> String {
+        self.lowercased()
+            .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: " ", with: "")
+            .folding(options: .diacriticInsensitive, locale: .current)
+    }
+}
 
 class ExerciseListModel: ObservableObject {
     @Published var exercises: [ExerciseTemplate] = []
@@ -38,7 +46,7 @@ class ExerciseListModel: ObservableObject {
             selectedExercises = exercises
         } else {
             selectedExercises = exercises.filter {
-                $0.name.localizedCaseInsensitiveContains(query)
+                $0.name.normalizedSearchText().contains(query.normalizedSearchText())
             }
         }
     }

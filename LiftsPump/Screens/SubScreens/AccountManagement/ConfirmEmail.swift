@@ -10,7 +10,10 @@ import Supabase
 
 struct ConfirmEmail: View {
     @State private var isEmailConfirmed = false
+    @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
+    @AppStorage("LASTNAME_KEY") var lastName: String = ""
     @AppStorage("EMAIL_KEY") var email: String = ""
+    @AppStorage("USERNAME_KEY") var username: String = ""
     @AppStorage("PASSWORD_KEY") var password: String = ""
     
     var body: some View {
@@ -51,6 +54,11 @@ struct ConfirmEmail: View {
                 let session = try await supabase.auth.signIn(email: email, password: password)
                 if session.user.emailConfirmedAt != nil {
                     print("Email confirmed! Navigating...")
+                    let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
+                    try await supabase
+                        .from("profile")
+                        .upsert(profileData)
+                        .execute()
                     isEmailConfirmed = true
                     self.password = ""
                     return

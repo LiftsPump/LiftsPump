@@ -5,14 +5,43 @@
 //  Created by Ahmed Abushagur on 5/4/25.
 //
 import Contacts
+import Supabase
 import Foundation
 
 public class FriendsManager: ObservableObject {
     private let store = CNContactStore()
     
     @Published public var contacts: [CNContact] = []
+    @Published public var friendsSearch: [Friend] = []
 
     public init() { }
+    
+    public func addFriend(friendToAdd: Friend) async {
+        do {
+            let FR = FriendRequest(requestee: friendToAdd.creator_id, status: 1)
+            try await supabase
+                .from("friends")
+                .insert(FR)
+                .execute()
+            print("Friend added")
+        } catch {
+            print("Failed to add friend: \(error)")
+        }
+    }
+    
+    public func searchFriends(searchText: String) async {
+            do {
+                let response = try await supabase
+                    .from("profile")
+                    .select("*")
+                    .filter("username", operator: "ilike", value: "%\(searchText)%")
+                    .execute()
+                try? friendsSearch = JSONDecoder().decode([Friend].self, from: response.data)
+                print(friendsSearch)
+            } catch {
+                print("Failed to search friends: \(error)")
+            }
+        }
 
     public func requestAccessAndFetchContacts() async {
         let status = CNContactStore.authorizationStatus(for: .contacts)

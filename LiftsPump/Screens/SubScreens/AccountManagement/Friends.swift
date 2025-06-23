@@ -53,8 +53,22 @@ struct Friends: View {
                 .accentColor(Theme.Colors.Primary1)
                 .padding(.horizontal)
                 .padding(.bottom, 30)
+                .onChange(of: searchText) { query in
+                    Task {
+                        await friendsManager.searchFriends(searchText: query)
+                    }
+                }
             if friendsManager.contacts.count > 0, let firstletter = friendsManager.contacts[0].givenName.first {
                 LetterSeperator(letter: "\(firstletter.uppercased())")
+            }
+            ForEach(friendsManager.friendsSearch.indices, id: \.self) { index in
+                let friend = friendsManager.friendsSearch[index]
+                Person(image: "plus", action: "Add", text: "\(friend.first_name+" "+friend.last_name)", profileImage: "person.crop.circle")
+                    .onTapGesture{
+                        Task {
+                            await friendsManager.addFriend(friendToAdd: friend)
+                        }
+                    }
             }
             ForEach(friendsManager.contacts.indices, id: \.self) { index in
                 let contact = friendsManager.contacts[index]

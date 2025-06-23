@@ -12,6 +12,7 @@ struct MyInfoScreen: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @AppStorage("LASTNAME_KEY") var lastName: String = ""
     @AppStorage("EMAIL_KEY") var email: String = ""
+    @AppStorage("USERNAME_KEY") var username: String = ""
     @AppStorage("HEIGHT_KEY") var height: Int = 0
     @AppStorage("WEIGHT_KEY") var weight: Int = 0
     @AppStorage("DOB_KEY") var dob: Double = Date().timeIntervalSince1970
@@ -33,6 +34,7 @@ struct MyInfoScreen: View {
                 }
                 
                 InfoTextboxes(title: "Email Address", placeHolder: "Email", info: $email)
+                InfoTextboxes(title: "Username", placeHolder: "username", info: $username)
                 InfoTextboxes(title: "Password", placeHolder: "Password", info: $randomString)
                 InfoTextboxes(title: "Country/Region", placeHolder: "United States", info: $randomString)
                 HStack{
@@ -59,7 +61,7 @@ struct MyInfoScreen: View {
                 GeneralButton(text: "Save profile data", color: Theme.Colors.Primary1, image: "square.and.arrow.down")
                     .padding(.vertical)
                     .onTapGesture {
-                        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), last_synced: Date(timeIntervalSince1970: last_synced))
+                        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), last_synced: Date(timeIntervalSince1970: last_synced), username: username)
                     }
             }
         } .background(Theme.Colors.NeutralDark)

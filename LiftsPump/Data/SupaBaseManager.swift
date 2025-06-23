@@ -31,15 +31,17 @@ public class SupaBaseManager {
     @AppStorage("WEIGHT_KEY") private var weight: Int = 0
     @AppStorage("DOB_KEY") private var dob: Double = Date().timeIntervalSince1970
     @AppStorage("LS_KEY") private var last_synced: Double = Date().timeIntervalSince1970
+    @AppStorage("USERNAME_KEY") var username: String = ""
 
     private func applyProfile(_ profile: Profile) {
         firstName = profile.first_name
         lastName = profile.last_name
-        email = profile.phone_number // Assuming phone_number is stored in EMAIL_KEY
+        email = profile.email // Assuming phone_number is stored in EMAIL_KEY
         height = profile.height
         weight = profile.weight
         dob = profile.dob.timeIntervalSince1970
         last_synced = profile.last_synced?.timeIntervalSince1970 ?? 1
+        username = profile.username
     }
     private var modelContext: ModelContext
 
@@ -52,8 +54,11 @@ public class SupaBaseManager {
         let responseE = try await supabase.from("exercises").select("*").execute()
         let responseS = try await supabase.from("sets").select("*").execute()
         let responseP = try await supabase.from("prdata").select("*").execute()
-        let responseProfile = try await supabase.from("profile").select("*").execute()
-
+        let responseProfile = try await supabase
+            .from("profile")
+            .select("*")
+            .eq("creator_id", value: supabase.auth.currentUser?.id ?? "")
+            .execute()
         let decoder = JSONDecoder()
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
@@ -105,7 +110,7 @@ public class SupaBaseManager {
             }
         }
         profile.last_synced = Date()
-        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(timeIntervalSince1970: last_synced))
+        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(timeIntervalSince1970: last_synced), username: username)
         applyProfile(profile)
 
         // Merge data
@@ -213,10 +218,10 @@ public class SupaBaseManager {
             }
         }
     }
-    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0, last_synced: Date = Date()) {
+    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0, last_synced: Date = Date(), username: String = "", email: String = "") {
         Task {
             do {
-                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type, last_synced: last_synced)
+                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type, last_synced: last_synced, username: username, email: email)
                 try await supabase
                     .from("profile")
                     .upsert(profileData)

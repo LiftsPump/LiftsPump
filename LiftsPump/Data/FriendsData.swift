@@ -6,3 +6,16 @@
 //
 
 import Foundation
+import SwiftData
+
+public struct Friend: Codable {
+    let creator_id: UUID
+    let first_name: String
+    let last_name: String
+    let username: String
+}
+public struct FriendRequest: Codable {
+    let requestee: UUID
+    let status: Int
+    //let creator_id: UUID?
+}

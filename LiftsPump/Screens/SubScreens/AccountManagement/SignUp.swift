@@ -8,6 +8,7 @@ struct SignUp: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @AppStorage("LASTNAME_KEY") var lastName: String = ""
     @AppStorage("EMAIL_KEY") var email: String = ""
+    @AppStorage("USERNAME_KEY") var username: String = ""
     @AppStorage("PASSWORD_KEY") var password: String = ""
     @State private var isSignInSuccessful = false
     @State private var errorMessage: String?
@@ -29,6 +30,7 @@ struct SignUp: View {
                     TextBoxSignUp(placeHolder: "First Name", info: $firstName, password: false)
                     TextBoxSignUp(placeHolder: "Last Name", info: $lastName, password: false)
                 }
+                TextBoxSignUp(placeHolder: "Username", info: $username, password: false)
                 TextBoxSignUp(placeHolder: "Email", info: $email, password: false)
                 TextBoxSignUp(placeHolder: "Password", info: $password, password: true)
             }
