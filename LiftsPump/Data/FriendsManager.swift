@@ -13,17 +13,58 @@ public class FriendsManager: ObservableObject {
     
     @Published public var contacts: [CNContact] = []
     @Published public var friendsSearch: [Friend] = []
+    @Published public var friendRequests: [FriendRequest] = []
 
     public init() { }
     
+    public func getFR() async {
+        do {
+            guard let creatorId = supabase.auth.currentUser?.id else {
+                print("No logged-in user found")
+                return
+            }
+            let response = try await supabase
+                .from("friends")
+                .select("*")
+                .eq("requestee", value: creatorId)
+                .execute()
+            print(response)
+            try? friendRequests = JSONDecoder().decode([FriendRequest].self, from: response.data)
+            print(friendRequests)
+        } catch {
+            print("Failed to sync: \(error)")
+        }
+    }
+    
     public func addFriend(friendToAdd: Friend) async {
         do {
-            let FR = FriendRequest(requestee: friendToAdd.creator_id, status: 1)
-            try await supabase
-                .from("friends")
-                .insert(FR)
-                .execute()
+            guard let creatorId = supabase.auth.currentUser?.id else {
+                print("No logged-in user found")
+                return
+            }
+            let requesteeId = friendToAdd.creator_id
+            let payload = FriendsPayload(creatorId: creatorId, requesteeId: requesteeId, action: "request")
+            let options = FunctionInvokeOptions(body: payload)
+            try await supabase.functions
+                .invoke(
+                  "create-friend-request-log",
+                  options: options
+                )
             print("Friend added")
+        } catch {
+            print("Failed to add friend: \(error)")
+        }
+    }
+    public func acceptFriend(friendToAdd: FriendRequest) async {
+        do {
+            let payload = FriendsPayload(creatorId: friendToAdd.creator_id, requesteeId: friendToAdd.requestee, action: "accept")
+            let options = FunctionInvokeOptions(body: payload)
+            try await supabase.functions
+                .invoke(
+                  "create-friend-request-log",
+                  options: options
+                )
+            print("Friend accepted")
         } catch {
             print("Failed to add friend: \(error)")
         }

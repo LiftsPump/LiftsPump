@@ -64,9 +64,13 @@ struct Friends: View {
             ForEach(friendsManager.friendsSearch.indices, id: \.self) { index in
                 let friend = friendsManager.friendsSearch[index]
                 Person(image: "plus", action: "Add", text: "\(friend.first_name+" "+friend.last_name)", profileImage: "person.crop.circle")
-                    .onTapGesture{
+                    .onTapGesture {
                         Task {
-                            await friendsManager.addFriend(friendToAdd: friend)
+                            do {
+                                try await friendsManager.addFriend(friendToAdd: friend)
+                            } catch {
+                                print("Add friend failed: \(error.localizedDescription)")
+                            }
                         }
                     }
             }

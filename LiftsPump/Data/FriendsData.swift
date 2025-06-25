@@ -17,5 +17,11 @@ public struct Friend: Codable {
 public struct FriendRequest: Codable {
     let requestee: UUID
     let status: Int
-    //let creator_id: UUID?
+    let creator_id: UUID
+    let date: Date
+}
+public struct FriendsPayload: Codable {
+    let creatorId: UUID
+    let requesteeId: UUID
+    let action: String
 }

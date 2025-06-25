@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct NotificationsScreen: View {
+    @StateObject var friendsManager = FriendsManager()
+
     var body: some View {
         ScrollView {
             HStack {
@@ -18,19 +20,25 @@ struct NotificationsScreen: View {
                 Spacer()
             }
             VStack(alignment: .leading) {
-                Rectangle()
-                    .fill(Theme.Colors.Primary1)
-                    .frame(width: .infinity, height: 2)
-                    .edgesIgnoringSafeArea(.horizontal)
-                    .padding(.horizontal)
-                Text("Today")
-                    .font(Theme.Fonts.SubHeading5)
-                    .padding(.leading)
-                Person(image: "eye", action: "View", text: "You have one new notification from your friend", profileImage: "person.crop.circle")
-                    .padding(.top, -17)
-                Person(image: "checkmark", action: "Accept", text: "Some nonsense about adding this confirming this wtv", profileImage: "person.crop.circle")
+                ForEach(friendsManager.friendRequests.indices, id: \.self) { index in
+                    let friend = friendsManager.friendRequests[index]
+                    Person(image: "checkmark", action: "Accept", text: "Someone added you", profileImage: "person.crop.circle")
+                        .onTapGesture {
+                            Task {
+                                do {
+                                    try await friendsManager.acceptFriend(friendToAdd: friend)
+                                } catch {
+                                    print("Add friend failed: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                }
+            } .onAppear{
+                Task {
+                    await friendsManager.getFR()
+                }
             }
-            VStack(alignment: .leading) {
+            /*VStack(alignment: .leading) {
                 Rectangle()
                     .fill(Theme.Colors.Primary1)
                     .frame(width: .infinity, height: 2)
@@ -42,7 +50,7 @@ struct NotificationsScreen: View {
                 Person(image: "checkmark", action: "Accept", text: "Some nonsense about adding this confirming this wtv", profileImage: "person.crop.circle")
                     .padding(.top, -17)
                 Person(image: "eye", action: "View", text: "Some nonsense about adding this confirming this wtv", profileImage: "person.crop.circle")
-            }
+            }*/
             
         } .background(Theme.Colors.NeutralDark)
             .navigationBarBackButtonHidden(true)
