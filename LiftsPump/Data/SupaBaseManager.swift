@@ -76,41 +76,45 @@ public class SupaBaseManager {
             return
         }
         let synced = profile.last_synced ?? Date(timeIntervalSince1970: 1)
-        if (Date().timeIntervalSince1970-synced.timeIntervalSince1970) > 86400 {
-            print("Yurrp")
-            let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-            for routine in currentRoutines {
-                if routine.type == .ai {
-                    modelContext.delete(routine)
+        do {
+            if (Date().timeIntervalSince1970-synced.timeIntervalSince1970) > 86400 {
+                print("Yurrp")
+                let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
+                for routine in currentRoutines {
+                    if routine.type == .ai {
+                        modelContext.delete(routine)
+                    }
                 }
-            }
-            let options = FunctionInvokeOptions(body: profile)
-            let airesponse: Response = try await supabase.functions
-                .invoke(
-                  "AiRoutines",
-                  options: options
-                )
-            var rawValue = (airesponse.message)
-            rawValue = rawValue
-                .replacingOccurrences(of: "```json", with: "")
-                .replacingOccurrences(of: "```", with: "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
-            for routine in aiDecoded {
-                routine.type = .ai
-                routines.append(routine)
-                for exercise in routine.exercises {
-                    exercise.routine_id = routine.id
-                    exercises.append(exercise)
-                    for set in exercise.sets {
-                        set.exercise_id = exercise.id
-                        sets.append(set)
+                let options = FunctionInvokeOptions(body: profile)
+                let airesponse: Response = try await supabase.functions
+                    .invoke(
+                        "AiRoutines",
+                        options: options
+                    )
+                var rawValue = (airesponse.message)
+                rawValue = rawValue
+                    .replacingOccurrences(of: "```json", with: "")
+                    .replacingOccurrences(of: "```", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
+                for routine in aiDecoded {
+                    routine.type = .ai
+                    routines.append(routine)
+                    for exercise in routine.exercises {
+                        exercise.routine_id = routine.id
+                        exercises.append(exercise)
+                        for set in exercise.sets {
+                            set.exercise_id = exercise.id
+                            sets.append(set)
+                        }
                     }
                 }
             }
+            profile.last_synced = Date()
+            SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(timeIntervalSince1970: last_synced), username: username)
+        } catch {
+            print("Error with AI \(error)")
         }
-        profile.last_synced = Date()
-        SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(timeIntervalSince1970: last_synced), username: username)
         applyProfile(profile)
 
         // Merge data

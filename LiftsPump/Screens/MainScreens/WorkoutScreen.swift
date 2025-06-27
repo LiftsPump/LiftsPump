@@ -110,8 +110,7 @@ struct WorkoutScreen: View {
                     if selectedTab == .history && !calorlist {
                         PlusButton(date: $selectedDate)
                     } else {
-                        PlusButton(date: .constant(Date()))
-                    }
+                        PlusButton(ifCreateScreen: true, date: .constant(Date()))                    }
                 }
                 }}})
     }

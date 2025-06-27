@@ -157,7 +157,7 @@ struct HomeScreen: View {
             }
             .overlay(content: {VStack{Spacer()
                 HStack{Spacer()
-                    PlusButton(date: .constant(Date()))
+                    PlusButton(ifCreateScreen: true, date: .constant(Date()))
                     .onTapGesture {showAccessory.toggle()}}}})
     }
 }

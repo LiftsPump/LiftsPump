@@ -8,6 +8,7 @@ struct PlusButton: View {
     @State private var isPresented2: Bool = false
     @State private var newRoutine: Routine = Routine(name: "New Routine", type: .preset)
     @State private var cancelled: Bool = false
+    var ifCreateScreen: Bool = false
     @Binding var date: Date
     let calendar = Calendar.current
 
@@ -18,9 +19,13 @@ struct PlusButton: View {
                 .frame(width: 46)
                 .shadow(color: Color(red: 1, green: 1, blue: 1, opacity: 0.4), radius: 10)
                 .onTapGesture {
-                    newRoutine.type = .date
-                    newRoutine.date = date
-                    isPresented2 = true
+                    if ifCreateScreen {
+                        isPresented = true
+                    } else {
+                        newRoutine.type = .date
+                        newRoutine.date = date
+                        isPresented2 = true
+                    }
                 }
             Image(systemName: "plus")
                 .font(.system(size: 30, weight: .bold))
