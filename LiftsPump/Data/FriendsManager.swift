@@ -28,11 +28,39 @@ public class FriendsManager: ObservableObject {
                 .select("*")
                 .eq("requestee", value: creatorId)
                 .execute()
-            print(response)
-            try? friendRequests = JSONDecoder().decode([FriendRequest].self, from: response.data)
-            print(friendRequests)
+            do {
+                let decoder = JSONDecoder()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                decoder.dateDecodingStrategy = .formatted(formatter)
+                friendRequests = try decoder.decode([FriendRequest].self, from: response.data)
+            } catch {
+                print("Decoding failed: \(error)")
+                print(String(data: response.data, encoding: .utf8) ?? "No response string")
+            }
         } catch {
             print("Failed to sync: \(error)")
+        }
+    }
+    public func getUsername(profileToFind: UUID) async -> String? {
+        do {
+            let response = try await supabase
+                .from("profile")
+                .select("username")
+                .eq("creator_id", value: profileToFind)
+                .single()
+                .execute()
+
+            struct UsernameResponse: Codable {
+                let username: String
+            }
+
+            let decoded = try JSONDecoder().decode(UsernameResponse.self, from: response.data)
+            return decoded.username
+
+        } catch {
+            print("Failed to receive username: \(error)")
+            return nil
         }
     }
     

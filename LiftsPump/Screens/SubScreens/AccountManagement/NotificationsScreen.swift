@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NotificationsScreen: View {
     @StateObject var friendsManager = FriendsManager()
+    @State private var usernames: [UUID: String] = [:]
 
     var body: some View {
         ScrollView {
@@ -22,13 +23,23 @@ struct NotificationsScreen: View {
             VStack(alignment: .leading) {
                 ForEach(friendsManager.friendRequests.indices, id: \.self) { index in
                     let friend = friendsManager.friendRequests[index]
-                    Person(image: "checkmark", action: "Accept", text: "Someone added you", profileImage: "person.crop.circle")
+                    let username = usernames[friend.creator_id] ?? "Loading..."
+                    Person(image: "checkmark", action: "Accept", text: username+" added you", profileImage: "person.crop.circle")
                         .onTapGesture {
                             Task {
                                 do {
                                     try await friendsManager.acceptFriend(friendToAdd: friend)
                                 } catch {
                                     print("Add friend failed: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                        .onAppear {
+                            Task {
+                                if usernames[friend.creator_id] == nil {
+                                    if let name = await friendsManager.getUsername(profileToFind: friend.creator_id) {
+                                        usernames[friend.creator_id] = name
+                                    }
                                 }
                             }
                         }

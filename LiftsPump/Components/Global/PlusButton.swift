@@ -20,6 +20,8 @@ struct PlusButton: View {
                 .shadow(color: Color(red: 1, green: 1, blue: 1, opacity: 0.4), radius: 10)
                 .onTapGesture {
                     if ifCreateScreen {
+                        modelContext.insert(newRoutine)
+                        SupaBaseManager.saveRoutine(routine: newRoutine)
                         isPresented = true
                     } else {
                         newRoutine.type = .date
