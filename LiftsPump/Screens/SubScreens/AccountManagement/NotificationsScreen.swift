@@ -24,25 +24,25 @@ struct NotificationsScreen: View {
                 ForEach(friendsManager.friendRequests.indices, id: \.self) { index in
                     let friend = friendsManager.friendRequests[index]
                     let username = usernames[friend.creator_id] ?? "Loading..."
-                    Person(image: "checkmark", action: "Accept", text: username+" added you", profileImage: "person.crop.circle")
-                        .onTapGesture {
+                    if friend.status == 1 {
+                        Person(image: "checkmark", action: "Accept", text: username+" added you", profileImage: "person.crop.circle", onTap: {
                             Task {
                                 do {
-                                    try await friendsManager.acceptFriend(friendToAdd: friend)
-                                } catch {
-                                    print("Add friend failed: \(error.localizedDescription)")
+                                    await friendsManager.acceptFriend(friendToAdd: friend)
+                                    await friendsManager.getFR()
                                 }
                             }
-                        }
-                        .onAppear {
-                            Task {
-                                if usernames[friend.creator_id] == nil {
-                                    if let name = await friendsManager.getUsername(profileToFind: friend.creator_id) {
-                                        usernames[friend.creator_id] = name
+                        })
+                            .onAppear {
+                                Task {
+                                    if usernames[friend.creator_id] == nil {
+                                        if let name = await friendsManager.getUsername(profileToFind: friend.creator_id) {
+                                            usernames[friend.creator_id] = name
+                                        }
                                     }
                                 }
                             }
-                        }
+                    }
                 }
             } .onAppear{
                 Task {

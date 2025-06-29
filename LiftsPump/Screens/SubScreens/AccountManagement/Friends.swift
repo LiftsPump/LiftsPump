@@ -12,6 +12,8 @@ struct Friends: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @Environment(\.dismiss) var dismiss
     @StateObject var friendsManager = FriendsManager()
+    @State private var usernames: [UUID: String] = [:]
+    @State private var searchOrAdd: Bool = true
 
     var body: some View {
         ScrollView {
@@ -28,79 +30,102 @@ struct Friends: View {
                     }
             } .padding()
             HStack {
-                Text("Find friends")
+                Text("Add friends")
                     .font(Theme.Fonts.SubHeading8)
                     .foregroundStyle(Theme.Colors.NeutralLight1)
                 Spacer()
             } .padding(.horizontal)
-            GeneralButton(text: "Find from contacts", color: Theme.Colors.Primary1, image: "text.page")
+            GeneralButton(text: (searchOrAdd ? "Search for friends" : "My friends"), color: Theme.Colors.Primary1, image: "text.page")
                 .onTapGesture {
-                    Task{
-                        await friendsManager.requestAccessAndFetchContacts()
+                    withAnimation {
+                        searchOrAdd.toggle()
                     }
                 }
-            HStack {
-                Text("Your friends")
-                    .font(Theme.Fonts.SubHeading8)
-                    .foregroundStyle(Theme.Colors.NeutralLight1)
-                Spacer()
-            } .padding(.horizontal)
-            TextField("Search friends...", text: $searchText)
-                .padding(8)
-                .background(Theme.Colors.NeutralLight1)
-                .cornerRadius(8)
-                .foregroundStyle(Theme.Colors.NeutralDark)
-                .accentColor(Theme.Colors.Primary1)
-                .padding(.horizontal)
-                .padding(.bottom, 30)
-                .onChange(of: searchText) { query in
-                    Task {
-                        await friendsManager.searchFriends(searchText: query)
+            if searchOrAdd {
+                HStack {
+                    Text("Your friends")
+                        .font(Theme.Fonts.SubHeading8)
+                        .foregroundStyle(Theme.Colors.NeutralLight1)
+                    Spacer()
+                } .padding(.horizontal)
+                ForEach(friendsManager.friendsList.indices, id: \.self) { index in
+                    let friend = friendsManager.friendsList[index]
+                    let currentUserId = supabase.auth.currentUser?.id
+                    let otherId = (friend.creator_id == currentUserId) ? friend.requestee : friend.creator_id
+                    let username = usernames[otherId] ?? "Loading..."
+                    if friend.status == 2 {
+                        Rectangle()
+                            .fill(Theme.Colors.NeutralDarkGray1)
+                            .frame(width: .infinity, height: 2)
+                            .edgesIgnoringSafeArea(.horizontal)
+                            .padding(.horizontal)
+                        Person(image: "plus", action: "Invite", text: "\(username)", profileImage: "person.crop.circle", onTap: {
+                            print("hey")
+                        })
+                            .onAppear {
+                                Task {
+                                    if usernames[otherId] == nil {
+                                        if let name = await friendsManager.getUsername(profileToFind: otherId) {
+                                            usernames[otherId] = name
+                                        }
+                                    }
+                                }
+                            }
                     }
                 }
-            if friendsManager.contacts.count > 0, let firstletter = friendsManager.contacts[0].givenName.first {
-                LetterSeperator(letter: "\(firstletter.uppercased())")
-            }
-            ForEach(friendsManager.friendsSearch.indices, id: \.self) { index in
-                let friend = friendsManager.friendsSearch[index]
-                Person(image: "plus", action: "Add", text: "\(friend.first_name+" "+friend.last_name)", profileImage: "person.crop.circle")
-                    .onTapGesture {
+            } else {
+                HStack {
+                    Text("Find friends")
+                        .font(Theme.Fonts.SubHeading8)
+                        .foregroundStyle(Theme.Colors.NeutralLight1)
+                    Spacer()
+                } .padding(.horizontal)
+                TextField("Search friends...", text: $searchText)
+                    .padding(8)
+                    .background(Theme.Colors.NeutralLight1)
+                    .cornerRadius(8)
+                    .foregroundStyle(Theme.Colors.NeutralDark)
+                    .accentColor(Theme.Colors.Primary1)
+                    .padding(.horizontal)
+                    .padding(.bottom, 30)
+                    .onChange(of: searchText) { query in
                         Task {
-                            do {
-                                try await friendsManager.addFriend(friendToAdd: friend)
-                            } catch {
-                                print("Add friend failed: \(error.localizedDescription)")
+                            await friendsManager.searchFriends(searchText: query)
+                        }
+                    }
+                if friendsManager.contacts.count > 0, let firstletter = friendsManager.contacts[0].givenName.first {
+                    LetterSeperator(letter: "\(firstletter.uppercased())")
+                }
+                ForEach(friendsManager.friendsSearch.indices, id: \.self) { index in
+                    let friend = friendsManager.friendsSearch[index]
+                    Rectangle()
+                        .fill(Theme.Colors.NeutralDarkGray1)
+                        .frame(width: .infinity, height: 2)
+                        .edgesIgnoringSafeArea(.horizontal)
+                        .padding(.horizontal)
+                    Person(
+                        image: "plus",
+                        action: "Add",
+                        text: "\(friend.first_name + " " + friend.last_name)",
+                        profileImage: "person.crop.circle",
+                        onTap: {
+                            Task {
+                                await friendsManager.addFriend(friendToAdd: friend)
                             }
                         }
-                    }
-            }
-            ForEach(friendsManager.contacts.indices, id: \.self) { index in
-                let contact = friendsManager.contacts[index]
-                if let firstCharacter = contact.givenName.first {
-                    let currentChar = String(firstCharacter).uppercased()
-                    if index > 0 && String(friendsManager.contacts[index-1].givenName.first ?? "#").uppercased() != currentChar {
-                        LetterSeperator(letter: currentChar)
-                    }
+                    )
                 }
-                Person(image: "plus", action: "Invite", text: "\(contact.givenName+" "+contact.familyName)", profileImage: "person.crop.circle")
-                    .onTapGesture {
-                        let contact = friendsManager.contacts[index]
-                        if let phoneNumber = contact.phoneNumbers.first?.value.stringValue {
-                            let cleanNumber = phoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-                            if let url = URL(string: "sms:\(cleanNumber)&body=Join%20\(firstName)%20on%20this%20app:%20https://liftspump.com") {
-                                    UIApplication.shared.open(url)
-                                }
-                        }
-                    }
             }
             Rectangle()
                 .fill(Theme.Colors.NeutralDarkGray1)
                 .frame(width: .infinity, height: 2)
                 .edgesIgnoringSafeArea(.horizontal)
                 .padding(.horizontal)
-
             Spacer()
         } .background(Theme.Colors.NeutralDark)
+        .task {
+            await friendsManager.getFriends()
+        }
     }
 }
 

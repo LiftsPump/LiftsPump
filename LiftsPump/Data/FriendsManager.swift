@@ -14,8 +14,35 @@ public class FriendsManager: ObservableObject {
     @Published public var contacts: [CNContact] = []
     @Published public var friendsSearch: [Friend] = []
     @Published public var friendRequests: [FriendRequest] = []
+    @Published public var friendsList: [FriendRequest] = []
 
     public init() { }
+    
+    public func getFriends() async {
+        do {
+            guard let creatorId = supabase.auth.currentUser?.id else {
+                print("No logged-in user found")
+                return
+            }
+            let response = try await supabase
+                .from("friends")
+                .select("*")
+                .or("requestee.eq.\(creatorId),creator_id.eq.\(creatorId)")
+                .execute()
+            do {
+                let decoder = JSONDecoder()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                decoder.dateDecodingStrategy = .formatted(formatter)
+                friendsList = try decoder.decode([FriendRequest].self, from: response.data)
+            } catch {
+                print("Decoding failed: \(error)")
+                print(String(data: response.data, encoding: .utf8) ?? "No response string")
+            }
+        } catch {
+            print("Failed to sync: \(error)")
+        }
+    }
     
     public func getFR() async {
         do {
@@ -26,7 +53,7 @@ public class FriendsManager: ObservableObject {
             let response = try await supabase
                 .from("friends")
                 .select("*")
-                .eq("requestee", value: creatorId)
+                .or("requestee.eq.\(creatorId),creator_id.eq.\(creatorId)")
                 .execute()
             do {
                 let decoder = JSONDecoder()
@@ -80,7 +107,7 @@ public class FriendsManager: ObservableObject {
                 )
             print("Friend added")
         } catch {
-            print("Failed to add friend: \(error)")
+            print("Failed to add friend: \(error.localizedDescription)")
         }
     }
     public func acceptFriend(friendToAdd: FriendRequest) async {
