@@ -149,10 +149,12 @@ struct HomeScreen: View {
             .sensoryFeedback(.selection, trigger: showAccessory)
             .task {
                 let supaManager = SupaBaseManager(context: modelContext)
-                do {
-                    try await supaManager.initSync()
-                } catch {
-                    print("Failed to initialize SupaBaseManager: \(error)")
+                Task.detached {
+                    do {
+                        try await supaManager.initSync()
+                    } catch {
+                        print("Failed to initialize SupaBaseManager: \(error)")
+                    }
                 }
             }
             .overlay(content: {VStack{Spacer()

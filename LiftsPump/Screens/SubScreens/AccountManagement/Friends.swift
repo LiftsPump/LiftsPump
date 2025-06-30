@@ -123,6 +123,7 @@ struct Friends: View {
                 .padding(.horizontal)
             Spacer()
         } .background(Theme.Colors.NeutralDark)
+            .animation(.snappy(duration: 0.3), value: searchOrAdd)
         .task {
             await friendsManager.getFriends()
         }

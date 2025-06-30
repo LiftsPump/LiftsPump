@@ -97,7 +97,9 @@ struct WorkoutCompleted: View {
                             .onTapGesture {
                                 try? modelContext.save()
                                 SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
-                                type += 1
+                                withAnimation {
+                                    type += 1
+                                }
                                 showAccessory.toggle()
                             }
                     }
@@ -113,7 +115,9 @@ struct WorkoutCompleted: View {
                                     externalRoutine = newRoutine
                                     SupaBaseManager.saveRoutine(routine: newRoutine)
                                     try? modelContext.save()
-                                    type = 2
+                                    withAnimation {
+                                        type = 2
+                                    }
                                     showAccessory.toggle()
                                 }
                         } else {
@@ -121,13 +125,16 @@ struct WorkoutCompleted: View {
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(Theme.Colors.NeutralLight1)
                                 .onTapGesture {
-                                    type = 1
+                                    withAnimation {
+                                        type = 1
+                                    }
                                     showAccessory.toggle()
                                 }
                         }
                     }
                     Image(systemName: "ellipsis")
                         .onTapGesture {
+                            print("ho hey")
                             showAccessory.toggle()
                             modalType = .Ellipsis
                             isPresented.toggle()
@@ -170,7 +177,9 @@ struct WorkoutCompleted: View {
                                 GeneralButton(text: "Repeat", color: Theme.Colors.Primary1, image: "repeat")
                                     .frame(width: 130)
                                     .onTapGesture {
-                                        type = 2
+                                        withAnimation {
+                                            type = 2
+                                        }
                                         showAccessory.toggle()
                                         resetCompleted(routineUpdate: routine)
                                     }
@@ -184,7 +193,9 @@ struct WorkoutCompleted: View {
                                         .frame(width: 105)
                                         .padding(.trailing, -20)
                                         .onTapGesture {
-                                            type = 2
+                                            withAnimation {
+                                                type = 2
+                                            }
                                             timerthing.toggleTimer(startOrStop: true)
                                         }
                                     GeneralButton(text: "End", color: Theme.Colors.Red, image: "xmark")
@@ -205,7 +216,9 @@ struct WorkoutCompleted: View {
                                             externalRoutine = newRoutine
                                             SupaBaseManager.saveRoutine(routine: newRoutine)
                                             try? modelContext.save
-                                            type = 4
+                                            withAnimation {
+                                                type = 4
+                                            }
                                         }
                                 }
                                 Spacer()
@@ -223,7 +236,9 @@ struct WorkoutCompleted: View {
                                         .padding(.trailing, -10)
                                         .onTapGesture {
                                             showAccessory.toggle()
-                                            type += 1
+                                            withAnimation {
+                                                type += 1
+                                            }
                                             timerthing.toggleTimer(startOrStop: false)
                                         }
                                 }
@@ -273,26 +288,6 @@ struct WorkoutCompleted: View {
                                 modalType = .Exercise
                                 isPresented.toggle()
                             }
-                            .sheet(item: $modalType, onDismiss: {
-                                addSelectedExercises()
-                            }) { type in
-                                switch type {
-                                case .Exercise:
-                                    ExerciseScreen(selectedExercises: Binding(
-                                        get: { selExercise ?? [] },
-                                        set: { selExercise = $0 }
-                                    ), fromWorkout: true)
-
-                                case .Ellipsis:
-                                    EllipsisView(modalType: $modalType)
-                                        .presentationDetents([.fraction(0.5)])
-
-                                case .Friends:
-                                    Friends()
-                                case .Schedule:
-                                    Friends()
-                                }
-                            }
                         Spacer()
                     }
                 }
@@ -301,17 +296,42 @@ struct WorkoutCompleted: View {
             .cornerRadius(12)
             .shadow(radius: 4, x: 0, y: 2)
             .padding()
+            .sheet(item: $modalType, onDismiss: {
+                addSelectedExercises()
+            }) { type in
+                switch type {
+                case .Exercise:
+                    ExerciseScreen(selectedExercises: Binding(
+                        get: { selExercise ?? [] },
+                        set: { selExercise = $0 }
+                    ), fromWorkout: true)
+
+                case .Ellipsis:
+                    EllipsisView(modalType: $modalType)
+                        .presentationDetents([.fraction(0.5)])
+
+                case .Friends:
+                    Friends()
+                case .Schedule:
+                    Friends()
+                }
+            }
         }
+        .animation(.snappy(duration: 0.3), value: type)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: BackButton())
         .background(Theme.Colors.NeutralDark)
         .sensoryFeedback(.impact, trigger: showAccessory)
         .onAppear{
             if !routine.exercises.isEmpty {
-                type = 2
+                withAnimation {
+                    type = 2
+                }
             }
             if (routine.type == .date && (routine.date ?? Date()) < Date()) {
-                type = 4
+                withAnimation {
+                    type = 4
+                }
             }
         }
     }

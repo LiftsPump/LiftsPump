@@ -21,6 +21,7 @@ struct ExerciseDetails: View {
     @State private var selectedTab: ExerciseTabs
     @Binding var addExercise: Bool
     @State private var prHistory: [PRRecord] = [] // PR Data
+    @State private var flipTab: Bool = false
     @State var player = AVPlayer(url: Bundle.main.url(forResource: "video2", withExtension: "mp4")!)
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.dismiss) var dismiss
@@ -77,11 +78,13 @@ struct ExerciseDetails: View {
                     .onTapGesture {
                         selectedTab = .about
                         showAccessory.toggle()
+                        flipTab = true
                     }
                 WorkoutTabs(color: selectedTab == .prs ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
                     .onTapGesture {
                         selectedTab = .prs
                         showAccessory.toggle()
+                        flipTab = false
                     }
             }
             .padding(.horizontal)
@@ -107,7 +110,7 @@ struct ExerciseDetails: View {
                             .padding()
                         Spacer()
                     }
-                }
+                } .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
             } else if selectedTab == .prs {
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -207,6 +210,7 @@ struct ExerciseDetails: View {
                         }
                     }
                 }
+                .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
                 .onAppear {
                     fetchPRHistory()
                 }
@@ -216,6 +220,7 @@ struct ExerciseDetails: View {
         .sensoryFeedback(.selection, trigger: showAccessory)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.Colors.NeutralDark)
+        .animation(.snappy(duration: 0.2), value: selectedTab)
     }
     
     private func fetchPRHistory() {

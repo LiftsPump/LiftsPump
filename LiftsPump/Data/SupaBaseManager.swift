@@ -32,6 +32,7 @@ public class SupaBaseManager {
     @AppStorage("DOB_KEY") private var dob: Double = Date().timeIntervalSince1970
     @AppStorage("LS_KEY") private var last_synced: Double = Date().timeIntervalSince1970
     @AppStorage("USERNAME_KEY") var username: String = ""
+    private static var running: Bool = false
 
     private func applyProfile(_ profile: Profile) {
         firstName = profile.first_name
@@ -50,6 +51,10 @@ public class SupaBaseManager {
     }
 
     @MainActor public func initSync() async throws {
+        if SupaBaseManager.running {
+            return
+        }
+        SupaBaseManager.running = true
         let responseR = try await supabase.from("routines").select("*").execute()
         let responseE = try await supabase.from("exercises").select("*").execute()
         let responseS = try await supabase.from("sets").select("*").execute()
@@ -73,6 +78,7 @@ public class SupaBaseManager {
         let profiles = try decoder.decode([Profile].self, from: responseProfile.data)
         guard var profile = profiles.first else {
             print("No profile found in Supabase.")
+            SupaBaseManager.running = false
             return
         }
         let synced = profile.last_synced ?? Date(timeIntervalSince1970: 1)
@@ -80,17 +86,17 @@ public class SupaBaseManager {
             if (Date().timeIntervalSince1970-synced.timeIntervalSince1970) > 86400 {
                 print("Yurrp")
                 let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-                for routine in currentRoutines {
-                    if routine.type == .ai {
-                        modelContext.delete(routine)
-                    }
-                }
                 let options = FunctionInvokeOptions(body: profile)
                 let airesponse: Response = try await supabase.functions
                     .invoke(
                         "AiRoutines",
                         options: options
                     )
+                for routine in currentRoutines {
+                    if routine.type == .ai {
+                        modelContext.delete(routine)
+                    }
+                }
                 var rawValue = (airesponse.message)
                 rawValue = rawValue
                     .replacingOccurrences(of: "```json", with: "")
@@ -111,9 +117,10 @@ public class SupaBaseManager {
                 }
             }
             profile.last_synced = Date()
-            SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(timeIntervalSince1970: last_synced), username: username)
+            SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(), username: username)
         } catch {
             print("Error with AI \(error)")
+            SupaBaseManager.running = false
         }
         applyProfile(profile)
 
@@ -166,6 +173,7 @@ public class SupaBaseManager {
                 
         modelContext.insert(prd)
         try modelContext.save()
+        SupaBaseManager.running = false
     }
     static func saveRoutine(routine: Routine) {
         Task {
