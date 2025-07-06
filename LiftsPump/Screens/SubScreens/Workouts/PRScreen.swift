@@ -7,7 +7,7 @@ struct PRScreen: View {
     @StateObject private var viewModel = ExerciseListModel() // Exercise Data
     @State private var sortByName = true // Toggle between sorting modes
     @State private var isPresented: Bool = false
-    @State private var currentSelected = ExerciseTemplate(id: "12", name: "Arnold press", primaryMuscles: ["Tricep", "Bicep"], instructions: ["Instruction 1", "Instruction 2"], images: ["plus"])
+    @State private var currentSelected: ExerciseTemplate?
 
     var body: some View {
         VStack {
@@ -18,7 +18,9 @@ struct PRScreen: View {
                     .padding(.top, 8)
                     .font(Theme.Fonts.SubHeading5)
                     .onTapGesture {
-                        sortByName.toggle()
+                        withAnimation {
+                            sortByName.toggle()
+                        }
                     }
             }
             .sensoryFeedback(.selection, trigger: showAccessory)
@@ -39,10 +41,12 @@ struct PRScreen: View {
                         groupedByMonthView()
                     }
                 }
-            } .sheet(isPresented: $isPresented) {
-                ExerciseDetails(defaultTab: ExerciseTabs.prs, exercise: currentSelected, addExercise: .constant(false))
+            }
+            .sheet(item: $currentSelected) { exercise in
+                ExerciseDetails(defaultTab: ExerciseTabs.prs, exercise: exercise, addExercise: .constant(false))
             }
         }
+        .animation(.snappy(duration: 0.2), value: sortByName)
         .onAppear {
             fetchPRHistory()
         }
@@ -65,7 +69,6 @@ struct PRScreen: View {
                         PRCard(exercise: .constant(exercise), PRRecord: .constant(record), selected: false)
                             .onTapGesture {
                                 currentSelected = exercise
-                                isPresented.toggle()
                             }
                     }
                 }
@@ -92,7 +95,6 @@ struct PRScreen: View {
                         PRCard(exercise: .constant(exercise), PRRecord: .constant(record), selected: false)
                             .onTapGesture {
                                 currentSelected = exercise
-                                isPresented.toggle()
                             }
                     }
                 }

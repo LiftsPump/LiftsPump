@@ -78,7 +78,9 @@ struct WorkoutScreen: View {
                         .padding(.top, 8)
                         .font(Theme.Fonts.SubHeading5)
                         .onTapGesture {
-                            calorlist.toggle()
+                            withAnimation{
+                                calorlist.toggle()
+                            }
                         }
                 }
                 if calorlist {
@@ -101,6 +103,7 @@ struct WorkoutScreen: View {
             Spacer()
         }
         .animation(.snappy(duration: 0.2), value: selectedTab)
+        .animation(.snappy(duration: 0.2), value: calorlist)
         .sensoryFeedback(.selection, trigger: showAccessory)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.Colors.NeutralDark)

@@ -308,7 +308,7 @@ struct WorkoutCompleted: View {
 
                 case .Ellipsis:
                     EllipsisView(modalType: $modalType)
-                        .presentationDetents([.fraction(0.5)])
+                        .presentationDetents([.fraction(0.4)])
 
                 case .Friends:
                     Friends()

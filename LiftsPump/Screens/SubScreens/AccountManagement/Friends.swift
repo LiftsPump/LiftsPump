@@ -14,6 +14,7 @@ struct Friends: View {
     @StateObject var friendsManager = FriendsManager()
     @State private var usernames: [UUID: String] = [:]
     @State private var searchOrAdd: Bool = true
+    var ont: String?
 
     var body: some View {
         ScrollView {

@@ -262,6 +262,11 @@ struct PRRow: View {
             Image(systemName: record.verified ? "checkmark.circle" : "x.circle")
                 .foregroundStyle(record.verified ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1)
                 .frame(width: 75)
+                .onTapGesture {
+                    if record.verified == false {
+                        
+                    }
+                }
         }
         .padding(.vertical, 5)
     }
