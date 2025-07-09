@@ -26,21 +26,21 @@ public class PRManager {
             return newPRData
         }
     }
-    func getPRHistory(for exerciseCode: String) -> [(date: Date, weight: Int)] {
+    func getPRHistory(for exerciseCode: String) -> [(date: Date, weight: Int, supaId: UUID)] {
         guard let exercisePRs = prData.dictionary[exerciseCode] else {
             return []
         }
-        return exercisePRs.map { ($0.date, $0.value) }
+        return exercisePRs.map { ($0.date, $0.value, $0.supaId) }
     }
-    func getPRDataFormatted() -> [String: [Date: Int]] {
-        var formattedData: [String: [Date: Int]] = [:]
+func getPRDataFormatted() -> [String: [(Date, Int, UUID)]] {
+    var formattedData: [String: [(Date, Int, UUID)]] = [:]
 
-        for (exerciseId, prEntries) in prData.dictionary {
-            formattedData[exerciseId] = Dictionary(uniqueKeysWithValues: prEntries.map { ($0.date, $0.value) })
-        }
-
-        return formattedData
+    for (exerciseId, prEntries) in prData.dictionary {
+        formattedData[exerciseId] = prEntries.map { ($0.date, $0.value, $0.supaId) }
     }
+
+    return formattedData
+}
 
     func checkForPRs(routine: Routine) {
         for exercise in routine.exercises {
@@ -52,14 +52,14 @@ public class PRManager {
                 var exercisePRs = prData.dictionary[exerciseName] ?? []
                 if let latestPR = exercisePRs.last {
                     if newWeight > latestPR.value {
-                        let newPR = PR(date: currentDate, value: newWeight)
+                        let newPR = PR(date: currentDate, value: newWeight, supaId: UUID())
                         SupaBaseManager.savePR(eCode: exerciseName, prdata: newPR)
                         exercisePRs.append(newPR)
                         prData.dictionary[exerciseName] = exercisePRs
                         maxSet.pr = true
                     }
                 } else {
-                    let newPR = PR(date: currentDate, value: newWeight)
+                    let newPR = PR(date: currentDate, value: newWeight, supaId: UUID())
                     SupaBaseManager.savePR(eCode: exerciseName, prdata: newPR)
                     exercisePRs.append(newPR)
                     prData.dictionary[exerciseName] = exercisePRs

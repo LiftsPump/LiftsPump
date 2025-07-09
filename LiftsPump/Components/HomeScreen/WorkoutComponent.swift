@@ -13,7 +13,7 @@ struct WorkoutComponent: View {
                 .foregroundStyle(Theme.Colors.Primary1)
                 .font(.system(size: 25))
             
-            HStack {
+            HStack(alignment: .top) {
                 Image(systemName: "\(image)")
                     .foregroundStyle(Color.white)
                     .padding()
@@ -29,7 +29,9 @@ struct WorkoutComponent: View {
                 Text("\(description)")
                     .foregroundColor(Color.gray)
                     .font(.system(size: 14))
-                    .frame(maxHeight: .infinity, alignment: .top)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+                    .frame(maxHeight: .infinity, alignment: .topLeading)
                     .padding(.leading, 6)
                 Spacer()
                 Image(systemName: "arrow.right")

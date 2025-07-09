@@ -165,7 +165,8 @@ public class SupaBaseManager {
         let prd: PRData = PRData(dictionary: [:])
         for prsup in prs {
             var exercisePRs = prd.dictionary[prsup.eCode] ?? []
-            let newPR = PR(date: prsup.date, value: prsup.value)
+            print(prsup.id)
+            let newPR = PR(date: prsup.date, value: prsup.value, supaId: prsup.id)
             exercisePRs.append(newPR)
             prd.dictionary[prsup.eCode] = exercisePRs
         }
@@ -207,7 +208,7 @@ public class SupaBaseManager {
     static func savePR(eCode: String, prdata: PR) {
         Task {
             do {
-                let prSupa = PRSupa(eCode: eCode, date: prdata.date, value: prdata.value)
+                let prSupa = PRSupa(id: UUID(), eCode: eCode, date: prdata.date, value: prdata.value)
                 try await supabase
                     .from("prdata")
                     .insert(prSupa)
@@ -227,6 +228,21 @@ public class SupaBaseManager {
                     .execute()
             } catch {
                 print("Error inserting data: \(error)")
+            }
+        }
+    }
+    static func prConfirmsSend(requestee_id: UUID, pr_id: UUID) {
+        Task {
+            do {
+                let payload = PRPayload(requestee_id: requestee_id, pr_id: pr_id)
+                let options = FunctionInvokeOptions(body: payload)
+                try await supabase.functions
+                    .invoke(
+                      "prconfirm",
+                      options: options
+                    )
+            } catch {
+                print("Error sending request: \(error)")
             }
         }
     }

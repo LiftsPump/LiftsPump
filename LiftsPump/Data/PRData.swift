@@ -12,24 +12,32 @@ import SwiftData
 struct PR: Codable {
     let date: Date
     let value: Int
+    let supaId: UUID
 
-    init(date: Date, value: Int) {
+    init(date: Date, value: Int, supaId: UUID) {
         self.date = date
         self.value = value
+        self.supaId = supaId
     }
 }
 
 struct PRRecord: Identifiable {
     let id = UUID()
     let date: String
+    let supaId: UUID
     let weight: Int
     let verified: Bool
     let percentage: String
     var eCode: String
     let realDate: Date
 }
+struct PRPayload: Codable {
+    let requestee_id: UUID
+    let pr_id: UUID
+}
+
 struct PRSupa: Codable {
-    var id = UUID()
+    let id: UUID
     let eCode: String
     let date: Date  
     let value: Int

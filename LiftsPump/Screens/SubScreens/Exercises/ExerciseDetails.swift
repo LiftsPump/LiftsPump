@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 enum ExerciseTabs {
-    case about, prs
+    case about, prs, confirm
 }
 import SwiftUI
 import AVKit
@@ -21,6 +21,7 @@ struct ExerciseDetails: View {
     @State private var selectedTab: ExerciseTabs
     @Binding var addExercise: Bool
     @State private var prHistory: [PRRecord] = [] // PR Data
+    @State private var prSelected: PRRecord?
     @State private var flipTab: Bool = false
     @State var player = AVPlayer(url: Bundle.main.url(forResource: "video2", withExtension: "mp4")!)
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
@@ -32,6 +33,7 @@ struct ExerciseDetails: View {
         self.exercise = exercise
         _selectedTab = State(initialValue: defaultTab)
         self._addExercise = addExercise
+        self._prSelected = State(initialValue: nil)
     }
     
     private func genInstructions() -> String {
@@ -80,7 +82,7 @@ struct ExerciseDetails: View {
                         showAccessory.toggle()
                         flipTab = true
                     }
-                WorkoutTabs(color: selectedTab == .prs ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
+                WorkoutTabs(color: (selectedTab == .prs || selectedTab == .confirm) ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
                     .onTapGesture {
                         selectedTab = .prs
                         showAccessory.toggle()
@@ -154,7 +156,7 @@ struct ExerciseDetails: View {
                                         .frame(width: 75)
                                 }
                             } .padding(.horizontal)
-                            PRRow(record: topRecord)
+                            PRRow(record: topRecord, selectedTab: $selectedTab, prSelected: $prSelected)
                                 .padding(.horizontal)
                         } else {
                             Text("No records available.")
@@ -204,7 +206,7 @@ struct ExerciseDetails: View {
                         }
                         ForEach(prHistory) { record in
                             if record.weight != prHistory.max(by: { $0.weight < $1.weight })?.weight {
-                                PRRow(record: record)
+                                PRRow(record: record, selectedTab: $selectedTab, prSelected: $prSelected)
                                     .padding(.horizontal)
                             }
                         }
@@ -213,6 +215,11 @@ struct ExerciseDetails: View {
                 .transition(.opacity.combined(with: .move(edge: flipTab ? .leading : .trailing)))
                 .onAppear {
                     fetchPRHistory()
+                }
+            } else if selectedTab == .confirm {
+                if let prCurrent = prSelected {
+                    YourFriends(selectededTab: $selectedTab, prSelected: prCurrent)
+                        .transition(.opacity.combined(with: .move(edge: .leading)))
                 }
             }
             Spacer()
@@ -229,6 +236,7 @@ struct ExerciseDetails: View {
         prHistory = response.map { pr in
             PRRecord(
                 date: pr.date.formatted(.dateTime.year().month(.abbreviated).day()),
+                supaId: pr.supaId,
                 weight: pr.weight,
                 verified: false,
                 percentage: String(Int.random(in: 0...100)),
@@ -241,6 +249,8 @@ struct ExerciseDetails: View {
 
 struct PRRow: View {
     let record: PRRecord
+    @Binding var selectedTab: ExerciseTabs
+    @Binding var prSelected: PRRecord?
     
     var body: some View {
         HStack {
@@ -264,7 +274,10 @@ struct PRRow: View {
                 .frame(width: 75)
                 .onTapGesture {
                     if record.verified == false {
-                        
+                        prSelected = record
+                        withAnimation {
+                            selectedTab = .confirm
+                        }
                     }
                 }
         }

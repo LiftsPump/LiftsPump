@@ -108,12 +108,13 @@ struct PRScreen: View {
         let response = prManager.getPRDataFormatted() // [String: [Date: Int]]
 
         prHistory = response.compactMap { (exerciseId, records) in
-            guard let (maxDate, maxWeight) = records.max(by: { $0.value < $1.value }) else {
+            guard let (maxDate, maxWeight, supaId) = records.max(by: { $0.1 < $1.1 }) else {
                 return nil
             }
 
             return PRRecord(
                 date: maxDate.formatted(.dateTime.year().month(.abbreviated).day()),
+                supaId: supaId,
                 weight: maxWeight,
                 verified: false,
                 percentage: String(Int.random(in: 0...100)),

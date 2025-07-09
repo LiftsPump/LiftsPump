@@ -56,7 +56,7 @@ struct HomeScreen: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             HStack(alignment: .top) {
-                Text("hello, \n\(firstName)!")
+                Text("Hello, \n\(firstName)!")
                     .font(Theme.Fonts.Heading1)
                     .foregroundStyle(Theme.Colors.Primary1)
                 Spacer()
