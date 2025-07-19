@@ -35,11 +35,18 @@ struct PRPayload: Codable {
     let requestee_id: UUID
     let pr_id: UUID
 }
+struct PRRequest: Codable {
+    let creator_id: UUID
+    let requestee: UUID
+    let id: UUID
+    let pr_id: UUID
+}
 
 struct PRSupa: Codable {
     let id: UUID
+    let creator_id: UUID
     let eCode: String
-    let date: Date  
+    let date: Date
     let value: Int
 }
 

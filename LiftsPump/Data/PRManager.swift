@@ -32,15 +32,41 @@ public class PRManager {
         }
         return exercisePRs.map { ($0.date, $0.value, $0.supaId) }
     }
-func getPRDataFormatted() -> [String: [(Date, Int, UUID)]] {
-    var formattedData: [String: [(Date, Int, UUID)]] = [:]
-
-    for (exerciseId, prEntries) in prData.dictionary {
-        formattedData[exerciseId] = prEntries.map { ($0.date, $0.value, $0.supaId) }
+    func getPRConfirms() async -> [PRRequest] {
+        do {
+            guard let creatorId = supabase.auth.currentUser?.id else {
+                print("No logged-in user found")
+                return []
+            }
+            let response = try await supabase
+                .from("prconfirm")
+                .select("*")
+                .or("requestee.eq.\(creatorId)")
+                .execute()
+            print(response.data)
+            do {
+                let decoder = JSONDecoder()
+                let prRequests = try decoder.decode([PRRequest].self, from: response.data)
+                return prRequests
+            } catch {
+                print("Decoding failed: \(error)")
+                print(String(data: response.data, encoding: .utf8) ?? "No response string")
+                return []
+            }
+        } catch {
+            print("Failed to get PR requests: \(error)")
+            return []
+        }
     }
+    func getPRDataFormatted() -> [String: [(Date, Int, UUID)]] {
+        var formattedData: [String: [(Date, Int, UUID)]] = [:]
 
-    return formattedData
-}
+        for (exerciseId, prEntries) in prData.dictionary {
+            formattedData[exerciseId] = prEntries.map { ($0.date, $0.value, $0.supaId) }
+        }
+
+        return formattedData
+    }
 
     func checkForPRs(routine: Routine) {
         for exercise in routine.exercises {

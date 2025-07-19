@@ -163,15 +163,19 @@ public class SupaBaseManager {
             modelContext.insert(routine)
         }
         let prd: PRData = PRData(dictionary: [:])
-        for prsup in prs {
-            var exercisePRs = prd.dictionary[prsup.eCode] ?? []
-            print(prsup.id)
-            let newPR = PR(date: prsup.date, value: prsup.value, supaId: prsup.id)
-            exercisePRs.append(newPR)
-            prd.dictionary[prsup.eCode] = exercisePRs
+        guard let userId = supabase.auth.currentUser?.id else {
+            print("User not logged in!")
+            SupaBaseManager.running = false
+            return
         }
-        print(prd.dictionary)
-                
+        for prsup in prs {
+            if prsup.creator_id == userId {
+                var exercisePRs = prd.dictionary[prsup.eCode] ?? []
+                let newPR = PR(date: prsup.date, value: prsup.value, supaId: prsup.id)
+                exercisePRs.append(newPR)
+                prd.dictionary[prsup.eCode] = exercisePRs
+            }
+        }
         modelContext.insert(prd)
         try modelContext.save()
         SupaBaseManager.running = false
@@ -208,7 +212,11 @@ public class SupaBaseManager {
     static func savePR(eCode: String, prdata: PR) {
         Task {
             do {
-                let prSupa = PRSupa(id: UUID(), eCode: eCode, date: prdata.date, value: prdata.value)
+                guard let userId = supabase.auth.currentUser?.id else {
+                    print("User not logged in!")
+                    return
+                }
+                let prSupa = PRSupa(id: UUID(), creator_id: userId, eCode: eCode, date: prdata.date, value: prdata.value)
                 try await supabase
                     .from("prdata")
                     .insert(prSupa)

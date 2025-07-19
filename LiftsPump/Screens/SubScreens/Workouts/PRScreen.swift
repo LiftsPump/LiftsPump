@@ -57,9 +57,6 @@ struct PRScreen: View {
             viewModel.findById(record.eCode)?.name.prefix(1).uppercased() ?? "#"
         }
         let sortedKeys = grouped.keys.sorted()
-        for key in sortedKeys {
-            print("\(key): \(grouped[key] ?? [])")
-        }
 
         return VStack {
             ForEach(sortedKeys, id: \.self) { letter in

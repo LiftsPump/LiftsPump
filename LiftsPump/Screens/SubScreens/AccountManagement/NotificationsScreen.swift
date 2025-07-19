@@ -9,9 +9,12 @@ import SwiftUI
 
 struct NotificationsScreen: View {
     @StateObject var friendsManager = FriendsManager()
+    @Environment(\.modelContext) private var modelContext
     @State private var usernames: [UUID: String] = [:]
+    @State private var prRequests: [PRRequest] = []
 
     var body: some View {
+        let prManager = PRManager(context: modelContext)
         ScrollView {
             HStack {
                 Text("Notifications")
@@ -44,9 +47,29 @@ struct NotificationsScreen: View {
                             }
                     }
                 }
+                ForEach(prRequests.indices, id: \.self) { index in
+                    let request = prRequests[index]
+                    let username = usernames[request.creator_id] ?? "Loading..."
+                    Person(image: "checkmark", action: "Confirm", text: username+" requested you", profileImage: "person.crop.circle", onTap: {
+                            Task {
+                                do {
+                                }
+                            }
+                        })
+                            .onAppear {
+                                Task {
+                                    if usernames[request.creator_id] == nil {
+                                        if let name = await friendsManager.getUsername(profileToFind: request.creator_id) {
+                                            usernames[request.creator_id] = name
+                                        }
+                                    }
+                                }
+                            }
+                }
             } .onAppear{
                 Task {
                     await friendsManager.getFR()
+                    prRequests = await prManager.getPRConfirms()
                 }
             }
             /*VStack(alignment: .leading) {
