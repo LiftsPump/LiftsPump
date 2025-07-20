@@ -9,8 +9,10 @@ import SwiftUI
 
 struct NotificationsScreen: View {
     @StateObject var friendsManager = FriendsManager()
+    @StateObject private var exerciseManager = ExerciseListModel()
     @Environment(\.modelContext) private var modelContext
     @State private var usernames: [UUID: String] = [:]
+    @State private var prInfo: [UUID: PRSupa] = [:]
     @State private var prRequests: [PRRequest] = []
 
     var body: some View {
@@ -50,7 +52,10 @@ struct NotificationsScreen: View {
                 ForEach(prRequests.indices, id: \.self) { index in
                     let request = prRequests[index]
                     let username = usernames[request.creator_id] ?? "Loading..."
-                    Person(image: "checkmark", action: "Confirm", text: username+" requested you", profileImage: "person.crop.circle", onTap: {
+                    let weight = prInfo[request.pr_id]?.value ?? 0
+                    let name = exerciseManager.findById(prInfo[request.pr_id]?.eCode ?? "")?.name  ?? "Loading..."
+                    
+                    Person(image: "checkmark", action: "Confirm", text: "\(username) wants you to confirm a \(weight)lb PR in \(name)", profileImage: "person.crop.circle", onTap: {
                             Task {
                                 do {
                                     SupaBaseManager.prAcceptOrDeny(requestee_id: request.requestee, pr_id: request.pr_id, action: "accept")
@@ -63,6 +68,12 @@ struct NotificationsScreen: View {
                                     if usernames[request.creator_id] == nil {
                                         if let name = await friendsManager.getUsername(profileToFind: request.creator_id) {
                                             usernames[request.creator_id] = name
+                                        }
+                                    }
+                                    if prInfo[request.pr_id] == nil {
+                                        let prs = try await SupaBaseManager.checkPR(pr_id: request.pr_id)
+                                        if let pr = prs.first {
+                                            prInfo[request.pr_id] = pr
                                         }
                                     }
                                 }

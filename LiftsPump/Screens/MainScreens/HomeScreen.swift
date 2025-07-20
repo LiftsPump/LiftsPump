@@ -13,45 +13,6 @@ struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query var routines: [Routine]
     @State private var showAccessory = false
-    
-    private func completedRoutines() -> Int {
-        var count = 0
-        for routine in routines {
-            if routine.type == .date {
-                count += 1
-            }
-        }
-        return count
-    }
-    private func userStreak() -> Int {
-        guard !routines.isEmpty else { return 0 }
-
-        // Sort routines by date in descending order
-        let sortedRoutines = routines.filter { $0.type == .date }.sorted { $0.date ?? Date() > $1.date ?? Date()}
-        
-        var streak = 0
-        var previousDate: Date? = nil
-        let calendar = Calendar.current
-        
-        for routine in sortedRoutines {
-            if let routineDate = routine.date {
-                if routineDate > Date() {
-                    continue
-                }
-                if previousDate == nil {
-                    streak += 1
-                } else if let daysDifference = calendar.dateComponents([.day], from: routineDate, to: previousDate!).day, daysDifference == 1 {
-                    streak += 1
-                } else if let daysDifference = calendar.dateComponents([.day], from: routineDate, to: previousDate!).day, daysDifference > 1 {
-                    streak = 0
-                    break
-                }
-                previousDate = routineDate
-            }
-        }
-        
-        return streak
-    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -96,19 +57,19 @@ struct HomeScreen: View {
             HStack {
                 NavigationLink(destination: WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)
                     .navigationBarItems(leading: BackButton())) {
-                        StatView(stat: completedRoutines(), image: "checkmark.circle")
+                        StatView(stat: DataMethods.completedRoutines(routines: routines), image: "checkmark.circle")
                 }
                 Spacer()
                 VStack{
                     NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)
                         .navigationBarItems(leading: BackButton())) {
-                            HalfStatView(image: "flame", stat: userStreak(), subText: "days in a row!", title: "Your streak")
+                            HalfStatView(image: "flame", stat: DataMethods.userStreak(routines: routines), subText: "days in a row!", title: "Your streak")
                             .padding(.bottom, 8)
                     }
                     Spacer()
                     NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.prs).navigationBarBackButtonHidden(true)
                         .navigationBarItems(leading: BackButton()))  {
-                        HalfStatView(image: "figure.strengthtraining.traditional", stat: 10, subText: "PRs confirmed!", title: "Your records")
+                            HalfStatView(image: "figure.strengthtraining.traditional", stat: DataMethods.getPRsConfirmed(modelContext: modelContext), subText: "PRs confirmed!", title: "Your records")
                             .padding(.top, 8)
                     }
                 }.frame(height: 175)

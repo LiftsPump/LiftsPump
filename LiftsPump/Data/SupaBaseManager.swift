@@ -282,6 +282,24 @@ public class SupaBaseManager {
             }
         }
     }
+    static func checkPR(pr_id: UUID) async throws -> [PRSupa] {
+        do {
+            let responsePR = try await supabase
+                .from("prdata")
+                .select("*")
+                .eq("id", value: pr_id)
+                .execute()
+            let decoder = JSONDecoder()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            decoder.dateDecodingStrategy = .formatted(formatter)
+            let prs = try decoder.decode([PRSupa].self, from: responsePR.data)
+            return prs
+        } catch {
+            print("Can't yield PR from id: \(error)")
+            return []
+        }
+    }
     static func updateRoutine(routine: Routine, id: UUID) {
         Task {
             do {

@@ -102,7 +102,7 @@ struct PRScreen: View {
     /// Fetch PR History and store only the top record per exercise
     private func fetchPRHistory() {
         let prManager = PRManager(context: modelContext)
-        let response = prManager.getPRDataFormatted() // [String: [Date: Int]]
+        let response = prManager.getPRDataFormatted()
 
         prHistory = response.compactMap { (exerciseId, records) in
             guard let (maxDate, maxWeight, supaId, confirmations) = records.max(by: { $0.1 < $1.1 }) else {
