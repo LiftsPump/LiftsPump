@@ -13,11 +13,13 @@ struct PR: Codable {
     let date: Date
     let value: Int
     let supaId: UUID
+    let confirmations: [UUID]
 
-    init(date: Date, value: Int, supaId: UUID) {
+    init(date: Date, value: Int, supaId: UUID, confirmations: [UUID]) {
         self.date = date
         self.value = value
         self.supaId = supaId
+        self.confirmations = confirmations
     }
 }
 
@@ -35,6 +37,11 @@ struct PRPayload: Codable {
     let requestee_id: UUID
     let pr_id: UUID
 }
+struct PRConfirm: Codable {
+    let requestee_id: UUID
+    let pr_id: UUID
+    let action: String
+}
 struct PRRequest: Codable {
     let creator_id: UUID
     let requestee: UUID
@@ -48,6 +55,7 @@ struct PRSupa: Codable {
     let eCode: String
     let date: Date
     let value: Int
+    let confirmations: [UUID]?
 }
 
 @Model

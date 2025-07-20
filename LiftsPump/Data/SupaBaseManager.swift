@@ -171,7 +171,7 @@ public class SupaBaseManager {
         for prsup in prs {
             if prsup.creator_id == userId {
                 var exercisePRs = prd.dictionary[prsup.eCode] ?? []
-                let newPR = PR(date: prsup.date, value: prsup.value, supaId: prsup.id)
+                let newPR = PR(date: prsup.date, value: prsup.value, supaId: prsup.id, confirmations: prsup.confirmations ?? [])
                 exercisePRs.append(newPR)
                 prd.dictionary[prsup.eCode] = exercisePRs
             }
@@ -216,7 +216,7 @@ public class SupaBaseManager {
                     print("User not logged in!")
                     return
                 }
-                let prSupa = PRSupa(id: UUID(), creator_id: userId, eCode: eCode, date: prdata.date, value: prdata.value)
+                let prSupa = PRSupa(id: UUID(), creator_id: userId, eCode: eCode, date: prdata.date, value: prdata.value, confirmations: prdata.confirmations)
                 try await supabase
                     .from("prdata")
                     .insert(prSupa)
@@ -243,6 +243,21 @@ public class SupaBaseManager {
         Task {
             do {
                 let payload = PRPayload(requestee_id: requestee_id, pr_id: pr_id)
+                let options = FunctionInvokeOptions(body: payload)
+                try await supabase.functions
+                    .invoke(
+                      "prconfirm",
+                      options: options
+                    )
+            } catch {
+                print("Error sending request: \(error)")
+            }
+        }
+    }
+    static func prAcceptOrDeny(requestee_id: UUID, pr_id: UUID, action: String) {
+        Task {
+            do {
+                let payload = PRConfirm(requestee_id: requestee_id, pr_id: pr_id, action: action)
                 let options = FunctionInvokeOptions(body: payload)
                 try await supabase.functions
                     .invoke(

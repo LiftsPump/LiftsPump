@@ -53,6 +53,8 @@ struct NotificationsScreen: View {
                     Person(image: "checkmark", action: "Confirm", text: username+" requested you", profileImage: "person.crop.circle", onTap: {
                             Task {
                                 do {
+                                    SupaBaseManager.prAcceptOrDeny(requestee_id: request.requestee, pr_id: request.pr_id, action: "accept")
+                                    prRequests = await prManager.getPRConfirms()
                                 }
                             }
                         })

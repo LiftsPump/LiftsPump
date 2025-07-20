@@ -238,7 +238,7 @@ struct ExerciseDetails: View {
                 date: pr.date.formatted(.dateTime.year().month(.abbreviated).day()),
                 supaId: pr.supaId,
                 weight: pr.weight,
-                verified: false,
+                verified: (!pr.confirmations.isEmpty),
                 percentage: String(Int.random(in: 0...100)),
                 eCode: exercise.id,
                 realDate: pr.date
