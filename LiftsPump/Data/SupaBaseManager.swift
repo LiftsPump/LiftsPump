@@ -235,7 +235,33 @@ public class SupaBaseManager {
                     .eq("id", value: routine.id)
                     .execute()
             } catch {
-                print("Error inserting data: \(error)")
+                print("Error deleting data: \(error)")
+            }
+        }
+    }
+    static func deleteExercise(exercise: Exercise) {
+        Task {
+            do {
+                try await supabase
+                    .from("exercises")
+                    .delete()
+                    .eq("id", value: exercise.id)
+                    .execute()
+            } catch {
+                print("Error deleting data: \(error)")
+            }
+        }
+    }
+    static func deleteSet(set: ESet) {
+        Task {
+            do {
+                try await supabase
+                    .from("sets")
+                    .delete()
+                    .eq("id", value: set.id)
+                    .execute()
+            } catch {
+                print("Error deleting data: \(error)")
             }
         }
     }

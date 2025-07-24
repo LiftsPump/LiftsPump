@@ -44,6 +44,7 @@ struct ExcerciseInfoCard: View {
                         Text("Remove")
                             .font(Theme.Fonts.Body6)
                             .onTapGesture {
+                                SupaBaseManager.deleteExercise(exercise: exercise)
                                 modelContext.delete(exercise)
                                 showAccessory.toggle()
                             }
@@ -74,6 +75,7 @@ struct ExcerciseInfoCard: View {
                                     .foregroundStyle(editMode ? Theme.Colors.Red : Theme.Colors.NeutralLight1)
                                     .onTapGesture {
                                         // Remove the set at the specified index
+                                        SupaBaseManager.deleteSet(set: exercise.sets[index])
                                         exercise.sets.remove(at: index)
                                         if editMode {
                                             showAccessory.toggle()

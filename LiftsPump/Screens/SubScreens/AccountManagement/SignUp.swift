@@ -98,7 +98,24 @@ struct SignUp: View {
                                 lastName = familyName
                             }
                             print("Apple Sign-In ID: \(userIdentifier)")
-                            isSignInSuccessful = true
+
+                            // Extract the identity token and generate a secure nonce
+                            guard let identityTokenData = appleIDCredential.identityToken,
+                                  let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
+                                errorMessage = "Unable to retrieve identity token from Apple"
+                                return
+                            }
+
+                            let nonce = UUID().uuidString  // Replace with a cryptographically secure nonce if needed
+
+                            Task {
+                                do {
+                                    isSignInSuccessful = true
+                                } catch {
+                                    errorMessage = "Supabase Apple sign-in failed: \(error.localizedDescription)"
+                                    return
+                                }
+                            }
                         }
                     case .failure(let error):
                         errorMessage = "Apple Sign-In failed: \(error.localizedDescription)"
