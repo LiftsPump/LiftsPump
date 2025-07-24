@@ -247,6 +247,7 @@ public class SupaBaseManager {
                     .delete()
                     .eq("id", value: exercise.id)
                     .execute()
+                print(exercise.id)
             } catch {
                 print("Error deleting data: \(error)")
             }
@@ -262,6 +263,30 @@ public class SupaBaseManager {
                     .execute()
             } catch {
                 print("Error deleting data: \(error)")
+            }
+        }
+    }
+    static func addExercise(exercise: Exercise) {
+        Task {
+            do {
+                try await supabase
+                    .from("exercises")
+                    .insert(exercise)
+                    .execute()
+            } catch {
+                print("Error inserting data: \(error)")
+            }
+        }
+    }
+    static func addSet(set: ESet) {
+        Task {
+            do {
+                try await supabase
+                    .from("sets")
+                    .insert(set)
+                    .execute()
+            } catch {
+                print("Error inserting data: \(error)")
             }
         }
     }
@@ -329,7 +354,6 @@ public class SupaBaseManager {
     static func updateRoutine(routine: Routine, id: UUID) {
         Task {
             do {
-                print(id)
                 if let currentUser = supabase.auth.currentUser {
                     print("Supabase User ID: \(currentUser.id)")
                 } else {
@@ -345,14 +369,16 @@ public class SupaBaseManager {
                     exercise.routine_id = routine.id
                     try await supabase
                         .from("exercises")
-                        .upsert(exercise)
+                        .update(exercise)
+                        .eq("id", value: exercise.id)
                         .execute()
                     print("Exercise updated successfully!")
                     for set in exercise.sets {
                         set.exercise_id = exercise.id
                         try await supabase
                             .from("sets")
-                            .upsert(set)
+                            .update(set)
+                            .eq("id", value: set.id)
                             .execute()
                         print("Set updated successfully!")
                     }

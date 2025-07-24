@@ -6,7 +6,7 @@ struct PlusButton: View {
     @Query var routines: [Routine]
     @State private var isPresented: Bool = false
     @State private var isPresented2: Bool = false
-    @State private var newRoutine: Routine = Routine(name: "New Routine", type: .preset)
+    @State private var newRoutine: Routine = Routine(id: UUID(), name: "New Routine", type: .preset)
     @State private var cancelled: Bool = false
     var ifCreateScreen: Bool = false
     @Binding var date: Date

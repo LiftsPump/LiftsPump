@@ -352,6 +352,7 @@ struct WorkoutCompleted: View {
     }
         private func addExercise(exercise: ExerciseTemplate) {
             let newExercise = Exercise(
+                id: UUID(),
                 name: exercise.name,
                 eCode: exercise.id,
                 text: exercise.instructions?.first ?? "",
@@ -360,6 +361,7 @@ struct WorkoutCompleted: View {
                 sets: []
             )
             let newSet = ESet(
+                id: UUID(),
                 weight: 0,
                 reps: 0,
                 pr: false,
@@ -369,10 +371,11 @@ struct WorkoutCompleted: View {
             )
             newExercise.sets.append(newSet)
             routine.exercises.append(newExercise)
+            SupaBaseManager.addExercise(exercise: newExercise)
         }
 }
 
 #Preview {
-    @Previewable @State var rout = Routine(name: "Test", type: RoutineType.preset)
+    @Previewable @State var rout = Routine(id: UUID(), name: "Test", type: RoutineType.preset)
     WorkoutCompleted(externalRoutine: $rout, plusButton: true)
 }

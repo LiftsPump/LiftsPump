@@ -21,7 +21,7 @@ class Response: Decodable {
 }
 @Model
 class Routine: Identifiable, Codable {
-    @Attribute(.unique) var id: UUID = UUID()
+    @Attribute(.unique) var id: UUID
     enum CodingKeys: CodingKey {
         case id, name, picture, text, exercises, type, days, weekly, date, duration
     }
@@ -39,7 +39,8 @@ class Routine: Identifiable, Codable {
     var date: Date? // Only for date routines
     var duration: TimeInterval? // Only for date routines
 
-    init(name: String,
+    init(id: UUID,
+         name: String,
          picture: String? = nil,
          text: String? = nil,
          exercises: [Exercise] = [],
@@ -48,6 +49,7 @@ class Routine: Identifiable, Codable {
          weekly: Int? = nil,
          date: Date? = nil,
          duration: TimeInterval? = nil) {
+        self.id = id
         self.name = name
         self.picture = picture
         self.text = text
@@ -63,6 +65,7 @@ class Routine: Identifiable, Codable {
     func copy() -> Routine {
         let copiedExercises = self.exercises.map { $0.copy() }
         return Routine(
+            id: self.id,
             name: self.name,
             picture: self.picture,
             text: self.text,
@@ -107,7 +110,7 @@ class Exercise: Identifiable, Codable {
     enum CodingKeys: CodingKey {
         case id, name, eCode, text, sets, routine_id
     }
-    @Attribute(.unique) var id: UUID = UUID()
+    @Attribute(.unique) var id: UUID
     var name: String
     var eCode: String
     var text: String?
@@ -118,12 +121,13 @@ class Exercise: Identifiable, Codable {
     var sets: [ESet] = []
     var routine_id: UUID?
 
-    init(name: String,
+    init(id: UUID, name: String,
          eCode: String = "",
          text: String? = nil,
          routine: Routine? = nil,
          routine_id: UUID? = nil,
          sets: [ESet] = []) {
+        self.id = id
         self.name = name
         self.eCode = eCode
         self.text = text
@@ -136,6 +140,7 @@ class Exercise: Identifiable, Codable {
     func copy() -> Exercise {
         let copiedSets = self.sets.map { $0.copy() }
         return Exercise(
+            id: self.id,
             name: self.name,
             eCode: self.eCode,
             text: self.text,
@@ -169,7 +174,7 @@ class ESet: Identifiable, Codable {
     enum CodingKeys: CodingKey {
         case id, weight, reps, pr, completed, exercise_id
     }
-    @Attribute(.unique) var id: UUID = UUID()
+    @Attribute(.unique) var id: UUID
     var weight: Int?
     var reps: Int?
     var pr: Bool = false
@@ -180,12 +185,14 @@ class ESet: Identifiable, Codable {
     @Relationship(inverse: \Exercise.sets)
     var exercise: Exercise?
 
-    init(weight: Int? = nil,
+    init(id: UUID,
+         weight: Int? = nil,
          reps: Int? = nil,
          pr: Bool = false,
          completed: Bool = false,
          exercise_id: UUID? = nil,
          exercise: Exercise? = nil) {
+        self.id = id
         self.weight = weight
         self.reps = reps
         self.pr = pr
@@ -197,6 +204,7 @@ class ESet: Identifiable, Codable {
     // Copy method
     func copy() -> ESet {
         return ESet(
+            id: self.id,
             weight: self.weight,
             reps: self.reps,
             pr: self.pr,

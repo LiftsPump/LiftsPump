@@ -94,7 +94,9 @@ struct ExcerciseInfoCard: View {
                                 )
                                 .onTapGesture {
                                     showAccessory.toggle()
-                                    exercise.sets.append(ESet(weight: 0, reps: 0, pr: false, completed: false, exercise: exercise))
+                                    let newSet = ESet(id: UUID(), weight: 0, reps: 0, pr: false, completed: false, exercise: exercise)
+                                    SupaBaseManager.addSet(set: newSet)
+                                    exercise.sets.append(newSet)
                                 }
                         }
                     }
@@ -194,8 +196,8 @@ struct ExcerciseInfoCard: View {
 }
 
 #Preview {
-    @Previewable @State var exerc = Exercise(name: "Becnh Press", eCode: "911", text: "I Am Conf8used", routine: Routine(name: "", picture: "", text: "", exercises: [], type: RoutineType.preset, days: 1, weekly: 1), sets: [
-        ESet(weight: 180, reps: 10, pr: true, completed: false, exercise: Exercise(name: "Becnh Press", eCode: "911", text: "I Am Conf8used", routine: Routine(name: "", picture: "", text: "", exercises: [], type: RoutineType.preset, days: 1, weekly: 1)))
+    @Previewable @State var exerc = Exercise(id: UUID(), name: "Becnh Press", eCode: "911", text: "I Am Conf8used", routine: Routine(id: UUID(), name: "", picture: "", text: "", exercises: [], type: RoutineType.preset, days: 1, weekly: 1), sets: [
+        ESet(id: UUID(), weight: 180, reps: 10, pr: true, completed: false, exercise: Exercise(id: UUID(), name: "Becnh Press", eCode: "911", text: "I Am Conf8used", routine: Routine(id: UUID(), name: "", picture: "", text: "", exercises: [], type: RoutineType.preset, days: 1, weekly: 1)))
     ])
     ExcerciseInfoCard(editMode: false, exercise: $exerc, active: .constant(3))
 }
