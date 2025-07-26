@@ -11,6 +11,7 @@ struct SignUp: View {
     @AppStorage("USERNAME_KEY") var username: String = ""
     @AppStorage("PASSWORD_KEY") var password: String = ""
     @State private var isSignInSuccessful = false
+    @State private var isSSOSignInSuccessful = false
     @State private var errorMessage: String?
 
     var body: some View {
@@ -52,6 +53,9 @@ struct SignUp: View {
             NavigationLink(destination: ConfirmEmail().navigationBarBackButtonHidden(true), isActive: $isSignInSuccessful) {
                 EmptyView()
             }
+            NavigationLink(destination: Tab().navigationBarBackButtonHidden(true), isActive: $isSSOSignInSuccessful) {
+                EmptyView()
+            }
 
             HStack {
                 Rectangle()
@@ -69,7 +73,33 @@ struct SignUp: View {
             .padding(.vertical)
             Button(action: {
                 Task {
-                    //await googleSignIn()
+                    do {
+                        guard let rootController = await UIApplication.shared.windows.first?.rootViewController else {
+                            print("No root view controller found")
+                            return
+                        }
+
+                        let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootController)
+
+                        guard let idToken = result.user.idToken?.tokenString else {
+                            print("No idToken found.")
+                            return
+                        }
+
+                        let accessToken = result.user.accessToken.tokenString
+
+                        let session = try await supabase.auth.signInWithOAuth(provider: .google)
+
+                        print("Signed in with Google, user id: \(session.user.id)")
+                        let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
+                        try await supabase
+                            .from("profile")
+                            .upsert(profileData)
+                            .execute()
+                        isSSOSignInSuccessful = true
+                    } catch {
+                        errorMessage = "Google sign-in failed: \(error.localizedDescription)"
+                    }
                 }
             }) {
                 HStack {
@@ -83,42 +113,36 @@ struct SignUp: View {
             .padding(.horizontal)
             SignInWithAppleButton(
                 onRequest: { request in
-                    request.requestedScopes = [.fullName, .email]
+                    request.requestedScopes = [.email, .fullName]
                 },
                 onCompletion: { result in
-                    switch result {
-                    case .success(let authorization):
-                        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                            let userIdentifier = appleIDCredential.user
-                            let fullName = appleIDCredential.fullName
-                            email = appleIDCredential.email ?? ""
-                            
-                            if let givenName = fullName?.givenName, let familyName = fullName?.familyName {
-                                firstName = givenName
-                                lastName = familyName
+                    Task {
+                        do {
+                            guard let credential = try result.get().credential as? ASAuthorizationAppleIDCredential else {
+                                return
                             }
-                            print("Apple Sign-In ID: \(userIdentifier)")
-
-                            // Extract the identity token and generate a secure nonce
-                            guard let identityTokenData = appleIDCredential.identityToken,
-                                  let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
-                                errorMessage = "Unable to retrieve identity token from Apple"
+                            guard let idToken = credential.identityToken
+                                .flatMap({ String(data: $0, encoding: .utf8) }) else {
                                 return
                             }
 
-                            let nonce = UUID().uuidString  // Replace with a cryptographically secure nonce if needed
+                            // Sign in with Supabase using the Apple ID token
+                            let session = try await supabase.auth.signInWithIdToken(
+                                credentials: .init(
+                                    provider: .apple, idToken: idToken
+                                )
+                            )
 
-                            Task {
-                                do {
-                                    isSignInSuccessful = true
-                                } catch {
-                                    errorMessage = "Supabase Apple sign-in failed: \(error.localizedDescription)"
-                                    return
-                                }
-                            }
+                            print("Signed in with Apple, user id: \(session.user.id)")
+                            let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
+                            try await supabase
+                                .from("profile")
+                                .upsert(profileData)
+                                .execute()
+                            isSSOSignInSuccessful = true
+                        } catch {
+                            errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
                         }
-                    case .failure(let error):
-                        errorMessage = "Apple Sign-In failed: \(error.localizedDescription)"
                     }
                 }
             )
