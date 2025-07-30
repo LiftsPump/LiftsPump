@@ -4,6 +4,28 @@ import AuthenticationServices
 import Supabase
 import GoogleSignIn
 
+extension UIApplication {
+    static func getTopViewController(base: UIViewController? =
+        UIApplication.shared.connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first?.rootViewController) -> UIViewController? {
+
+        if let nav = base as? UINavigationController {
+            return getTopViewController(base: nav.visibleViewController)
+        }
+
+        if let tab = base as? UITabBarController {
+            return tab.selectedViewController.flatMap { getTopViewController(base: $0) }
+        }
+
+        if let presented = base?.presentedViewController {
+            return getTopViewController(base: presented)
+        }
+
+        return base
+    }
+}
+
 struct SignUp: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @AppStorage("LASTNAME_KEY") var lastName: String = ""
@@ -74,7 +96,7 @@ struct SignUp: View {
             Button(action: {
                 Task {
                     do {
-                        guard let rootController = await UIApplication.shared.windows.first?.rootViewController else {
+                        guard let rootController = await UIApplication.getTopViewController() else {
                             print("No root view controller found")
                             return
                         }
@@ -88,7 +110,12 @@ struct SignUp: View {
 
                         let accessToken = result.user.accessToken.tokenString
 
-                        let session = try await supabase.auth.signInWithOAuth(provider: .google)
+                        let session = try await supabase.auth.signInWithIdToken(credentials: OpenIDConnectCredentials(
+                                provider: .google,
+                                idToken: idToken,
+                                accessToken: accessToken
+                            )
+                        )
 
                         print("Signed in with Google, user id: \(session.user.id)")
                         let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
@@ -132,6 +159,15 @@ struct SignUp: View {
                                     provider: .apple, idToken: idToken
                                 )
                             )
+                            if let newEmail = credential.email {
+                                email = newEmail
+                            }
+                            if let fN = credential.fullName?.givenName {
+                                firstName = fN
+                            }
+                            if let lN = credential.fullName?.familyName {
+                                lastName = lN
+                            }
 
                             print("Signed in with Apple, user id: \(session.user.id)")
                             let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
