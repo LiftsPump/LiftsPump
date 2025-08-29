@@ -210,6 +210,15 @@ struct WorkoutCompleted: View {
                                             newRoutine.type = .date
                                             newRoutine.date = Date()
                                             newRoutine.duration = timerthing.elapsedTime
+                                            newRoutine.id = UUID()
+                                            for exercise in newRoutine.exercises {
+                                                exercise.id = UUID()
+                                                exercise.routine_id = newRoutine.id
+                                                for set in exercise.sets {
+                                                    set.id = UUID()
+                                                    set.exercise_id = exercise.id
+                                                }
+                                            }
                                             modelContext.insert(newRoutine)
                                             resetCompleted(routineUpdate: routine)
                                             routine = newRoutine

@@ -159,6 +159,7 @@ struct SignUp: View {
                                     provider: .apple, idToken: idToken
                                 )
                             )
+                            print(credential.fullName!.givenName)
                             if let newEmail = credential.email {
                                 email = newEmail
                             }

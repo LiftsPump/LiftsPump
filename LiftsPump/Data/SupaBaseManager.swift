@@ -23,6 +23,18 @@ extension DateFormatter {
     }()
 }
 
+extension Routine: CustomStringConvertible {
+    public var description: String {
+        return """
+        Routine:
+          id: \(id)
+          name: \(name)
+          type: \(type)
+          exercises: \(exercises.map { $0.name })
+        """
+    }
+}
+
 public class SupaBaseManager {
     @AppStorage("FIRSTNAME_KEY") private var firstName: String = ""
     @AppStorage("LASTNAME_KEY") private var lastName: String = ""
@@ -160,7 +172,14 @@ public class SupaBaseManager {
 
         // Save new routines
         for routine in routines {
+            print(routine)
             modelContext.insert(routine)
+            for exercise in routine.exercises {
+                modelContext.insert(exercise)
+                for sets in exercise.sets {
+                    modelContext.insert(sets)
+                }
+            }
         }
         let prd: PRData = PRData(dictionary: [:])
         guard let userId = supabase.auth.currentUser?.id else {
