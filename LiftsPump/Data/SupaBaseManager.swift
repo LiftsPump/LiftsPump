@@ -321,6 +321,15 @@ public class SupaBaseManager {
             }
         }
     }
+    static func usernameCreate(username: String) async throws {
+        let payload = Username(username: username)
+        let options = FunctionInvokeOptions(body: payload)
+        try await supabase.functions
+            .invoke(
+                "set-username",
+                options: options
+            )
+    }
     static func prAcceptOrDeny(requestee_id: UUID, pr_id: UUID, action: String) {
         Task {
             do {

@@ -23,7 +23,7 @@ struct ConfirmEmail: View {
                     .font(.system(size: 175))
                 Text("Check your inbox!")
                     .font(Theme.Fonts.Heading3)
-                Text("Once you confirm your email you will be brought to the login screen.")
+                Text("Once you confirm your email you will be brought to the username screen.")
                     .font(Theme.Fonts.SubHeading3)
                     .padding(.horizontal, 10)
             }
@@ -36,7 +36,7 @@ struct ConfirmEmail: View {
                 )
             )
             .navigationDestination(isPresented: $isEmailConfirmed) {
-                Tab().navigationBarBackButtonHidden(true)
+                CreateUsername()
             }
             .onAppear {
                 Task {

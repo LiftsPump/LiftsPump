@@ -20,3 +20,7 @@ struct Profile: Codable {
     let username: String
     let email: String
 }
+
+struct Username: Codable {
+    let username: String
+}
