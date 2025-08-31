@@ -116,6 +116,7 @@ struct ExcerciseInfoCard: View {
                                     exercise.sets[index].weight = Int(newValue) ?? 0
                                 }
                             ))
+                            .scrollDismissesKeyboard(.interactively)
                             .keyboardType(.numberPad)
                             .font(Theme.Fonts.Body5)
                             .foregroundStyle(Theme.Colors.NeutralDark)
@@ -146,6 +147,7 @@ struct ExcerciseInfoCard: View {
                                     exercise.sets[index].reps = Int(newValue) ?? 0
                                 }
                             ))
+                            .scrollDismissesKeyboard(.interactively)
                             .keyboardType(.numberPad)
                             .onTapGesture {
                                 showAccessory.toggle()

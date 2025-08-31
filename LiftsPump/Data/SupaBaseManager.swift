@@ -158,28 +158,25 @@ public class SupaBaseManager {
         }
 
 
-        // Clear old data
-        let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-        let currentPRData = try modelContext.fetch(FetchDescriptor<PRData>())
-        for routine in currentRoutines {
-            if routine.type != .ai {
-                modelContext.delete(routine)
+        // Mirror cloud deletions locally (except .ai routines) and reset PRData
+        do {
+            // Build cloud ID sets
+            let cloudRoutineIDs = Set(routines.filter { $0.type != .ai }.map { $0.id })
+            // Delete local routines that no longer exist in cloud (excluding .ai)
+            let localRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
+            for r in localRoutines where r.type != .ai && !cloudRoutineIDs.contains(r.id) {
+                modelContext.delete(r)
             }
-        }
-        for PRData in currentPRData {
-            modelContext.delete(PRData)
+            // Reset PRData to avoid duplicates; a fresh PRData will be inserted below
+            let existingPRs = try modelContext.fetch(FetchDescriptor<PRData>())
+            for p in existingPRs { modelContext.delete(p) }
+        } catch {
+            print("Error reconciling local deletions: \(error)")
         }
 
         // Save new routines
         for routine in routines {
-            print(routine)
             modelContext.insert(routine)
-            for exercise in routine.exercises {
-                modelContext.insert(exercise)
-                for sets in exercise.sets {
-                    modelContext.insert(sets)
-                }
-            }
         }
         let prd: PRData = PRData(dictionary: [:])
         guard let userId = supabase.auth.currentUser?.id else {
