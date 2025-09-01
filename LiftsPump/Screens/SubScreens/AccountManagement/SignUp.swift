@@ -53,9 +53,11 @@ struct SignUp: View {
                     TextBoxSignUp(placeHolder: "First Name", info: $firstName, password: false)
                     TextBoxSignUp(placeHolder: "Last Name", info: $lastName, password: false)
                 }
-                TextBoxSignUp(placeHolder: "Username", info: $username, password: false)
                 TextBoxSignUp(placeHolder: "Email", info: $email, password: false)
+                    .keyboardType(.emailAddress)
+                    .textContentType(.username)
                 TextBoxSignUp(placeHolder: "Password", info: $password, password: true)
+                    .textContentType(.newPassword)
             }
 
             if let errorMessage = errorMessage {

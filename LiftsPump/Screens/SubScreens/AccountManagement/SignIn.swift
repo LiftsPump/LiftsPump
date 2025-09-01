@@ -21,7 +21,10 @@ struct SignIn: View {
 
             VStack {
                 TextBoxSignUp(placeHolder: "Email", info: $email, password: false)
+                    .keyboardType(.emailAddress)
+                    .textContentType(.username)
                 TextBoxSignUp(placeHolder: "Password", info: $password, password: true)
+                    .textContentType(.password)
             }
 
             if let errorMessage = errorMessage {
