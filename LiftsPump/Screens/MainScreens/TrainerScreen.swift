@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct TrainerScreen: View {
-    @AppStorage("TRAINER_NAME_KEY") var trainerName: String = ""
+    @AppStorage("TRAINER_NAME_KEY") var trainerName: String = "Ahmed"
     @AppStorage("TRAINER_VIDEOS_KEY") var trainerVideosJson: String = "[]"
     @Environment(\.modelContext) private var modelContext
     @Query var routines: [Routine]

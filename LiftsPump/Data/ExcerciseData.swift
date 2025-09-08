@@ -15,6 +15,7 @@ enum RoutineType: String, Codable {
     case custom
     case ai
     case assigned
+    case trainer
 }
 class Response: Decodable {
     var message: String

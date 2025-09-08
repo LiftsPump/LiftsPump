@@ -54,7 +54,7 @@ struct ConfirmEmail: View {
                 let session = try await supabase.auth.signIn(email: email, password: password)
                 if session.user.emailConfirmedAt != nil {
                     print("Email confirmed! Navigating...")
-                    let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
+                    let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email, trainer: nil)
                     try await supabase
                         .from("profile")
                         .upsert(profileData)

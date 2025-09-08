@@ -7,8 +7,8 @@
 import Foundation
 
 struct Trainer: Codable {
-    let id: UUID
-    let name: String
+    let trainer_id: UUID
+    let name: String?
     let videos: [String]?
 }
 

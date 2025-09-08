@@ -23,6 +23,87 @@ extension DateFormatter {
     }()
 }
 
+extension JSONDecoder.DateDecodingStrategy {
+    static func flexible(_ formats: [String]) -> JSONDecoder.DateDecodingStrategy {
+        return .custom { decoder in
+            // Try to decode as String first, then as numeric epoch
+            let container = try decoder.singleValueContainer()
+
+            // Helper to attempt parsing a string with many formats
+            func parseString(_ raw: String) -> Date? {
+                let value = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+                if value.isEmpty { return nil }
+
+                // ISO8601 with and without fractional seconds
+                let isoFS = ISO8601DateFormatter()
+                isoFS.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                if let d = isoFS.date(from: value) { return d }
+
+                let iso = ISO8601DateFormatter()
+                iso.formatOptions = [.withInternetDateTime]
+                if let d = iso.date(from: value) { return d }
+
+                // Common SQL-like patterns, with variable fractional precision and optional TZ offset
+                let df = DateFormatter()
+                df.locale = Locale(identifier: "en_US_POSIX")
+                df.timeZone = TimeZone(secondsFromGMT: 0)
+
+                // Build a list of patterns to try
+                var patterns: [String] = []
+                // Space-separated date time
+                patterns += [
+                    "yyyy-MM-dd HH:mm:ss",
+                    "yyyy-MM-dd HH:mm:ssXXXXX",
+                ]
+                // Fractional seconds 3..6 digits, with and without TZ
+                for n in 3...6 {
+                    let frac = String(repeating: "S", count: n)
+                    patterns.append("yyyy-MM-dd HH:mm:ss.\(frac)")
+                    patterns.append("yyyy-MM-dd HH:mm:ss.\(frac)XXXXX")
+                    patterns.append("yyyy-MM-dd'T'HH:mm:ss.\(frac)")
+                    patterns.append("yyyy-MM-dd'T'HH:mm:ss.\(frac)XXXXX")
+                }
+                // Bare date
+                patterns.append("yyyy-MM-dd")
+
+                for f in formats + patterns {
+                    df.dateFormat = f
+                    if let d = df.date(from: value) { return d }
+                }
+
+                return nil
+            }
+
+            if let s = try? container.decode(String.self), let d = parseString(s) {
+                return d
+            }
+            if let epochMs = try? container.decode(Int.self) {
+                // Heuristic: treat 13+ digit as milliseconds, else seconds
+                if epochMs > 2_000_000_000 { // > ~2033 in seconds means ms
+                    return Date(timeIntervalSince1970: TimeInterval(epochMs) / 1000.0)
+                } else {
+                    return Date(timeIntervalSince1970: TimeInterval(epochMs))
+                }
+            }
+            if let epochD = try? container.decode(Double.self) {
+                // Could be seconds or milliseconds with decimals; assume seconds if < 10^11
+                if epochD > 100_000_000_000 { // clearly ms
+                    return Date(timeIntervalSince1970: epochD / 1000.0)
+                } else {
+                    return Date(timeIntervalSince1970: epochD)
+                }
+            }
+
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Date string does not match any expected format"
+                )
+            )
+        }
+    }
+}
+
 extension Routine: CustomStringConvertible {
     public var description: String {
         return """
@@ -52,7 +133,7 @@ public class SupaBaseManager {
     private func applyProfile(_ profile: Profile) {
         firstName = profile.first_name
         lastName = profile.last_name
-        email = profile.email // Assuming phone_number is stored in EMAIL_KEY
+        email = profile.email ?? "" // Assuming phone_number is stored in EMAIL_KEY
         height = profile.height
         weight = profile.weight
         dob = profile.dob.timeIntervalSince1970
@@ -71,6 +152,7 @@ public class SupaBaseManager {
             return
         }
         SupaBaseManager.running = true
+        defer { SupaBaseManager.running = false }
         let responseR = try await supabase.from("routines").select("*").execute()
         let responseE = try await supabase.from("exercises").select("*").execute()
         let responseS = try await supabase.from("sets").select("*").execute()
@@ -81,15 +163,18 @@ public class SupaBaseManager {
             .eq("creator_id", value: supabase.auth.currentUser?.id ?? "")
             .execute()
         let decoder = JSONDecoder()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        decoder.dateDecodingStrategy = .formatted(formatter)
+        decoder.dateDecodingStrategy = .flexible([
+            "yyyy-MM-dd HH:mm:ss.SSS",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ssXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd"
+        ])
 
         var routines = try decoder.decode([Routine].self, from: responseR.data)
         var exercises = try decoder.decode([Exercise].self, from: responseE.data)
         var sets = try decoder.decode([ESet].self, from: responseS.data)
-        formatter.dateFormat = "yyyy-MM-dd"
-        decoder.dateDecodingStrategy = .formatted(formatter)
         let prs = try decoder.decode([PRSupa].self, from: responseP.data)
         let profiles = try decoder.decode([Profile].self, from: responseProfile.data)
         guard var profile = profiles.first else {
@@ -145,11 +230,10 @@ public class SupaBaseManager {
                 let responseT = try await supabase
                     .from("trainer")
                     .select("*")
-                    .eq("id", value: trainerUUID)
+                    .eq("trainer_id", value: trainerUUID)
                     .execute()
                 let trainers = try JSONDecoder().decode([Trainer].self, from: responseT.data)
                 if let trainer = trainers.first {
-                    trainerName = trainer.name
                     if let vids = trainer.videos,
                        let data = try? JSONEncoder().encode(vids),
                        let json = String(data: data, encoding: .utf8) {
@@ -375,10 +459,10 @@ public class SupaBaseManager {
             }
         }
     }
-    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0, last_synced: Date = Date(), username: String = "", email: String = "") {
+    static func saveProfile(first_name: String = "", last_name: String = "", phone_number: String = "", height: Int = 0, weight: Int = 0, dob: Date = Date(), type: Int = 0, last_synced: Date = Date(), username: String = "", email: String = "", trainer: UUID? = nil) {
         Task {
             do {
-                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type, last_synced: last_synced, username: username, email: email)
+                let profileData = Profile(first_name: first_name, last_name: last_name, phone_number: phone_number, height: height, weight: weight, dob: dob, type: type, last_synced: last_synced, username: username, email: email, trainer: trainer)
                 try await supabase
                     .from("profile")
                     .upsert(profileData)
@@ -396,9 +480,11 @@ public class SupaBaseManager {
                 .eq("id", value: pr_id)
                 .execute()
             let decoder = JSONDecoder()
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            decoder.dateDecodingStrategy = .formatted(formatter)
+            decoder.dateDecodingStrategy = .flexible([
+                "yyyy-MM-dd",
+                "yyyy-MM-dd'T'HH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss"
+            ])
             let prs = try decoder.decode([PRSupa].self, from: responsePR.data)
             return prs
         } catch {

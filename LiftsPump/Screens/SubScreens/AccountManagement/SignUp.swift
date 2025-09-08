@@ -120,7 +120,7 @@ struct SignUp: View {
                         )
 
                         print("Signed in with Google, user id: \(session.user.id)")
-                        let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
+                        let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email, trainer: nil)
                         try await supabase
                             .from("profile")
                             .upsert(profileData)
@@ -173,7 +173,7 @@ struct SignUp: View {
                             }
 
                             print("Signed in with Apple, user id: \(session.user.id)")
-                            let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email)
+                            let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email, trainer: nil)
                             try await supabase
                                 .from("profile")
                                 .upsert(profileData)
