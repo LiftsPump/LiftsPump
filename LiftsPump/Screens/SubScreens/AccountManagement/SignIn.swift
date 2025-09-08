@@ -2,6 +2,8 @@ import SwiftUI
 import GoogleSignInSwift
 import AuthenticationServices
 import Supabase
+import UIKit
+import GoogleSignIn
 
 struct SignIn: View {
     @AppStorage("EMAIL_KEY") var email: String = ""
@@ -14,6 +16,10 @@ struct SignIn: View {
     var body: some View {
         VStack {
             Spacer()
+            Image("AppLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
             Text("Sign In")
                 .foregroundStyle(Theme.Colors.NeutralLight1)
                 .font(Theme.Fonts.Heading6)
@@ -69,7 +75,7 @@ struct SignIn: View {
             
             Button(action: {
                 Task {
-                    //await googleSignIn()
+                    await googleSignIn()
                 }
             }) {
                 HStack {
@@ -137,6 +143,32 @@ struct SignIn: View {
           } catch {
               result = .failure(error)
           }
+        }
+    }
+
+    func googleSignIn() async {
+        do {
+            guard let rootController = await UIApplication.getTopViewController() else {
+                return
+            }
+            let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootController)
+            guard let idToken = result.user.idToken?.tokenString else {
+                errorMessage = "No id token found."
+                return
+            }
+            let accessToken = result.user.accessToken.tokenString
+            _ = try await supabase.auth.signInWithIdToken(
+                credentials: .init(
+                    provider: .google,
+                    idToken: idToken,
+                    accessToken: accessToken
+                )
+            )
+            isSignInSuccessful = true
+            let supaManager = SupaBaseManager(context: modelContext)
+            try await supaManager.initSync()
+        } catch {
+            errorMessage = "Google sign-in failed: \(error.localizedDescription)"
         }
     }
 }
