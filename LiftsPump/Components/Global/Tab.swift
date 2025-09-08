@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 struct Tab: View {
+    @AppStorage("TRAINER_ID_KEY") var trainerId: String = ""
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -24,9 +25,15 @@ struct Tab: View {
                 .tabItem {
                     Image(systemName: "calendar")
                 }
+            if !trainerId.isEmpty {
+                TrainerScreen()
+                    .tabItem {
+                        Image(systemName: "person.2.fill")
+                    }
+            }
             ProfileScreen()
                 .tabItem {
-                    Image(systemName: "person.fill").font(.system(size: 26)) 
+                    Image(systemName: "person.fill").font(.system(size: 26))
                 }
         }
         .accentColor(Theme.Colors.Primary1) // Change the selected tab item color

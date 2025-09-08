@@ -19,6 +19,7 @@ struct Profile: Codable {
     var last_synced: Date?
     let username: String
     let email: String
+    let trainer: UUID?
 }
 
 struct Username: Codable {
