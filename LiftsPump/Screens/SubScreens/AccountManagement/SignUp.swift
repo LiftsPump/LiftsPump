@@ -3,7 +3,28 @@ import GoogleSignInSwift
 import AuthenticationServices
 import Supabase
 import GoogleSignIn
-import UIKit
+
+extension UIApplication {
+    static func getTopViewController(base: UIViewController? =
+        UIApplication.shared.connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first?.rootViewController) -> UIViewController? {
+
+        if let nav = base as? UINavigationController {
+            return getTopViewController(base: nav.visibleViewController)
+        }
+
+        if let tab = base as? UITabBarController {
+            return tab.selectedViewController.flatMap { getTopViewController(base: $0) }
+        }
+
+        if let presented = base?.presentedViewController {
+            return getTopViewController(base: presented)
+        }
+
+        return base
+    }
+}
 
 struct SignUp: View {
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
@@ -18,10 +39,6 @@ struct SignUp: View {
     var body: some View {
         VStack {
             Spacer()
-            Image("AppLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 100, height: 100)
             Text("Create an account")
                 .foregroundStyle(Theme.Colors.NeutralLight1)
                 .font(Theme.Fonts.Heading6)
