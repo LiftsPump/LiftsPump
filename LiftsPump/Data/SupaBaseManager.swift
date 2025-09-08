@@ -44,6 +44,9 @@ public class SupaBaseManager {
     @AppStorage("DOB_KEY") private var dob: Double = Date().timeIntervalSince1970
     @AppStorage("LS_KEY") private var last_synced: Double = Date().timeIntervalSince1970
     @AppStorage("USERNAME_KEY") var username: String = ""
+    @AppStorage("TRAINER_ID_KEY") private var trainerId: String = ""
+    @AppStorage("TRAINER_NAME_KEY") private var trainerName: String = ""
+    @AppStorage("TRAINER_VIDEOS_KEY") private var trainerVideos: String = "[]"
     private static var running: Bool = false
 
     private func applyProfile(_ profile: Profile) {
@@ -55,6 +58,7 @@ public class SupaBaseManager {
         dob = profile.dob.timeIntervalSince1970
         last_synced = profile.last_synced?.timeIntervalSince1970 ?? 1
         username = profile.username
+        trainerId = profile.trainer?.uuidString ?? ""
     }
     private var modelContext: ModelContext
 
@@ -135,6 +139,32 @@ public class SupaBaseManager {
             SupaBaseManager.running = false
         }
         applyProfile(profile)
+
+        if let trainerUUID = profile.trainer {
+            do {
+                let responseT = try await supabase
+                    .from("trainer")
+                    .select("*")
+                    .eq("id", value: trainerUUID)
+                    .execute()
+                let trainers = try JSONDecoder().decode([Trainer].self, from: responseT.data)
+                if let trainer = trainers.first {
+                    trainerName = trainer.name
+                    if let vids = trainer.videos,
+                       let data = try? JSONEncoder().encode(vids),
+                       let json = String(data: data, encoding: .utf8) {
+                        trainerVideos = json
+                    } else {
+                        trainerVideos = "[]"
+                    }
+                }
+            } catch {
+                print("Error fetching trainer: \(error)")
+            }
+        } else {
+            trainerName = ""
+            trainerVideos = "[]"
+        }
 
         // Merge data
         for routine in routines {
