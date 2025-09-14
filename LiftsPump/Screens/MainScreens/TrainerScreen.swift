@@ -1,4 +1,5 @@
 import SwiftUI
+import AppIntents
 import SwiftData
 
 struct TrainerScreen: View {
@@ -28,9 +29,10 @@ struct TrainerScreen: View {
                         .foregroundStyle(Theme.Colors.Primary1)
                         .padding(.horizontal)
                     ForEach(videos, id: \.self) { link in
-                        if let url = URL(string: link) {
-                            Link(link, destination: url)
-                                .foregroundStyle(Theme.Colors.Primary1)
+                        if let id = extractYouTubeID(from: link) {
+                            YouTubeView(videoID: id)
+                                .frame(height: 200)
+                                .cornerRadius(8)
                                 .padding(.horizontal)
                         }
                     }
