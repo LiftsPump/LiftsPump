@@ -78,8 +78,10 @@ struct ProfileScreen: View {
                     .padding(.bottom, 10)
                     .padding(.top, 10)
             }
-        } .background(Theme.Colors.NeutralDark)
-            .sensoryFeedback(.selection, trigger: showAccessory)
+        }
+        .background(Theme.Colors.NeutralDark)
+        .syncOnScroll()
+        .sensoryFeedback(.selection, trigger: showAccessory)
     }
 }
 

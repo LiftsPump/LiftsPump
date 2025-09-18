@@ -56,6 +56,7 @@ struct CompletedScreen: View {
         }
         .sensoryFeedback(.selection, trigger: showAccessory)
         .background(Theme.Colors.NeutralDark)
+        .syncOnScroll()
     }
 }
 

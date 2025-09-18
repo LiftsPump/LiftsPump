@@ -95,18 +95,31 @@ struct SignUp: View {
                     .padding(.horizontal)
             }
             .padding(.vertical)
-            Button(action: {
-                Task {
+            GoogleSignInButton(scheme: .dark, style: .wide, state: .normal) {
+                Task { @MainActor in
                     do {
                         guard let rootController = await UIApplication.getTopViewController() else {
-                            print("No root view controller found")
+                            errorMessage = "No root view controller found"
                             return
                         }
 
                         let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootController)
 
+                        // Seed local fields from Google profile
+                        if let profile = result.user.profile {
+                            let mail = profile.email
+                            if email.isEmpty { email = mail }
+                            if let given = profile.givenName, firstName.isEmpty { firstName = given }
+                            if let family = profile.familyName, lastName.isEmpty { lastName = family }
+                            if username.isEmpty {
+                                if let base = mail.split(separator: "@").first {
+                                    username = String(base)
+                                }
+                            }
+                        }
+
                         guard let idToken = result.user.idToken?.tokenString else {
-                            print("No idToken found.")
+                            errorMessage = "No idToken found."
                             return
                         }
 
@@ -120,7 +133,8 @@ struct SignUp: View {
                         )
 
                         print("Signed in with Google, user id: \(session.user.id)")
-                        let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email, trainer: nil)
+                        let seededUsername = username.isEmpty ? (email.split(separator: "@").first.map(String.init) ?? "") : username
+                        let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: seededUsername, email: email, trainer: nil)
                         try await supabase
                             .from("profile")
                             .upsert(profileData)
@@ -130,15 +144,8 @@ struct SignUp: View {
                         errorMessage = "Google sign-in failed: \(error.localizedDescription)"
                     }
                 }
-            }) {
-                HStack {
-                    GoogleSignInButton(scheme: .dark, style: .wide, state: .normal, action: {})
-                    
-                }
-                .frame(maxWidth: .infinity)
-                .cornerRadius(8)
-                .frame(height: 50)
             }
+            .frame(height: 50)
             .padding(.horizontal)
             SignInWithAppleButton(
                 onRequest: { request in
@@ -171,9 +178,13 @@ struct SignUp: View {
                             if let lN = credential.fullName?.familyName {
                                 lastName = lN
                             }
+                            if username.isEmpty {
+                                if !email.isEmpty, let base = email.split(separator: "@").first { username = String(base) }
+                            }
 
                             print("Signed in with Apple, user id: \(session.user.id)")
-                            let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: username, email: email, trainer: nil)
+                            let seededUsername = username.isEmpty ? (email.split(separator: "@").first.map(String.init) ?? "") : username
+                            let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: seededUsername, email: email, trainer: nil)
                             try await supabase
                                 .from("profile")
                                 .upsert(profileData)

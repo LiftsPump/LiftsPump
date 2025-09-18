@@ -108,6 +108,7 @@ struct HomeScreen: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.Colors.NeutralDark)
             .sensoryFeedback(.selection, trigger: showAccessory)
+            .syncOnScroll(modelContext: modelContext)
             .task {
                 let supaManager = SupaBaseManager(context: modelContext)
                 Task.detached {

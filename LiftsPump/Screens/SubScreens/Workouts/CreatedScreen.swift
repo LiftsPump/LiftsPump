@@ -62,6 +62,7 @@ struct CreatedScreen: View {
             .sensoryFeedback(.selection, trigger: showAccessory)
             .scrollContentBackground(.hidden)
             .background(Theme.Colors.NeutralDark)
+            .syncOnScroll(modelContext: modelContext)
             .listStyle(.inset)
             .navigationViewStyle(StackNavigationViewStyle())
         }

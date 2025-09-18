@@ -93,6 +93,7 @@ struct ExerciseScreen: View {
                 }
             }
             .background(Theme.Colors.NeutralDark)
+            .syncOnScroll()
         }
         .background(Theme.Colors.NeutralDark)
         .sensoryFeedback(.selection, trigger: showAccessory)

@@ -5,8 +5,16 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
 			<key>CFBundleURLName</key>
-			<string>com.googleusercontent.apps.703159570131-hikevjbnh0vop3iffqkb7dso9qme3o64</string>
+			<string>com.google</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.703159570131-fr7b2to938qri6p53ev640ft8pubolno</string>
+			</array>
 		</dict>
 	</array>
 	<key>NSAppTransportSecurity</key>
