@@ -2,12 +2,15 @@ import SwiftUI
 
 struct ExerciseFilterView: View {
     @Binding var selectedMuscles: Set<String>
+    @Binding var selectedTools: Set<String>
     let availableMuscles: [String]
+    let availableTools: [String]
     @Binding var searchText: String
     var onApply: (Set<String>) -> Void
     @Environment(\.dismiss) private var dismiss
 
     private func isSelected(_ muscle: String) -> Bool { selectedMuscles.contains(muscle) }
+    private func isToolSelected(_ tool: String) -> Bool { selectedTools.contains(tool) }
 
     var body: some View {
         NavigationStack {
@@ -40,6 +43,33 @@ struct ExerciseFilterView: View {
                     }
                     .padding(.horizontal)
                 }
+                if !availableTools.isEmpty {
+                    Text("Tools")
+                        .font(Theme.Fonts.SubHeading7)
+                        .foregroundStyle(Theme.Colors.NeutralLight1)
+                        .padding(.horizontal)
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyVGrid(columns: [GridItem(.flexible(minimum: 100)), GridItem(.flexible(minimum: 80)), GridItem(.flexible(minimum: 100))], spacing: 12) {
+                        ForEach(availableTools, id: \.self) { tool in
+                            let active = isToolSelected(tool)
+                            Text(tool)
+                                .font(Theme.Fonts.Body5)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                                .background(active ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1)
+                                .foregroundStyle(active ? Theme.Colors.NeutralDark : Theme.Colors.NeutralLight1)
+                                .cornerRadius(8)
+                                .onTapGesture {
+                                    var next = selectedTools
+                                    if next.contains(tool) { next.remove(tool) } else { next.insert(tool) }
+                                    selectedTools = next
+                                    onApply(selectedMuscles)
+                                }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
                 Spacer()
             }
             .navigationTitle("Filter")
@@ -48,6 +78,7 @@ struct ExerciseFilterView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Clear") {
                         selectedMuscles.removeAll()
+                        selectedTools.removeAll()
                         onApply(selectedMuscles)
                     }
                 }
@@ -65,5 +96,11 @@ struct ExerciseFilterView: View {
 }
 
 #Preview {
-    ExerciseFilterView(selectedMuscles: .constant(["Chest", "Back"]), availableMuscles: ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"], searchText: .constant("")) { _ in }
+    ExerciseFilterView(
+        selectedMuscles: .constant(["Chest", "Back"]),
+        selectedTools: .constant(["Machine"]),
+        availableMuscles: ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"],
+        availableTools: ["Machine", "Dumbbell", "Barbell", "Kettlebell"],
+        searchText: .constant("")
+    ) { _ in }
 }

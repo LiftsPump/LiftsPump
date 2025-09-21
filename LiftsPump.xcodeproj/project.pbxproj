@@ -76,13 +76,6 @@
 			);
 			target = 90C851062DA55E4200872CC2 /* WorkoutExtension */;
 		};
-		E2DE23152C97BB8E00B97A27 /* Exceptions for "LiftsPump" folder in "LiftsPump" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = E2F99E9B2C8D1CFB004D683F /* LiftsPump */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -96,9 +89,6 @@
 		};
 		E2F99E9E2C8D1CFB004D683F /* LiftsPump */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				E2DE23152C97BB8E00B97A27 /* Exceptions for "LiftsPump" folder in "LiftsPump" target */,
-			);
 			path = LiftsPump;
 			sourceTree = "<group>";
 		};
@@ -623,7 +613,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LiftsPump/Info.plist;
+				INFOPLIST_FILE = LiftsPump/InfoSecond.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSContactsUsageDescription = "This app requires access to your contacts to find friends.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -672,7 +662,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LiftsPump/Info.plist;
+				INFOPLIST_FILE = LiftsPump/InfoSecond.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSContactsUsageDescription = "This app requires access to your contacts to find friends.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

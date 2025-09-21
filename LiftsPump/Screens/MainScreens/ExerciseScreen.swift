@@ -12,6 +12,7 @@ struct ExerciseScreen: View {
     @State private var currentSelected = ExerciseTemplate(id: "12", name: "Arnold press", primaryMuscles: ["Tricep", "Bicep"], instructions: ["Instruction 1", "Instruction 2"], images: ["plus"])
     @State private var isFilterPresented: Bool = false
     @State private var selectedMuscles: Set<String> = []
+    @State private var selectedTools: Set<String> = []
 
     var body: some View {
         VStack {
@@ -118,11 +119,18 @@ struct ExerciseScreen: View {
                         selectedMuscles = newValue
                     }
                 ),
+                selectedTools: Binding(
+                    get: { selectedTools },
+                    set: { newValue in
+                        selectedTools = newValue
+                    }
+                ),
                 availableMuscles: viewModel.availableMuscles,
+                availableTools: viewModel.availableTools,
                 searchText: $searchText,
                 onApply: { muscles in
                     selectedMuscles = muscles
-                    viewModel.updateFilters(muscles: muscles, currentQuery: searchText)
+                    viewModel.updateFilters(muscles: muscles, tools: selectedTools, currentQuery: searchText)
                 }
             )
             .presentationDetents([.fraction(0.5), .medium, .large])
@@ -132,6 +140,7 @@ struct ExerciseScreen: View {
             viewModel.fetchExercises() // Fetch exercises on view load
             selectedExercises = [] // Initialize with an empty array
             selectedMuscles = viewModel.selectedMuscles
+            selectedTools = viewModel.selectedTools
         }
     }
 }

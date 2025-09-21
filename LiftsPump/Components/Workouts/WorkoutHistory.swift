@@ -11,6 +11,8 @@ struct WorkoutHistory: View {
     var title: String
     var image: String
     var date: String
+    var type: RoutineType
+    
     var body: some View {
         VStack() {
             HStack {
@@ -38,6 +40,7 @@ struct WorkoutHistory: View {
                             .foregroundStyle(Theme.Colors.NeutralLight1)
                             .padding(.vertical, 5)
                         Image(systemName: "person.circle")
+                        TypeTag(type: type)
                         Spacer()
                     }
 
@@ -53,5 +56,5 @@ struct WorkoutHistory: View {
 }
 
 #Preview {
-    WorkoutHistory(title: "Chest & Back", image: "figure.run", date: "8/12/24")
+    WorkoutHistory(title: "Chest & Back", image: "figure.run", date: "8/12/24", type: .preset)
 }

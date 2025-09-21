@@ -99,14 +99,10 @@ struct CalendarScreen: View {
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
                                 .fill(.thinMaterial)
                                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
-                            WorkoutHistory(title: routine.name, image: "figure.run", date: selectedDateString)
-                                .padding(.vertical)
+                                .padding()
+                            WorkoutHistory(title: routine.name, image: "figure.run", date: selectedDateString, type: routine.type)
                         }
-                        .overlay(alignment: .topTrailing) {
-                            TypeTag(type: routine.type)
-                                .padding(10)
-                        }
-                        .padding(.horizontal)
+                        .padding(5)
                     }
                 }
                 let hasAny: Bool = !matches.isEmpty

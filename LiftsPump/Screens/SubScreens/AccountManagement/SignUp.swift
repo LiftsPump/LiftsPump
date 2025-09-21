@@ -98,7 +98,7 @@ struct SignUp: View {
             GoogleSignInButton(scheme: .dark, style: .wide, state: .normal) {
                 Task { @MainActor in
                     do {
-                        guard let rootController = await UIApplication.getTopViewController() else {
+                        guard let rootController =  UIApplication.getTopViewController() else {
                             errorMessage = "No root view controller found"
                             return
                         }
@@ -168,7 +168,6 @@ struct SignUp: View {
                                     provider: .apple, idToken: idToken
                                 )
                             )
-                            print(credential.fullName!.givenName)
                             if let newEmail = credential.email {
                                 email = newEmail
                             }

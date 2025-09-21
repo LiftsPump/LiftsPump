@@ -21,15 +21,6 @@ struct HomeScreen: View {
                     Text("Hello, \n\(firstName)!")
                         .font(Theme.Fonts.Heading1)
                         .foregroundStyle(Theme.Colors.Primary1)
-                    Button("Send Test Notification") {
-                        NotificationManager.shared.sendHomeScreenSummary(
-                            firstName: firstName,
-                            completedRoutines: DataMethods.completedRoutines(routines: routines),
-                            streak: DataMethods.userStreak(routines: routines)
-                        )
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding(.top, 8)
                 }
                 Spacer()
                 NavigationLink(destination: NotificationsScreen()) {
@@ -109,7 +100,7 @@ struct HomeScreen: View {
                             ZStack {
                                 WorkoutComponent(title: routine.name, image: "figure.run", description: DataMethods.summarizer(routine: routine))
                             }
-                            .overlay(alignment: .topTrailing) {
+                            .overlay(alignment: .bottomTrailing) {
                                 TypeTag(type: routine.type)
                                     .padding(10)
                             }

@@ -5,28 +5,41 @@ struct TypeTag: View {
 
     private func label(for type: RoutineType) -> String {
         switch type {
-        case .preset: return "Preset"
+        case .preset:   return "Preset"
         case .assigned: return "Assigned"
-        case .ai: return "AI"
-        case .trainer: return "Trainer"
-        case .custom: return "Custom"
-        case .date: return "Scheduled"
+        case .ai:       return "AI"
+        case .trainer:  return "Trainer"
+        case .custom:   return "Custom"
+        case .date:     return "Scheduled"
+        }
+    }
+
+    private func symbolName(for type: RoutineType) -> String {
+        // choose stable symbols (iOS 16+ friendly)
+        switch type {
+        case .preset:   return "book.closed"
+        case .assigned: return "checkmark.circle"
+        case .ai:       return "wand.and.stars"
+        case .trainer:  return "person.fill"
+        case .custom:   return "paintbrush"
+        case .date:     return "calendar"
         }
     }
 
     private func color(for type: RoutineType) -> Color {
         switch type {
-        case .preset: return Theme.Colors.Primary1
+        case .preset:   return Theme.Colors.Primary1
         case .assigned: return .orange
-        case .ai: return .purple
-        case .trainer: return .teal
-        case .custom: return .indigo
-        case .date: return Theme.Colors.NeutralGray1
+        case .ai:       return .purple
+        case .trainer:  return .teal
+        case .custom:   return .indigo
+        case .date:     return Theme.Colors.NeutralGray1
         }
     }
 
     var body: some View {
-        Text(label(for: type))
+        Image(systemName: symbolName(for: type))
+            .symbolRenderingMode(.monochrome)
             .font(Theme.Fonts.Body6)
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
