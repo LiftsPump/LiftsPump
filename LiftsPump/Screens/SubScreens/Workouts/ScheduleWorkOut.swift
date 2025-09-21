@@ -10,6 +10,7 @@ import SwiftUI
 struct ScheduleWorkOut: View {
     @Binding var selectedDate: Date
     @Binding var isDismissed: Bool
+    @Binding var routine: Routine
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) var dismiss
     @State var recurring: Bool = false
@@ -24,19 +25,23 @@ struct ScheduleWorkOut: View {
                     .foregroundStyle(Theme.Colors.NeutralLight1)
                     .font(Theme.Fonts.SubHeading6)
                 Spacer()
-                Image(systemName: "xmark")
-                    .padding()
-                    .foregroundStyle(Theme.Colors.NeutralLight1)
-                    .font(.system(size: 16))
-                    .onTapGesture {
-                        isDismissed = true
-                        dismiss()
-                    }
-            }
-            GeneralButton(text: "Make recurring", color: Theme.Colors.Primary1, image: "repeat", hollow: true)
-                .onTapGesture {
-                    recurring = !recurring
+                Button(action: {
+                    isDismissed = true
+                    dismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .padding()
+                        .font(.system(size: 16))
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(Theme.Colors.NeutralLight1)
+                .accessibilityLabel("Close")
+            }
+            Button(action: { recurring.toggle() }) {
+                GeneralButton(text: "Make recurring", color: Theme.Colors.Primary1, image: "repeat", hollow: true)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Toggle recurring")
             if recurring {
                 VStack() {
                     HStack() {
@@ -76,7 +81,7 @@ struct ScheduleWorkOut: View {
                                 .edgesIgnoringSafeArea(.all)
                                 .frame(width: 100)
                             Picker("Repeat every", selection: $repeatInterval) {
-                                ForEach(["Day", "2 days", "3 days", "Week", "Month"], id: \.self) { interval in
+                                ForEach(["Day", "2 days", "3 days", "Week"], id: \.self) { interval in
                                     Text(interval).tag(interval)
                                 }
                             }
@@ -128,15 +133,52 @@ struct ScheduleWorkOut: View {
                     .padding(.horizontal)
                 Spacer()
             }
-            GeneralButton(text: "Schedule workout", color: Theme.Colors.Primary1, image: "calendar")
-                .onTapGesture {
-                    dismiss()
+            Button(action: {
+                // Persist the schedule to the bound routine
+                if recurring {
+                    // Use preset type with recurrence, store selectedDate as the start date
+                    routine.type = .preset
+                    routine.date = selectedDate
+                    // Map repeatInterval to days/weekly
+                    switch repeatInterval {
+                    case "Day":
+                        routine.days = 1
+                        routine.weekly = nil
+                    case "2 days":
+                        routine.days = 2
+                        routine.weekly = nil
+                    case "3 days":
+                        routine.days = 3
+                        routine.weekly = nil
+                    case "Week":
+                        routine.weekly = 1
+                        routine.days = nil
+                    default:
+                        routine.days = 1
+                        routine.weekly = nil
+                    }
+                } else {
+                    // Single occurrence date-based routine
+                    routine.type = .date
+                    routine.date = selectedDate
+                    routine.days = nil
+                    routine.weekly = nil
                 }
+                isDismissed = false
+                dismiss()
+            }) {
+                GeneralButton(text: "Schedule workout", color: Theme.Colors.Primary1, image: "calendar")
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Schedule workout")
             Spacer()
         } .background(Theme.Colors.NeutralDark)
     }
 }
 
 #Preview {
-    ScheduleWorkOut(selectedDate: .constant(Date()), isDismissed: .constant(false))
+    @Previewable @State var date = Date()
+    @Previewable @State var dismissed = false
+    @Previewable @State var rout = Routine(id: UUID(), name: "Test", type: .preset)
+    ScheduleWorkOut(selectedDate: $date, isDismissed: $dismissed, routine: $rout)
 }

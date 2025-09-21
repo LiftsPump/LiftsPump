@@ -46,42 +46,52 @@ struct WorkoutScreen: View {
             .padding(.leading)
             
             HStack {
-                WorkoutTabs(color: selectedTab == .history ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Workout History", textColor: selectedTab == .history ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture {
-                        flipTab = selectedTabIndex(for: .history) < selectedTabIndex(for: selectedTab)
-                        previousTab = selectedTab
-                        selectedTab = .history
-                        showAccessory.toggle()
-                    }
-                WorkoutTabs(color: selectedTab == .created ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Created Workouts", textColor: selectedTab == .created ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture {
-                        flipTab = selectedTabIndex(for: .created) < selectedTabIndex(for: selectedTab)
-                        previousTab = selectedTab
-                        selectedTab = .created
-                        showAccessory.toggle()
-                    }
-                WorkoutTabs(color: selectedTab == .prs ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal Records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture {
-                        flipTab = selectedTabIndex(for: .prs) < selectedTabIndex(for: selectedTab)
-                        previousTab = selectedTab
-                        selectedTab = .prs
-                        showAccessory.toggle()
-                    }
+                Button(action: {
+                    flipTab = selectedTabIndex(for: .history) < selectedTabIndex(for: selectedTab)
+                    previousTab = selectedTab
+                    selectedTab = .history
+                    showAccessory.toggle()
+                }) {
+                    WorkoutTabs(color: selectedTab == .history ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Workout History", textColor: selectedTab == .history ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Workout History tab")
+                
+                Button(action: {
+                    flipTab = selectedTabIndex(for: .created) < selectedTabIndex(for: selectedTab)
+                    previousTab = selectedTab
+                    selectedTab = .created
+                    showAccessory.toggle()
+                }) {
+                    WorkoutTabs(color: selectedTab == .created ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Created Workouts", textColor: selectedTab == .created ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Created Workouts tab")
+                
+                Button(action: {
+                    flipTab = selectedTabIndex(for: .prs) < selectedTabIndex(for: selectedTab)
+                    previousTab = selectedTab
+                    selectedTab = .prs
+                    showAccessory.toggle()
+                }) {
+                    WorkoutTabs(color: selectedTab == .prs ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal Records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Personal Records tab")
             }
             .padding(.horizontal)
             
             if selectedTab == .history {
                 HStack {
                     Spacer()
-                    Text(calorlist ? "Calendar View" : "List View")
-                        .padding(.trailing)
-                        .padding(.top, 8)
-                        .font(Theme.Fonts.SubHeading5)
-                        .onTapGesture {
-                            withAnimation{
-                                calorlist.toggle()
-                            }
-                        }
+                    Button(action: { withAnimation { calorlist.toggle() } }) {
+                        Text(calorlist ? "Calendar View" : "List View")
+                            .padding(.trailing)
+                            .padding(.top, 8)
+                            .font(Theme.Fonts.SubHeading5)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(calorlist ? "Switch to calendar" : "Switch to list")
                 }
                 if calorlist {
                     CompletedScreen()

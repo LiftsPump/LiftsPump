@@ -13,26 +13,29 @@ struct PlusButton: View {
     let calendar = Calendar.current
 
     var body: some View {
-        ZStack {
-            Circle()
-                .foregroundStyle(Theme.Colors.Primary1)
-                .frame(width: 46)
-                .shadow(color: Color(red: 1, green: 1, blue: 1, opacity: 0.4), radius: 10)
-                .onTapGesture {
-                    if ifCreateScreen {
-                        modelContext.insert(newRoutine)
-                        SupaBaseManager.saveRoutine(routine: newRoutine)
-                        isPresented = true
-                    } else {
-                        newRoutine.type = .date
-                        newRoutine.date = date
-                        isPresented2 = true
-                    }
-                }
-            Image(systemName: "plus")
-                .font(.system(size: 30, weight: .bold))
-                .foregroundStyle(Theme.Colors.NeutralDark)
+        Button(action: {
+            if ifCreateScreen {
+                modelContext.insert(newRoutine)
+                SupaBaseManager.saveRoutine(routine: newRoutine)
+                isPresented = true
+            } else {
+                newRoutine.type = .date
+                newRoutine.date = date
+                isPresented2 = true
+            }
+        }) {
+            ZStack {
+                Circle()
+                    .foregroundStyle(Theme.Colors.Primary1)
+                    .frame(width: 46)
+                    .shadow(color: Color(red: 1, green: 1, blue: 1, opacity: 0.4), radius: 10)
+                Image(systemName: "plus")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundStyle(Theme.Colors.NeutralDark)
+            }
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Add routine")
         .padding()
         .fullScreenCover(isPresented: $isPresented) {
             WorkoutCompleted(externalRoutine: $newRoutine, plusButton: true)
@@ -46,8 +49,8 @@ struct PlusButton: View {
             } else {
                 cancelled = false
             }
-        }){
-            ScheduleWorkOut(selectedDate: $date, isDismissed: $cancelled)
+        }) {
+            ScheduleWorkOut(selectedDate: $date, isDismissed: $cancelled, routine: $newRoutine)
         }
     }
 }

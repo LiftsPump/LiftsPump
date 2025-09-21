@@ -59,12 +59,14 @@ struct WorkoutCompleted: View {
             let timerView = TimerView(timerManager: timerthing)
             if plusButton {
                 HStack {
-                    BackButton()
-                        .onTapGesture {
-                            showAccessory.toggle()
-                            dismiss()
-                        }
-                        .padding(.horizontal)
+                    Button(action: {
+                        showAccessory.toggle()
+                        dismiss()
+                    }) {
+                        BackButton()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
                     Spacer()
                 }
             }
@@ -86,59 +88,72 @@ struct WorkoutCompleted: View {
                     }
                     Spacer()
                     if !(type == 1) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(Theme.Colors.NeutralLight1)
+                        Button(action: {
+                            // TODO: Implement share action
+                        }) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 20, weight: .bold))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Theme.Colors.NeutralLight1)
+                        .accessibilityLabel("Share")
                     }
                     
                     if (type == 1) {
-                        GeneralButton(text: "Save", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
-                            .frame(width: 100)
-                            .onTapGesture {
-                                try? modelContext.save()
-                                SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
-                                withAnimation {
-                                    type += 1
-                                }
-                                showAccessory.toggle()
-                            }
+                        Button(action: {
+                            try? modelContext.save()
+                            SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
+                            withAnimation { type += 1 }
+                            showAccessory.toggle()
+                        }) {
+                            GeneralButton(text: "Save", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
+                                .frame(width: 100)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Save routine")
                     }
                     if (type == 2 || type == 3) {
                         if routine.type == .ai {
-                            GeneralButton(text: "Add", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
-                                .frame(width: 100)
-                                .onTapGesture {
-                                    let newRoutine = routine.copy()
-                                    newRoutine.type = .preset
-                                    modelContext.insert(newRoutine)
-                                    routine = newRoutine
-                                    externalRoutine = newRoutine
-                                    SupaBaseManager.saveRoutine(routine: newRoutine)
-                                    try? modelContext.save()
-                                    withAnimation {
-                                        type = 2
-                                    }
-                                    showAccessory.toggle()
-                                }
+                            Button(action: {
+                                let newRoutine = routine.copy()
+                                newRoutine.type = .preset
+                                modelContext.insert(newRoutine)
+                                routine = newRoutine
+                                externalRoutine = newRoutine
+                                SupaBaseManager.saveRoutine(routine: newRoutine)
+                                try? modelContext.save()
+                                withAnimation { type = 2 }
+                                showAccessory.toggle()
+                            }) {
+                                GeneralButton(text: "Add", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
+                                    .frame(width: 100)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Add routine")
                         } else {
-                            Image(systemName: "pencil")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(Theme.Colors.NeutralLight1)
-                                .onTapGesture {
-                                    withAnimation {
-                                        type = 1
-                                    }
-                                    showAccessory.toggle()
+                            Button(action: {
+                                withAnimation {
+                                    type = 1
                                 }
+                                showAccessory.toggle()
+                            }) {
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 20, weight: .bold))
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(Theme.Colors.NeutralLight1)
+                            .accessibilityLabel("Edit")
                         }
                     }
-                    Image(systemName: "ellipsis")
-                        .onTapGesture {
-                            print("ho hey")
-                            showAccessory.toggle()
-                            modalType = .Ellipsis
-                            isPresented.toggle()
-                        }
+                    Button(action: {
+                        showAccessory.toggle()
+                        modalType = .Ellipsis
+                        isPresented.toggle()
+                    }) {
+                        Image(systemName: "ellipsis")
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("More options")
                     
                 } .padding(.horizontal, 10)
                 .padding(.top)
@@ -174,61 +189,64 @@ struct WorkoutCompleted: View {
                         Spacer()
                         if (type == 4) {
                             VStack {
-                                GeneralButton(text: "Repeat", color: Theme.Colors.Primary1, image: "repeat")
-                                    .frame(width: 130)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            type = 2
-                                        }
-                                        showAccessory.toggle()
-                                        resetCompleted(routineUpdate: routine)
-                                    }
+                                Button(action: {
+                                    withAnimation { type = 2 }
+                                    showAccessory.toggle()
+                                    resetCompleted(routineUpdate: routine)
+                                }) {
+                                    GeneralButton(text: "Repeat", color: Theme.Colors.Primary1, image: "repeat")
+                                        .frame(width: 130)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Repeat workout")
                                 Spacer()
                             }
                         } else if (type == 3) {
                             VStack {
                                 HStack {
                                     Spacer()
-                                    GeneralButton(text: "Pause", color: Theme.Colors.NeutralGray1, image: "pause")
-                                        .frame(width: 105)
-                                        .padding(.trailing, -20)
-                                        .onTapGesture {
-                                            withAnimation {
-                                                type = 2
-                                            }
-                                            timerthing.toggleTimer(startOrStop: true)
-                                        }
-                                    GeneralButton(text: "End", color: Theme.Colors.Red, image: "xmark")
-                                        .frame(width: 115)
-                                        .padding(.trailing, -10)
-                                        .onTapGesture {
-                                            let prManager = PRManager(context: modelContext)
-                                            prManager.checkForPRs(routine: routine)
-                                            showAccessory.toggle()
-                                            timerthing.toggleTimer(startOrStop: true)
-                                            let newRoutine = routine.copy()
-                                            newRoutine.type = .date
-                                            newRoutine.date = Date()
-                                            newRoutine.duration = timerthing.elapsedTime
-                                            newRoutine.id = UUID()
-                                            for exercise in newRoutine.exercises {
-                                                exercise.id = UUID()
-                                                exercise.routine_id = newRoutine.id
-                                                for set in exercise.sets {
-                                                    set.id = UUID()
-                                                    set.exercise_id = exercise.id
-                                                }
-                                            }
-                                            modelContext.insert(newRoutine)
-                                            resetCompleted(routineUpdate: routine)
-                                            routine = newRoutine
-                                            externalRoutine = newRoutine
-                                            SupaBaseManager.saveRoutine(routine: newRoutine)
-                                            try? modelContext.save
-                                            withAnimation {
-                                                type = 4
+                                    Button(action: {
+                                        withAnimation { type = 2 }
+                                        timerthing.toggleTimer(startOrStop: true)
+                                    }) {
+                                        GeneralButton(text: "Pause", color: Theme.Colors.NeutralGray1, image: "pause")
+                                            .frame(width: 105)
+                                            .padding(.trailing, -20)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Pause workout")
+                                    Button(action: {
+                                        let prManager = PRManager(context: modelContext)
+                                        prManager.checkForPRs(routine: routine)
+                                        showAccessory.toggle()
+                                        timerthing.toggleTimer(startOrStop: true)
+                                        let newRoutine = routine.copy()
+                                        newRoutine.type = .date
+                                        newRoutine.date = Date()
+                                        newRoutine.duration = timerthing.elapsedTime
+                                        newRoutine.id = UUID()
+                                        for exercise in newRoutine.exercises {
+                                            exercise.id = UUID()
+                                            exercise.routine_id = newRoutine.id
+                                            for set in exercise.sets {
+                                                set.id = UUID()
+                                                set.exercise_id = exercise.id
                                             }
                                         }
+                                        modelContext.insert(newRoutine)
+                                        resetCompleted(routineUpdate: routine)
+                                        routine = newRoutine
+                                        externalRoutine = newRoutine
+                                        SupaBaseManager.saveRoutine(routine: newRoutine)
+                                        try? modelContext.save()
+                                        withAnimation { type = 4 }
+                                    }) {
+                                        GeneralButton(text: "End", color: Theme.Colors.Red, image: "xmark")
+                                            .frame(width: 115)
+                                            .padding(.trailing, -10)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("End workout")
                                 }
                                 Spacer()
                                 HStack {
@@ -240,16 +258,17 @@ struct WorkoutCompleted: View {
                             VStack {
                                 HStack {
                                     Spacer()
-                                    GeneralButton(text: "Begin Workout", color: Theme.Colors.Primary1, image: "play.fill")
-                                        .frame(width: 170)
-                                        .padding(.trailing, -10)
-                                        .onTapGesture {
-                                            showAccessory.toggle()
-                                            withAnimation {
-                                                type += 1
-                                            }
-                                            timerthing.toggleTimer(startOrStop: false)
-                                        }
+                                    Button(action: {
+                                        showAccessory.toggle()
+                                        withAnimation { type += 1 }
+                                        timerthing.toggleTimer(startOrStop: false)
+                                    }) {
+                                        GeneralButton(text: "Begin Workout", color: Theme.Colors.Primary1, image: "play.fill")
+                                            .frame(width: 170)
+                                            .padding(.trailing, -10)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Begin workout")
                                 }
                                 Spacer()
                                 HStack {
@@ -275,28 +294,28 @@ struct WorkoutCompleted: View {
                 } .padding(.bottom)
                 if (type == 1) {
                     HStack {
-                        Rectangle()
-                            .foregroundColor(Theme.Colors.Primary1)
-                            .overlay(HStack {
-                                Image(systemName: "plus")
-                                    .font(.system(size: 20))
-                                    .padding(.trailing, -6)
-                                Text("Add exercises")
-                                    .font(Theme.Fonts.Body5)
-                                    .padding(.trailing, 6)
-                                Image(systemName: "arrow.right")
-                                    .font(.system(size: 20))
-                                    .padding(.trailing, -1)
-                            })
-                            .foregroundStyle(Theme.Colors.NeutralDark)
-                            .frame(width: 150, height: 36)
-                            .cornerRadius(4)
-                            .padding()
-                            .onTapGesture {
-                                showAccessory.toggle()
-                                modalType = .Exercise
-                                isPresented.toggle()
-                            }
+                        Button {
+                            showAccessory.toggle()
+                            modalType = .Exercise
+                            isPresented.toggle()
+                        } label: {
+                            Rectangle()
+                                .foregroundColor(Theme.Colors.Primary1)
+                                .overlay(HStack {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 20))
+                                        .padding(.trailing, -6)
+                                    Text("Add exercises")
+                                        .font(Theme.Fonts.Body5)
+                                        .padding(.trailing, 6)
+                                    Image(systemName: "arrow.right")
+                                        .font(.system(size: 20))
+                                        .padding(.trailing, -1)
+                                })
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Theme.Colors.Primary1)
+                        .padding(.leading)
                         Spacer()
                     }
                 }
@@ -328,7 +347,11 @@ struct WorkoutCompleted: View {
         }
         .animation(.snappy(duration: 0.3), value: type)
         .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: BackButton())
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                BackButton()
+            }
+        }
         .background(Theme.Colors.NeutralDark)
         .sensoryFeedback(.impact, trigger: showAccessory)
         .onAppear{
@@ -388,3 +411,4 @@ struct WorkoutCompleted: View {
     @Previewable @State var rout = Routine(id: UUID(), name: "Test", type: RoutineType.preset)
     WorkoutCompleted(externalRoutine: $rout, plusButton: true)
 }
+

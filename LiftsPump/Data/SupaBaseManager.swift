@@ -183,46 +183,53 @@ public class SupaBaseManager {
             return
         }
         let synced = profile.last_synced ?? Date(timeIntervalSince1970: 1)
-        do {
-            if (Date().timeIntervalSince1970-synced.timeIntervalSince1970) > 86400 {
-                print("Yurrp")
-                let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-                let options = FunctionInvokeOptions(body: profile)
-                let airesponse: Response = try await supabase.functions
-                    .invoke(
-                        "AiRoutines",
-                        options: options
-                    )
-                for routine in currentRoutines {
-                    if routine.type == .ai {
-                        modelContext.delete(routine)
-                    }
-                }
-                var rawValue = (airesponse.message)
-                rawValue = rawValue
-                    .replacingOccurrences(of: "```json", with: "")
-                    .replacingOccurrences(of: "```", with: "")
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
-                for routine in aiDecoded {
-                    routine.type = .ai
-                    routines.append(routine)
-                    for exercise in routine.exercises {
-                        exercise.routine_id = routine.id
-                        exercises.append(exercise)
-                        for set in exercise.sets {
-                            set.exercise_id = exercise.id
-                            sets.append(set)
+
+        // Detached task for AI routines logic
+        Task.detached { [modelContext] in
+            @MainActor func processAIRoutines() async {
+                do {
+                    if (Date().timeIntervalSince1970 - synced.timeIntervalSince1970) > 86400 {
+                        print("Yurrp")
+                        let currentRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
+                        let options = FunctionInvokeOptions(body: profile)
+                        let airesponse: Response = try await supabase.functions
+                            .invoke(
+                                "AiRoutines",
+                                options: options
+                            )
+                        for routine in currentRoutines {
+                            if routine.type == .ai {
+                                modelContext.delete(routine)
+                            }
                         }
+                        var rawValue = (airesponse.message)
+                        rawValue = rawValue
+                            .replacingOccurrences(of: "```json", with: "")
+                            .replacingOccurrences(of: "```", with: "")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                        let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
+                        for routine in aiDecoded {
+                            routine.type = .ai
+                            routines.append(routine)
+                            for exercise in routine.exercises {
+                                exercise.routine_id = routine.id
+                                exercises.append(exercise)
+                                for set in exercise.sets {
+                                    set.exercise_id = exercise.id
+                                    sets.append(set)
+                                }
+                            }
+                        }
+                        profile.last_synced = Date()
+                        SupaBaseManager.saveProfile(first_name: profile.first_name, last_name: profile.last_name, phone_number: "", height: profile.height, weight: profile.weight, dob: profile.dob, type: 1, last_synced: profile.last_synced ?? Date(), username: profile.username)
                     }
+                } catch {
+                    print("Error with AI \(error)")
                 }
             }
-            profile.last_synced = Date()
-            SupaBaseManager.saveProfile(first_name: firstName, last_name: lastName, phone_number: "", height: height, weight: weight, dob: Date(timeIntervalSince1970: dob), type: 1, last_synced: Date(), username: username)
-        } catch {
-            print("Error with AI \(error)")
-            SupaBaseManager.running = false
+            await processAIRoutines()
         }
+
         applyProfile(profile)
 
         if let trainerUUID = profile.trainer {
@@ -508,20 +515,26 @@ public class SupaBaseManager {
                 print("Routine updated successfully!")
                 for exercise in routine.exercises {
                     exercise.routine_id = routine.id
-                    try await supabase
-                        .from("exercises")
-                        .update(exercise)
-                        .eq("id", value: exercise.id)
-                        .execute()
-                    print("Exercise updated successfully!")
+                    do {
+                        try await supabase
+                            .from("exercises")
+                            .upsert(exercise)
+                            .execute()
+                        print("Exercise upserted successfully!")
+                    } catch {
+                        print("Error upserting exercise: \(error)")
+                    }
                     for set in exercise.sets {
                         set.exercise_id = exercise.id
-                        try await supabase
-                            .from("sets")
-                            .update(set)
-                            .eq("id", value: set.id)
-                            .execute()
-                        print("Set updated successfully!")
+                        do {
+                            try await supabase
+                                .from("sets")
+                                .upsert(set)
+                                .execute()
+                            print("Set upserted successfully!")
+                        } catch {
+                            print("Error upserting set: \(error)")
+                        }
                     }
                 }
             } catch {

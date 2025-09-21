@@ -23,12 +23,13 @@ struct Friends: View {
                     .font(Theme.Fonts.SubHeading9)
                     .foregroundStyle(Theme.Colors.NeutralLight1)
                 Spacer()
-                Image(systemName: "xmark")
-                    .font(.system(size: 20))
-                    .foregroundStyle(Theme.Colors.NeutralLight1)
-                    .onTapGesture {
-                        dismiss()
-                    }
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 20))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Theme.Colors.NeutralLight1)
+                .accessibilityLabel("Close")
             } .padding()
             HStack {
                 Text("Add friends")
@@ -36,12 +37,13 @@ struct Friends: View {
                     .foregroundStyle(Theme.Colors.NeutralLight1)
                 Spacer()
             } .padding(.horizontal)
-            GeneralButton(text: (searchOrAdd ? "Search for friends" : "My friends"), color: Theme.Colors.Primary1, image: "text.page")
-                .onTapGesture {
-                    withAnimation {
-                        searchOrAdd.toggle()
-                    }
-                }
+            Button(action: {
+                withAnimation { searchOrAdd.toggle() }
+            }) {
+                GeneralButton(text: (searchOrAdd ? "Search for friends" : "My friends"), color: Theme.Colors.Primary1, image: "text.page")
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(searchOrAdd ? "Switch to search" : "Show my friends")
             if searchOrAdd {
                 HStack {
                     Text("Your friends")
@@ -58,7 +60,7 @@ struct Friends: View {
                         Rectangle()
                             .fill(Theme.Colors.NeutralDarkGray1)
                             .frame(width: .infinity, height: 2)
-                            .edgesIgnoringSafeArea(.horizontal)
+                            .ignoresSafeArea(edges: .horizontal)
                             .padding(.horizontal)
                         Person(image: "plus", action: "Invite", text: "\(username)", profileImage: "person.crop.circle", onTap: {
                             print("hey")
@@ -87,8 +89,14 @@ struct Friends: View {
                     .cornerRadius(8)
                     .foregroundStyle(Theme.Colors.NeutralDark)
                     .accentColor(Theme.Colors.Primary1)
+                    .submitLabel(.search)
                     .padding(.horizontal)
                     .padding(.bottom, 30)
+                    .onSubmit {
+                        Task {
+                            await friendsManager.searchFriends(searchText: searchText)
+                        }
+                    }
                     .onChange(of: searchText) { query in
                         Task {
                             await friendsManager.searchFriends(searchText: query)
@@ -102,7 +110,7 @@ struct Friends: View {
                     Rectangle()
                         .fill(Theme.Colors.NeutralDarkGray1)
                         .frame(width: .infinity, height: 2)
-                        .edgesIgnoringSafeArea(.horizontal)
+                        .ignoresSafeArea(edges: .horizontal)
                         .padding(.horizontal)
                     Person(
                         image: "plus",
@@ -120,11 +128,12 @@ struct Friends: View {
             Rectangle()
                 .fill(Theme.Colors.NeutralDarkGray1)
                 .frame(width: .infinity, height: 2)
-                .edgesIgnoringSafeArea(.horizontal)
+                .ignoresSafeArea(edges: .horizontal)
                 .padding(.horizontal)
             Spacer()
         } .background(Theme.Colors.NeutralDark)
             .animation(.snappy(duration: 0.3), value: searchOrAdd)
+            .sensoryFeedback(.selection, trigger: searchOrAdd)
         .task {
             await friendsManager.getFriends()
         }

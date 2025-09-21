@@ -4,6 +4,7 @@ import Supabase
 
 struct ContentView: View {
     @AppStorage("ISNEW_KEY") var new: Bool = true
+    @AppStorage("APPEARANCE_KEY") private var appearance: String = "system"
 
     var body: some View {
         Group {
@@ -40,12 +41,20 @@ struct ContentView: View {
                 }
             }
         }
+        .preferredColorScheme(resolvedScheme())
     }
     func checkUserLoginStatus() -> Bool {
         if (supabase.auth.currentUser != nil) {
             return(true)
         } else {
             return false
+        }
+    }
+    private func resolvedScheme() -> ColorScheme? {
+        switch appearance {
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil
         }
     }
 }

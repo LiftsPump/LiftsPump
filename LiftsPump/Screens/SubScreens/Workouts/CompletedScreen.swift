@@ -34,12 +34,18 @@ struct CompletedScreen: View {
                                                     }
                                                 ), plusButton: false).navigationBarBackButtonHidden(true)
                             } label: {
-                                WorkoutHistory(
-                                    title: routine.name,
-                                    image: "figure.run",
-                                    date: routine.date?.formatted(.dateTime.year().month(.abbreviated).day()) ?? "No Date Available"
-                                )
-                                .padding(.vertical)
+                                ZStack {
+                                    WorkoutHistory(
+                                        title: routine.name,
+                                        image: "figure.run",
+                                        date: routine.date?.formatted(.dateTime.year().month(.abbreviated).day()) ?? "No Date Available"
+                                    )
+                                    .padding(.vertical)
+                                }
+                                .overlay(alignment: .topTrailing) {
+                                    TypeTag(type: routine.type)
+                                        .padding(10)
+                                }
                             }
                         }
                     }

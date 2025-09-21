@@ -15,6 +15,34 @@ struct CalendarScreen: View {
     @State private var showAccessory = false
     let calendar = Calendar.current
 
+    private func occurs(_ routine: Routine, on date: Date) -> Bool {
+        guard let start = routine.date else { return false }
+        let dayStart = calendar.startOfDay(for: start)
+        let dateStart = calendar.startOfDay(for: date)
+
+        switch routine.type {
+        case .date:
+            return calendar.isDate(dayStart, inSameDayAs: dateStart)
+        case .preset:
+            // Recurring logic
+            if let d = routine.days, d > 0 {
+                // every N days starting from start
+                let comps = calendar.dateComponents([.day], from: dayStart, to: dateStart)
+                if let diff = comps.day, diff >= 0 { return diff % d == 0 }
+            }
+            if let w = routine.weekly, w > 0 {
+                // every N weeks on the same weekday as start
+                let comps = calendar.dateComponents([.weekOfYear], from: dayStart, to: dateStart)
+                if let weeks = comps.weekOfYear, weeks >= 0 {
+                    return (weeks % w == 0) && (calendar.component(.weekday, from: dayStart) == calendar.component(.weekday, from: dateStart))
+                }
+            }
+            return false
+        default:
+            return false
+        }
+    }
+
     private var isToday: Bool { Calendar.current.isDateInToday(selectedDate) }
     private var formattedDate: String {
         let df = DateFormatter()
@@ -57,29 +85,32 @@ struct CalendarScreen: View {
             .padding(.horizontal)
             VStack {
                 let selectedDateString = selectedDate.formatted(.dateTime.year().month(.abbreviated).day())
-                ForEach(routines) { routine in
-                    if let routineDate = routine.date,
-                       calendar.isDate(routineDate, inSameDayAs: selectedDate) {
-                        NavigationLink {
-                            WorkoutCompleted(externalRoutine: Binding(
-                                                get: { routine },
-                                                set: { updatedRoutine in
-                                                    modelContext.insert(updatedRoutine)
-                                                }
-                                            ), plusButton: false).navigationBarBackButtonHidden(true)
-                        } label: {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .fill(.thinMaterial)
-                                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
-                                WorkoutHistory(title: routine.name, image: "figure.run", date: selectedDateString)
-                                    .padding(.vertical)
-                            }
-                            .padding(.horizontal)
+                let matches = routines.filter { occurs($0, on: selectedDate) }
+                ForEach(matches, id: \.id) { routine in
+                    NavigationLink {
+                        WorkoutCompleted(externalRoutine: Binding(
+                                            get: { routine },
+                                            set: { updatedRoutine in
+                                                modelContext.insert(updatedRoutine)
+                                            }
+                                        ), plusButton: false).navigationBarBackButtonHidden(true)
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(.thinMaterial)
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
+                            WorkoutHistory(title: routine.name, image: "figure.run", date: selectedDateString)
+                                .padding(.vertical)
                         }
+                        .overlay(alignment: .topTrailing) {
+                            TypeTag(type: routine.type)
+                                .padding(10)
+                        }
+                        .padding(.horizontal)
                     }
                 }
-                if routines.filter({ $0.date != nil && calendar.isDate($0.date!, inSameDayAs: selectedDate) }).isEmpty {
+                let hasAny: Bool = !matches.isEmpty
+                if !hasAny {
                     ZStack {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(.ultraThinMaterial)
@@ -101,7 +132,7 @@ struct CalendarScreen: View {
                         .padding(20)
                     }
                     .padding(.horizontal)
-                    .padding(.top, 8)
+                    .padding(.vertical, 8)
                 }
             }
         }

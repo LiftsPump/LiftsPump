@@ -19,6 +19,16 @@ class ExerciseListModel: ObservableObject {
     @Published var exercises: [ExerciseTemplate] = []
     @Published var selectedExercises: [ExerciseTemplate] = []
     
+    // Current filter state (selected primary muscle groups)
+    @Published var selectedMuscles: Set<String> = []
+
+    // All available primary muscles from the loaded dataset
+    var availableMuscles: [String] {
+        let all = exercises.flatMap { $0.primaryMuscles }
+        let unique = Set(all.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) })
+        return unique.sorted()
+    }
+    
     func fetchExercises() {
         if !exercises.isEmpty {
             return
@@ -35,6 +45,7 @@ class ExerciseListModel: ObservableObject {
             DispatchQueue.main.async {
                 self.exercises = decodedData
                 self.selectedExercises = decodedData
+                self.selectedMuscles = []
             }
         } catch {
             print("Error loading or decoding local JSON file: \(error)")
@@ -42,14 +53,30 @@ class ExerciseListModel: ObservableObject {
     }
     
     func searchExercises(query: String) {
-        if query.isEmpty {
-            selectedExercises = exercises
-        } else {
-            selectedExercises = exercises.filter {
-                $0.name.normalizedSearchText().contains(query.normalizedSearchText())
-            }
+        // Normalize query and perform combined search + filter
+        let q = query.normalizedSearchText()
+
+        let base = exercises.filter { ex in
+            // Filter by name match if query provided
+            let matchesQuery: Bool
+            if q.isEmpty { matchesQuery = true }
+            else { matchesQuery = ex.name.normalizedSearchText().contains(q) }
+
+            // Filter by selected muscles if any chosen
+            let matchesMuscle: Bool
+            if selectedMuscles.isEmpty { matchesMuscle = true }
+            else { matchesMuscle = !Set(ex.primaryMuscles).intersection(selectedMuscles).isEmpty }
+
+            return matchesQuery && matchesMuscle
         }
+        selectedExercises = base
     }
+
+    func updateFilters(muscles: Set<String>, currentQuery: String) {
+        selectedMuscles = muscles
+        searchExercises(query: currentQuery)
+    }
+    
     func findById(_ id: String) -> ExerciseTemplate? {
         if exercises.isEmpty {
             fetchExercises() // Ensure data is loaded
@@ -57,3 +84,4 @@ class ExerciseListModel: ObservableObject {
         return exercises.first(where: { $0.id == id })
     }
 }
+

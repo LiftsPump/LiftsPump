@@ -17,9 +17,20 @@ struct HomeScreen: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             HStack(alignment: .top) {
-                Text("Hello, \n\(firstName)!")
-                    .font(Theme.Fonts.Heading1)
-                    .foregroundStyle(Theme.Colors.Primary1)
+                VStack(alignment: .leading) {
+                    Text("Hello, \n\(firstName)!")
+                        .font(Theme.Fonts.Heading1)
+                        .foregroundStyle(Theme.Colors.Primary1)
+                    Button("Send Test Notification") {
+                        NotificationManager.shared.sendHomeScreenSummary(
+                            firstName: firstName,
+                            completedRoutines: DataMethods.completedRoutines(routines: routines),
+                            streak: DataMethods.userStreak(routines: routines)
+                        )
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.top, 8)
+                }
                 Spacer()
                 NavigationLink(destination: NotificationsScreen()) {
                     Image(systemName: "bell.fill")
@@ -95,8 +106,14 @@ struct HomeScreen: View {
                                                 }
                                             ), plusButton: false).navigationBarBackButtonHidden(true)
                         } label: {
-                            WorkoutComponent(title: routine.name, image: "figure.run", description: DataMethods.summarizer(routine: routine))
-                                .padding(.horizontal)
+                            ZStack {
+                                WorkoutComponent(title: routine.name, image: "figure.run", description: DataMethods.summarizer(routine: routine))
+                            }
+                            .overlay(alignment: .topTrailing) {
+                                TypeTag(type: routine.type)
+                                    .padding(10)
+                            }
+                            .padding(.horizontal)
                         }
                         Spacer()
                             .padding(3)
@@ -119,10 +136,17 @@ struct HomeScreen: View {
                     }
                 }
             }
-            .overlay(content: {VStack{Spacer()
-                HStack{Spacer()
-                    PlusButton(ifCreateScreen: true, date: .constant(Date()))
-                    .onTapGesture {showAccessory.toggle()}}}})
+            .task {
+                await NotificationManager.shared.requestAuthorizationIfNeeded()
+            }
+            .overlay(content: { VStack { Spacer()
+                HStack { Spacer()
+                    Button(action: { showAccessory.toggle() }) {
+                        PlusButton(ifCreateScreen: true, date: .constant(Date()))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }})
     }
 }
 

@@ -49,23 +49,29 @@ struct ExerciseDetails: View {
     var body: some View {
         VStack {
             HStack {
-                BackButton()
-                    .padding()
-                    .onTapGesture {
-                        dismiss()
-                        showAccessory.toggle()
-                    }
+                Button(action: {
+                    dismiss()
+                    showAccessory.toggle()
+                }) {
+                    BackButton()
+                        .padding()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Back")
                 Spacer()
             }
             HStack {
                 Spacer()
-                GeneralButton(text: "Add to workout", color: Theme.Colors.Primary1, image: "plus")
-                    .frame(width: 175)
-                    .onTapGesture {
-                        addExercise = true
-                        showAccessory.toggle()
-                        dismiss()
-                    }
+                Button(action: {
+                    addExercise = true
+                    showAccessory.toggle()
+                    dismiss()
+                }) {
+                    GeneralButton(text: "Add to workout", color: Theme.Colors.Primary1, image: "plus")
+                        .frame(width: 175)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Add exercise to workout")
             }
             HStack {
                 Text("\(exercise.name)")
@@ -76,18 +82,25 @@ struct ExerciseDetails: View {
             .padding(.leading)
             
             HStack {
-                WorkoutTabs(color: selectedTab == .about ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "About", textColor: selectedTab == .about ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture {
-                        selectedTab = .about
-                        showAccessory.toggle()
-                        flipTab = true
-                    }
-                WorkoutTabs(color: (selectedTab == .prs || selectedTab == .confirm) ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
-                    .onTapGesture {
-                        selectedTab = .prs
-                        showAccessory.toggle()
-                        flipTab = false
-                    }
+                Button(action: {
+                    selectedTab = .about
+                    showAccessory.toggle()
+                    flipTab = true
+                }) {
+                    WorkoutTabs(color: selectedTab == .about ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "About", textColor: selectedTab == .about ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("About tab")
+                
+                Button(action: {
+                    selectedTab = .prs
+                    showAccessory.toggle()
+                    flipTab = false
+                }) {
+                    WorkoutTabs(color: (selectedTab == .prs || selectedTab == .confirm) ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1, text: "Personal records", textColor: selectedTab == .prs ? Theme.Colors.NeutralDark : Theme.Colors.NeutralDarkGray1)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Personal records tab")
             }
             .padding(.horizontal)
             
@@ -269,17 +282,18 @@ struct PRRow: View {
                 .foregroundStyle(Theme.Colors.NeutralLight1)
                 .frame(width: 50)
             Spacer()
-            Image(systemName: record.verified ? "checkmark.circle" : "x.circle")
-                .foregroundStyle(record.verified ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1)
-                .frame(width: 75)
-                .onTapGesture {
-                    if record.verified == false {
-                        prSelected = record
-                        withAnimation {
-                            selectedTab = .confirm
-                        }
-                    }
+            Button(action: {
+                if record.verified == false {
+                    prSelected = record
+                    withAnimation { selectedTab = .confirm }
                 }
+            }) {
+                Image(systemName: record.verified ? "checkmark.circle" : "x.circle")
+                    .foregroundStyle(record.verified ? Theme.Colors.Primary1 : Theme.Colors.NeutralGray1)
+                    .frame(width: 75)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(record.verified ? "Verified" : "Request verification")
         }
         .padding(.vertical, 5)
     }

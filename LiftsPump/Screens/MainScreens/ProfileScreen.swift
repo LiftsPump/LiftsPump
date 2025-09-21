@@ -40,14 +40,12 @@ struct ProfileScreen: View {
                 NavigationLink(destination: Friends().navigationBarBackButtonHidden(true)) {
                     Selectors(text: "My friends", image: "person.2.fill")
                 }
-                Selectors(text: "Settings", image: "gearshape.fill")
-                    .onTapGesture {
-                        showAccessory.toggle()
-                    }
-                Selectors(text: "Privacy", image: "lock.fill")
-                    .onTapGesture {
-                        showAccessory.toggle()
-                    }
+                NavigationLink(destination: SettingsScreen()) {
+                    Selectors(text: "Settings", image: "gearshape.fill")
+                }
+                NavigationLink(destination: PrivacyScreen()) {
+                    Selectors(text: "Privacy", image: "lock.fill")
+                }
                 Selectors(text: "Help & Support", image: "questionmark")
                     .onTapGesture {
                         showAccessory.toggle()

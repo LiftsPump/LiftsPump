@@ -41,23 +41,26 @@ struct ExcerciseInfoCard: View {
                         .font(Theme.Fonts.SubHeading5)
                     Spacer()
                     if editMode {
-                        Text("Remove")
-                            .font(Theme.Fonts.Body6)
-                            .onTapGesture {
-                                SupaBaseManager.deleteExercise(exercise: exercise)
-                                modelContext.delete(exercise)
-                                showAccessory.toggle()
-                            }
+                        Button(action: {
+                            SupaBaseManager.deleteExercise(exercise: exercise)
+                            modelContext.delete(exercise)
+                            showAccessory.toggle()
+                        }) {
+                            Text("Remove")
+                                .font(Theme.Fonts.Body6)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Remove exercise")
                     } else {
-                        Image(systemName: ("chevron.down"))
-                            .font(.system(size: 25))
-                            .rotationEffect(.degrees(workoutModal ? 180 : 0))
-                                .animation(.easeInOut, value: workoutModal)
-                            .onTapGesture {
-                                workoutModal.toggle()
-                            }
-                            .padding(10)
-                            .contentShape(Circle())
+                        Button(action: { workoutModal.toggle() }) {
+                            Image(systemName: ("chevron.down"))
+                                .font(.system(size: 25))
+                                .rotationEffect(.degrees(workoutModal ? 180 : 0))
+                                .padding(10)
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Circle())
+                        .animation(.easeInOut, value: workoutModal)
                     }
                 } .padding([.top, .trailing])
                     .padding(.top, -20)
@@ -70,34 +73,40 @@ struct ExcerciseInfoCard: View {
                         ForEach(Array(exercise.sets.enumerated()), id: \.element.id) { index, set in
                             VStack {
                                 Spacer()
-                                Text("\(index + 1)")
-                                    .font(Theme.Fonts.Body5)
-                                    .foregroundStyle(editMode ? Theme.Colors.Red : Theme.Colors.NeutralLight1)
-                                    .onTapGesture {
-                                        // Remove the set at the specified index
-                                        SupaBaseManager.deleteSet(set: exercise.sets[index])
-                                        exercise.sets.remove(at: index)
-                                        if editMode {
-                                            showAccessory.toggle()
-                                        }
+                                Button(action: {
+                                    SupaBaseManager.deleteSet(set: exercise.sets[index])
+                                    exercise.sets.remove(at: index)
+                                    if editMode {
+                                        showAccessory.toggle()
                                     }
+                                }) {
+                                    Text("\(index + 1)")
+                                        .font(Theme.Fonts.Body5)
+                                        .foregroundStyle(editMode ? Theme.Colors.Red : Theme.Colors.NeutralLight1)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(!editMode)
+                                .accessibilityLabel("Delete set \(index + 1)")
                             }
                         }
                         if editMode {
-                            Circle()
-                                .frame(width: 16, height: 16)
-                                .foregroundStyle(Theme.Colors.Primary1)
-                                .overlay(
-                                    Text("+")
-                                        .font(Theme.Fonts.SubHeading6)
-                                        .foregroundStyle(Theme.Colors.NeutralDark)
-                                )
-                                .onTapGesture {
-                                    showAccessory.toggle()
-                                    let newSet = ESet(id: UUID(), weight: 0, reps: 0, pr: false, completed: false, exercise: exercise)
-                                    SupaBaseManager.addSet(set: newSet)
-                                    exercise.sets.append(newSet)
-                                }
+                            Button(action: {
+                                showAccessory.toggle()
+                                let newSet = ESet(id: UUID(), weight: 0, reps: 0, pr: false, completed: false, exercise: exercise)
+                                SupaBaseManager.addSet(set: newSet)
+                                exercise.sets.append(newSet)
+                            }) {
+                                Circle()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundStyle(Theme.Colors.Primary1)
+                                    .overlay(
+                                        Text("+")
+                                            .font(Theme.Fonts.SubHeading6)
+                                            .foregroundStyle(Theme.Colors.NeutralDark)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Add set")
                         }
                     }
                     .padding(.leading)
@@ -151,7 +160,6 @@ struct ExcerciseInfoCard: View {
                             .keyboardType(.numberPad)
                             .onTapGesture {
                                 showAccessory.toggle()
-                                exercise.sets[index].reps = 0
                             }
                             .font(Theme.Fonts.Body5)
                             .foregroundStyle(Theme.Colors.NeutralDark)
@@ -171,15 +179,19 @@ struct ExcerciseInfoCard: View {
                             .foregroundStyle(allCompleted() ? Theme.Colors.Primary1 : Theme.Colors.NeutralLight1)
                         ForEach(exercise.sets) { set in
                             Spacer()
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 18))
-                                .foregroundStyle(set.completed ? Theme.Colors.Primary1 : Theme.Colors.NeutralLight1)
-                                .onTapGesture {
-                                    if active == 3 {
-                                        set.completed = !set.completed
-                                        showAccessory.toggle()
-                                    }
+                            Button(action: {
+                                if active == 3 {
+                                    set.completed.toggle()
+                                    showAccessory.toggle()
                                 }
+                            }) {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 18))
+                                    .foregroundStyle(set.completed ? Theme.Colors.Primary1 : Theme.Colors.NeutralLight1)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(active != 3)
+                            .accessibilityLabel(set.completed ? "Mark incomplete" : "Mark complete")
                         }
                     }
                     .padding(.bottom, editMode ? 30 : 0)

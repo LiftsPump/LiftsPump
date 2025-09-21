@@ -10,6 +10,8 @@ struct ExerciseScreen: View {
     @State private var addExercise: Bool = false
     @State private var isPresented = false // Dictionary to track sheet state per exercise
     @State private var currentSelected = ExerciseTemplate(id: "12", name: "Arnold press", primaryMuscles: ["Tricep", "Bicep"], instructions: ["Instruction 1", "Instruction 2"], images: ["plus"])
+    @State private var isFilterPresented: Bool = false
+    @State private var selectedMuscles: Set<String> = []
 
     var body: some View {
         VStack {
@@ -58,7 +60,7 @@ struct ExerciseScreen: View {
                         .foregroundColor(Theme.Colors.NeutralLight1)
                         .padding(.trailing)
                         .onTapGesture {
-                            showAccessory.toggle()
+                            isFilterPresented = true
                         }
                 }
             }
@@ -108,9 +110,28 @@ struct ExerciseScreen: View {
         }) {
             ExerciseDetails(defaultTab: ExerciseTabs.about, exercise: currentSelected, addExercise: $addExercise)
         }
+        .sheet(isPresented: $isFilterPresented) {
+            ExerciseFilterView(
+                selectedMuscles: Binding(
+                    get: { selectedMuscles },
+                    set: { newValue in
+                        selectedMuscles = newValue
+                    }
+                ),
+                availableMuscles: viewModel.availableMuscles,
+                searchText: $searchText,
+                onApply: { muscles in
+                    selectedMuscles = muscles
+                    viewModel.updateFilters(muscles: muscles, currentQuery: searchText)
+                }
+            )
+            .presentationDetents([.fraction(0.5), .medium, .large])
+            .presentationDragIndicator(.visible)
+        }
         .onAppear {
             viewModel.fetchExercises() // Fetch exercises on view load
             selectedExercises = [] // Initialize with an empty array
+            selectedMuscles = viewModel.selectedMuscles
         }
     }
 }

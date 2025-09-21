@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import GoogleSignIn
 
 @main
 struct LiftsPump: App {
@@ -25,6 +26,11 @@ struct LiftsPump: App {
         WindowGroup {
             ContentView()
                 .modelContainer(sharedModelContainer)
+                .onOpenURL { url in
+                    Task { @MainActor in
+                        _ = GIDSignIn.sharedInstance.handle(url)
+                    }
+                }
                 .task {
                     let supaManager = SupaBaseManager(context: sharedModelContainer.mainContext)
                     do {

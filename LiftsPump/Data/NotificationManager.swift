@@ -39,4 +39,10 @@ final class NotificationManager {
             }
         }
     }
+    
+    func sendHomeScreenSummary(firstName: String, completedRoutines: Int, streak: Int) {
+        let title = "Hey, \(firstName)!"
+        let body = "You've completed \(completedRoutines) workouts. Your current streak is \(streak) days!"
+        sendNow(title: title, body: body)
+    }
 }
