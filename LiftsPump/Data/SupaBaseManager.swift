@@ -185,8 +185,7 @@ public class SupaBaseManager {
         let synced = profile.last_synced ?? Date(timeIntervalSince1970: 1)
 
         // Detached task for AI routines logic
-        Task.detached { [modelContext] in
-            @MainActor func processAIRoutines() async {
+            func processAIRoutines() async {
                 do {
                     if (Date().timeIntervalSince1970 - synced.timeIntervalSince1970) > 86400 {
                         print("Yurrp")
@@ -197,20 +196,22 @@ public class SupaBaseManager {
                                 "AiRoutines",
                                 options: options
                             )
-                        for routine in currentRoutines {
-                            if routine.type == .ai {
-                                modelContext.delete(routine)
-                            }
-                        }
                         var rawValue = (airesponse.message)
                         rawValue = rawValue
                             .replacingOccurrences(of: "```json", with: "")
                             .replacingOccurrences(of: "```", with: "")
                             .trimmingCharacters(in: .whitespacesAndNewlines)
                         let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
+                        for routine in currentRoutines {
+                            if routine.type == .ai {
+                                modelContext.delete(routine)
+                                SupaBaseManager.deleteRoutine(routine: routine)
+                            }
+                        }
                         for routine in aiDecoded {
                             routine.type = .ai
                             routines.append(routine)
+                            SupaBaseManager.saveRoutine(routine: routine)
                             for exercise in routine.exercises {
                                 exercise.routine_id = routine.id
                                 exercises.append(exercise)
@@ -228,7 +229,6 @@ public class SupaBaseManager {
                 }
             }
             await processAIRoutines()
-        }
 
         applyProfile(profile)
 
@@ -259,7 +259,6 @@ public class SupaBaseManager {
 
         // Merge data
         for routine in routines {
-            if routine.type == .ai { continue }
             for exercise in exercises {
                 if exercise.routine_id == routine.id {
                     let copyE = exercise.copy()

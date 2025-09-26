@@ -41,7 +41,7 @@ struct ContentView: View {
                 }
             }
         }
-        .preferredColorScheme(resolvedScheme())
+        .preferredColorScheme(.dark)
     }
     func checkUserLoginStatus() -> Bool {
         if (supabase.auth.currentUser != nil) {
