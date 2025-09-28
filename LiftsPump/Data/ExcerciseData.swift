@@ -174,7 +174,7 @@ class Exercise: Identifiable, Codable {
 @Model
 class ESet: Identifiable, Codable {
     enum CodingKeys: CodingKey {
-        case id, weight, reps, pr, completed, exercise_id
+        case id, weight, reps, pr, completed, exercise_id, order
     }
     @Attribute(.unique) var id: UUID
     var weight: Int?
@@ -182,6 +182,7 @@ class ESet: Identifiable, Codable {
     var pr: Bool = false
     var completed: Bool = false
     var exercise_id: UUID?
+    var order: Int?
     
     // Relationships
     @Relationship(inverse: \Exercise.sets)
@@ -193,7 +194,8 @@ class ESet: Identifiable, Codable {
          pr: Bool = false,
          completed: Bool = false,
          exercise_id: UUID? = nil,
-         exercise: Exercise? = nil) {
+         exercise: Exercise? = nil,
+         order: Int? = nil) {
         self.id = id
         self.weight = weight
         self.reps = reps
@@ -201,6 +203,7 @@ class ESet: Identifiable, Codable {
         self.completed = completed
         self.exercise = exercise
         self.exercise_id = exercise_id
+        self.order = order
     }
 
     // Copy method
@@ -212,7 +215,8 @@ class ESet: Identifiable, Codable {
             pr: self.pr,
             completed: self.completed,
             exercise_id: exercise_id,
-            exercise: nil // Do not copy the exercise to avoid circular references
+            exercise: nil,
+            order: self.order
         )
     }
     required init(from decoder: Decoder) throws {
@@ -223,6 +227,7 @@ class ESet: Identifiable, Codable {
         pr = try container.decode(Bool.self, forKey: .pr)
         completed = try container.decode(Bool.self, forKey: .completed)
         exercise_id = try container.decodeIfPresent(UUID.self, forKey: .exercise_id)
+        order = try container.decodeIfPresent(Int.self, forKey: .order)
     }
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -232,5 +237,6 @@ class ESet: Identifiable, Codable {
         try container.encode(pr, forKey: .pr)
         try container.encode(completed, forKey: .completed)
         try container.encodeIfPresent(exercise_id, forKey: .exercise_id)
+        try container.encodeIfPresent(order, forKey: .order)
     }
 }

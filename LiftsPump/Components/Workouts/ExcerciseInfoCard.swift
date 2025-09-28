@@ -67,32 +67,38 @@ struct ExcerciseInfoCard: View {
                     .padding(.bottom, 1)
                 
                 HStack {
+                    let sortedIndices = exercise.sets.indices.sorted { (lhs, rhs) in
+                        let l = exercise.sets[lhs].order ?? Int.max
+                        let r = exercise.sets[rhs].order ?? Int.max
+                        return l < r
+                    }
                     VStack {
                         Text("Set")
                             .font(Theme.Fonts.Body5)
-                        ForEach(Array(exercise.sets.enumerated()), id: \.element.id) { index, set in
+                        ForEach(Array(sortedIndices.enumerated()), id: \.element) { displayPosition, originalIndex in
                             VStack {
                                 Spacer()
                                 Button(action: {
-                                    SupaBaseManager.deleteSet(set: exercise.sets[index])
-                                    exercise.sets.remove(at: index)
+                                    SupaBaseManager.deleteSet(set: exercise.sets[originalIndex])
+                                    exercise.sets.remove(at: originalIndex)
                                     if editMode {
                                         showAccessory.toggle()
                                     }
                                 }) {
-                                    Text("\(index + 1)")
+                                    Text("\(displayPosition + 1)")
                                         .font(Theme.Fonts.Body5)
                                         .foregroundStyle(editMode ? Theme.Colors.Red : Theme.Colors.NeutralLight1)
                                 }
                                 .buttonStyle(.plain)
                                 .disabled(!editMode)
-                                .accessibilityLabel("Delete set \(index + 1)")
+                                .accessibilityLabel("Delete set \(displayPosition + 1)")
                             }
                         }
                         if editMode {
                             Button(action: {
                                 showAccessory.toggle()
-                                let newSet = ESet(id: UUID(), weight: 0, reps: 0, pr: false, completed: false, exercise: exercise)
+                                let nextOrder = (exercise.sets.compactMap { $0.order }.max() ?? exercise.sets.count) + 1
+                                let newSet = ESet(id: UUID(), weight: 0, reps: 0, pr: false, completed: false, exercise: exercise, order: nextOrder)
                                 SupaBaseManager.addSet(set: newSet)
                                 exercise.sets.append(newSet)
                             }) {
@@ -116,13 +122,13 @@ struct ExcerciseInfoCard: View {
                     VStack {
                         Text("lbs")
                             .font(Theme.Fonts.Body5)
-                        ForEach(exercise.sets.indices, id: \.self) { index in
+                        ForEach(sortedIndices, id: \.self) { originalIndex in
                             // Binding the weight for each set
-                            let set = exercise.sets[index]
+                            let set = exercise.sets[originalIndex]
                             TextField("Weight", text: Binding(
                                 get: { String(set.weight ?? 0) },
                                 set: { newValue in
-                                    exercise.sets[index].weight = Int(newValue) ?? 0
+                                    exercise.sets[originalIndex].weight = Int(newValue) ?? 0
                                 }
                             ))
                             .scrollDismissesKeyboard(.interactively)
@@ -147,13 +153,13 @@ struct ExcerciseInfoCard: View {
                     VStack {
                         Text("Reps")
                             .font(Theme.Fonts.Body5)
-                        ForEach(exercise.sets.indices, id: \.self) { index in
+                        ForEach(sortedIndices, id: \.self) { originalIndex in
                             // Using a binding to modify each set's reps
-                            let set = exercise.sets[index]
+                            let set = exercise.sets[originalIndex]
                             TextField("Reps", text: Binding(
                                 get: { String(set.reps ?? 0) },
                                 set: { newValue in
-                                    exercise.sets[index].reps = Int(newValue) ?? 0
+                                    exercise.sets[originalIndex].reps = Int(newValue) ?? 0
                                 }
                             ))
                             .scrollDismissesKeyboard(.interactively)
@@ -177,7 +183,7 @@ struct ExcerciseInfoCard: View {
                         Image(systemName: "checkmark.circle")
                             .font(.system(size: 25))
                             .foregroundStyle(allCompleted() ? Theme.Colors.Primary1 : Theme.Colors.NeutralLight1)
-                        ForEach(exercise.sets) { set in
+                        ForEach(exercise.sets.sorted(by: { ($0.order ?? Int.max) < ($1.order ?? Int.max) })) { set in
                             Spacer()
                             Button(action: {
                                 if active == 3 {
@@ -215,3 +221,4 @@ struct ExcerciseInfoCard: View {
     ])
     ExcerciseInfoCard(editMode: false, exercise: $exerc, active: .constant(3))
 }
+
