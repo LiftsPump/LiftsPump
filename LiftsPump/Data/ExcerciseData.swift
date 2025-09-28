@@ -110,12 +110,13 @@ class Routine: Identifiable, Codable {
 @Model
 class Exercise: Identifiable, Codable {
     enum CodingKeys: CodingKey {
-        case id, name, eCode, text, sets, routine_id
+        case id, name, eCode, text, sets, routine_id, order
     }
     @Attribute(.unique) var id: UUID
     var name: String
     var eCode: String
     var text: String?
+    var order: Int?
     
     // Relationships
     @Relationship(inverse: \Routine.exercises)
@@ -128,7 +129,8 @@ class Exercise: Identifiable, Codable {
          text: String? = nil,
          routine: Routine? = nil,
          routine_id: UUID? = nil,
-         sets: [ESet] = []) {
+         sets: [ESet] = [],
+         order: Int = 0) {
         self.id = id
         self.name = name
         self.eCode = eCode
@@ -136,6 +138,7 @@ class Exercise: Identifiable, Codable {
         self.routine = routine
         self.routine_id = routine_id
         self.sets = sets
+        self.order = order
     }
 
     // Copy method
@@ -148,7 +151,8 @@ class Exercise: Identifiable, Codable {
             text: self.text,
             routine: nil, // Do not copy the routine to avoid circular references
             routine_id: routine_id,
-            sets: copiedSets
+            sets: copiedSets,
+            order: order ?? 0
         )
     }
     required init(from decoder: Decoder) throws {
@@ -159,6 +163,7 @@ class Exercise: Identifiable, Codable {
         text = try container.decodeIfPresent(String.self, forKey: .text)
         sets = try container.decodeIfPresent([ESet].self, forKey: .sets) ?? []
         routine_id = try container.decodeIfPresent(UUID.self, forKey: .routine_id)
+        order = try container.decodeIfPresent(Int.self, forKey: .order)
     }
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -168,6 +173,7 @@ class Exercise: Identifiable, Codable {
         try container.encodeIfPresent(text, forKey: .text)
         //try container.encode(sets, forKey: .sets)
         try container.encodeIfPresent(routine_id, forKey: .routine_id)
+        try container.encodeIfPresent(order, forKey: .order)
     }
 }
 

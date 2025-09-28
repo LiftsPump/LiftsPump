@@ -289,9 +289,15 @@ struct WorkoutCompleted: View {
                         Spacer()
                     } .padding(.horizontal)
                 }
-                ForEach($routine.exercises) { $exercise in
-                    ExcerciseInfoCard(editMode: type == 1, exercise: $exercise, active: $type)
-                } .padding(.bottom)
+                let sortedExerciseIndices = routine.exercises.indices.sorted { (lhs, rhs) in
+                    let l = routine.exercises[lhs].order ?? Int.max
+                    let r = routine.exercises[rhs].order ?? Int.max
+                    return l < r
+                }
+                ForEach(sortedExerciseIndices, id: \.self) { exerciseIndex in
+                    ExcerciseInfoCard(editMode: type == 1, exercise: $routine.exercises[exerciseIndex], active: $type)
+                }
+                .padding(.bottom)
                 if (type == 1) {
                     HStack {
                         Button {
@@ -383,6 +389,7 @@ struct WorkoutCompleted: View {
         }
     }
         private func addExercise(exercise: ExerciseTemplate) {
+            let nextExerciseOrder = (routine.exercises.compactMap { $0.order }.max() ?? routine.exercises.count) + 1
             let newExercise = Exercise(
                 id: UUID(),
                 name: exercise.name,
@@ -390,7 +397,8 @@ struct WorkoutCompleted: View {
                 text: exercise.instructions?.first ?? "",
                 routine: routine,
                 routine_id: routine.id,
-                sets: []
+                sets: [],
+                order: nextExerciseOrder
             )
             let newSet = ESet(
                 id: UUID(),
