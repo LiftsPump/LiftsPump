@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>SUPABASE_URL</key>
+	<string>$(SUPABASEURL)</string>
+	<key>SUPABASE_KEY</key>
+	<string>$(SUPABASEKEY)</string>
 	<key>GIDClientID</key>
 	<string>703159570131-fr7b2to938qri6p53ev640ft8pubolno.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>

@@ -10,10 +10,52 @@ import Supabase
 import SwiftData
 import SwiftUI
 
-let supabase = SupabaseClient(
-  supabaseURL: URL(string: "https://dupuztvhoifyczvqyjbk.supabase.co")!,
-  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1cHV6dHZob2lmeWN6dnF5amJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1MzM2OTYsImV4cCI6MjA1NDEwOTY5Nn0.eXwBsJA33-aPiz_I1Q4sQEX2Z7yxMg0Q7ERMuT-BRtQ"
-)
+private func infoValue(forKey key: String) -> String? {
+    // Prefer main bundle first
+    if let s = Bundle.main.object(forInfoDictionaryKey: key) as? String, !s.isEmpty {
+        return s
+    }
+    // Search all app bundles (e.g., when running tests or extensions)
+    for bundle in Bundle.allBundles where bundle != Bundle.main {
+        if let s = bundle.object(forInfoDictionaryKey: key) as? String, !s.isEmpty {
+            return s
+        }
+    }
+    // Search all frameworks
+    for framework in Bundle.allFrameworks {
+        if let s = framework.object(forInfoDictionaryKey: key) as? String, !s.isEmpty {
+            return s
+        }
+    }
+    // Environment variables fallback (useful for CI / Previews)
+    if let s = ProcessInfo.processInfo.environment[key], !s.isEmpty {
+        return s
+    }
+    // Optional: Secrets.plist fallback if provided in the app bundle
+    if let url = Bundle.main.url(forResource: "Secrets", withExtension: "plist"),
+       let data = try? Data(contentsOf: url),
+       let dict = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+       let s = dict[key] as? String, !s.isEmpty {
+        return s
+    }
+    return nil
+}
+
+let supabase: SupabaseClient = {
+    guard
+        let urlString = infoValue(forKey: "SUPABASE_URL"),
+        let key = infoValue(forKey: "SUPABASE_KEY"),
+        let url = URL(string: urlString)
+    else {
+        #if DEBUG
+        assertionFailure("Missing or invalid SUPABASE_* in Info.plist/Environment. Checked Bundle.main, allBundles, allFrameworks, env, Secrets.plist.")
+        return SupabaseClient(supabaseURL: URL(string: "https://example.invalid")!, supabaseKey: "debug-placeholder")
+        #else
+        fatalError("Missing or invalid SUPABASE_* in Info.plist")
+        #endif
+    }
+    return SupabaseClient(supabaseURL: url, supabaseKey: key)
+}()
 
 extension DateFormatter {
     static let dobFormat: DateFormatter = {
@@ -204,8 +246,8 @@ public class SupaBaseManager {
                         let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
                         for routine in currentRoutines {
                             if routine.type == .ai {
-                                modelContext.delete(routine)
                                 SupaBaseManager.deleteRoutine(routine: routine)
+                                modelContext.delete(routine)
                             }
                         }
                         for routine in aiDecoded {
@@ -542,3 +584,4 @@ public class SupaBaseManager {
         }
     }
 }
+
