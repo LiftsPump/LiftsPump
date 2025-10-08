@@ -270,7 +270,13 @@ public class SupaBaseManager {
                     print("Error with AI \(error)")
                 }
             }
-            await processAIRoutines()
+        Task {
+            do {
+                await processAIRoutines()
+            } catch {
+                print("Error with AI \(error)")
+            }
+        }
 
         applyProfile(profile)
 
@@ -283,6 +289,7 @@ public class SupaBaseManager {
                     .execute()
                 let trainers = try JSONDecoder().decode([Trainer].self, from: responseT.data)
                 if let trainer = trainers.first {
+                    trainerName = trainer.display_name ?? ""
                     if let vids = trainer.videos,
                        let data = try? JSONEncoder().encode(vids),
                        let json = String(data: data, encoding: .utf8) {

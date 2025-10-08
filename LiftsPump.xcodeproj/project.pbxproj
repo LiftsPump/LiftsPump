@@ -20,6 +20,7 @@
 		E292C6F32D533E49007C82BC /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E292C6F22D533E49007C82BC /* GoogleSignInSwift */; };
 		E29C8B212DE786F100CF93FB /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = E29C8B202DE786F100CF93FB /* OpenAI */; };
 		E2A927282E8B8FF20005DA3A /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2A927272E8B8FF20005DA3A /* Config.xcconfig */; };
+		E2B0B85F2E95ACAF00E2BE2D /* Config.example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		90C851092DA55E4200872CC2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		90C8510B2DA55E4200872CC2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		E2A927272E8B8FF20005DA3A /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.example.xcconfig; sourceTree = "<group>"; };
 		E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftsPump.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2F99EB72C8D1CFD004D683F /* LiftsPumpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				E2A927272E8B8FF20005DA3A /* Config.xcconfig */,
+				E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */,
 				E2F99E9E2C8D1CFB004D683F /* LiftsPump */,
 				E2F99EB02C8D1CFD004D683F /* LiftsPumpTests */,
 				E2F99EBA2C8D1CFD004D683F /* LiftsPumpUITests */,
@@ -351,6 +354,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2B0B85F2E95ACAF00E2BE2D /* Config.example.xcconfig in Resources */,
 				E2A927282E8B8FF20005DA3A /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

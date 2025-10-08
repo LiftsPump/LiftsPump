@@ -212,7 +212,7 @@ struct TrainerScreen: View {
                     }
                     .padding(.horizontal)
 
-                    CalendarScreen(selectedDate: $selectedDate)
+                    CalendarScreen(selectedDate: $selectedDate, trainer: true)
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)

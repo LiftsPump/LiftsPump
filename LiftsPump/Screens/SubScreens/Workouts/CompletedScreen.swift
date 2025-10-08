@@ -40,7 +40,7 @@ struct CompletedScreen: View {
             ForEach(groupedRoutines, id: \.key) { section in
                 Section {
                     ForEach(section.value) { routine in
-                        if routine.type == .date {
+                        if routine.type == .date || routine.type == .assigned {
                             NavigationLink {
                                 WorkoutCompleted(
                                     externalRoutine: Binding(

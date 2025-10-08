@@ -1,42 +1,6 @@
 import SwiftUI
 import Supabase
 
-struct TrainerSession: Decodable, Identifiable {
-    let id: UUID
-    let trainer: UUID
-    let user_id: UUID
-    let user_email: String?
-    let title: String?
-    let start_at: Date
-    let end_at: Date?
-    let meet_url: String?
-    let created_at: Date?
-}
-
-struct CustomExerciseRow: Decodable, Identifiable {
-    let id: UUID
-    let trainer: UUID
-    let name: String
-    let category: String?
-    let equipment: String?
-    let primary_muscles: String?
-    let secondary_muscles: String?
-    let instructions: String?
-    let images: String?
-    let created_at: Date?
-    let updated_at: Date?
-}
-
-struct TierRow: Decodable, Identifiable {
-    let id: UUID
-    let trainer: UUID
-    let price: Int?
-    let key: String?
-    let name: String
-    let active: Bool?
-    let stripe_price_id: String?
-}
-
 struct CoachRoutinesView: View {
     var body: some View {
         standardScaffold(title: "Custom Routines") {
@@ -74,26 +38,48 @@ struct CoachExercisesView: View {
                     .font(Theme.Fonts.Body3)
                     .foregroundStyle(Theme.Colors.NeutralLight1)
             } else {
-                List(exercises) { ex in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(ex.name)
-                            .font(Theme.Fonts.SubHeading5)
-                            .foregroundStyle(Theme.Colors.NeutralLight1)
-                            .lineLimit(1).minimumScaleFactor(0.8)
-                        HStack(spacing: 8) {
-                            if let cat = ex.category { pill(cat) }
-                            if let eq = ex.equipment { pill(eq) }
+                List {
+                    ForEach(exercises) { ex in
+                        HStack(alignment: .top, spacing: 12) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [Theme.Colors.Primary1.opacity(0.35), Theme.Colors.PurpleGradient.opacity(0.35)]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                                Image(systemName: "dumbbell")
+                                    .foregroundStyle(Theme.Colors.NeutralLight1)
+                                    .font(.system(size: 20, weight: .bold))
+                            }
+                            .frame(width: 44, height: 44)
+
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(ex.name)
+                                    .font(Theme.Fonts.SubHeading5)
+                                    .foregroundStyle(Theme.Colors.NeutralLight1)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+
+                                HStack(spacing: 8) {
+                                    if let cat = ex.category { pill(cat) }
+                                    if let eq = ex.equipment { pill(eq) }
+                                }
+
+                                if let instr = ex.instructions, let first = instr.first, !first.isEmpty {
+                                    Text(first)
+                                        .font(Theme.Fonts.Body6)
+                                        .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.9))
+                                        .lineLimit(2)
+                                        .minimumScaleFactor(0.8)
+                                }
+                            }
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.5))
                         }
-                        if let instr = ex.instructions, !instr.isEmpty {
-                            Text(instr)
-                                .font(Theme.Fonts.Body6)
-                                .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.9))
-                                .lineLimit(3)
-                                .minimumScaleFactor(0.8)
-                        }
+                        .padding(.vertical, 6)
+                        .listRowBackground(Theme.Colors.NeutralDark)
                     }
-                    .listRowBackground(Theme.Colors.NeutralDark)
                 }
+                .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .background(Theme.Colors.NeutralDark)
             }
@@ -247,35 +233,37 @@ struct CoachTiersView: View {
             } else {
                 VStack(spacing: 12) {
                     ForEach(tiers) { t in
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(.thinMaterial)
-                                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(t.name)
-                                        .font(Theme.Fonts.SubHeading5)
-                                        .foregroundStyle(Theme.Colors.NeutralLight1)
-                                        .lineLimit(1).minimumScaleFactor(0.8)
-                                    HStack(spacing: 8) {
-                                        if let price = t.price { pill("$\(price)/mo") }
-                                        if let key = t.key { pill(key) }
-                                        if let active = t.active { pill(active ? "Active" : "Inactive") }
+                        if t.active ?? false {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(.thinMaterial)
+                                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(t.name)
+                                            .font(Theme.Fonts.SubHeading5)
+                                            .foregroundStyle(Theme.Colors.NeutralLight1)
+                                            .lineLimit(1).minimumScaleFactor(0.8)
+                                        HStack(spacing: 8) {
+                                            if let price = t.price { pill("$\(price)/mo") }
+                                            if let key = t.key { pill(key) }
+                                            if let active = t.active { pill(active ? "Active" : "Inactive") }
+                                        }
+                                    }
+                                    Spacer()
+                                    Button {
+                                        // Hook to purchase / manage subscription here
+                                    } label: {
+                                        Text("Manage")
+                                            .font(Theme.Fonts.Body6)
+                                            .padding(.horizontal, 12).padding(.vertical, 8)
+                                            .background(Theme.Colors.Primary1)
+                                            .foregroundStyle(Theme.Colors.NeutralDark)
+                                            .clipShape(Capsule())
                                     }
                                 }
-                                Spacer()
-                                Button {
-                                    // Hook to purchase / manage subscription here
-                                } label: {
-                                    Text("Manage")
-                                        .font(Theme.Fonts.Body6)
-                                        .padding(.horizontal, 12).padding(.vertical, 8)
-                                        .background(Theme.Colors.Primary1)
-                                        .foregroundStyle(Theme.Colors.NeutralDark)
-                                        .clipShape(Capsule())
-                                }
+                                .padding(14)
                             }
-                            .padding(14)
                         }
                     }
                 }

@@ -13,14 +13,17 @@ struct CalendarScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query var routines: [Routine]
     @State private var showAccessory = false
+    var trainer: Bool = false
     let calendar = Calendar.current
-
+    
     private func occurs(_ routine: Routine, on date: Date) -> Bool {
         guard let start = routine.date else { return false }
         let dayStart = calendar.startOfDay(for: start)
         let dateStart = calendar.startOfDay(for: date)
-
+        
         switch routine.type {
+        case .assigned:
+            return calendar.isDate(dayStart, inSameDayAs: dateStart)
         case .date:
             return calendar.isDate(dayStart, inSameDayAs: dateStart)
         case .preset:
@@ -41,6 +44,14 @@ struct CalendarScreen: View {
         default:
             return false
         }
+    }
+    private func isEmpty(routines: [Routine]) -> Bool {
+        for routine in routines {
+            if routine.type == .assigned {
+                return false
+            }
+        }
+        return true
     }
 
     private var isToday: Bool { Calendar.current.isDateInToday(selectedDate) }
@@ -87,26 +98,28 @@ struct CalendarScreen: View {
                 let selectedDateString = selectedDate.formatted(.dateTime.year().month(.abbreviated).day())
                 let matches = routines.filter { occurs($0, on: selectedDate) }
                 ForEach(matches, id: \.id) { routine in
-                    NavigationLink {
-                        WorkoutCompleted(externalRoutine: Binding(
-                                            get: { routine },
-                                            set: { updatedRoutine in
-                                                modelContext.insert(updatedRoutine)
-                                            }
-                                        ), plusButton: false).navigationBarBackButtonHidden(true)
-                    } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(.thinMaterial)
-                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
-                                .padding()
-                            WorkoutHistory(title: routine.name, image: "figure.run", date: selectedDateString, type: routine.type)
+                    if (!trainer || (trainer && (routine.type == .assigned))) {
+                        NavigationLink {
+                            WorkoutCompleted(externalRoutine: Binding(
+                                get: { routine },
+                                set: { updatedRoutine in
+                                    modelContext.insert(updatedRoutine)
+                                }
+                            ), plusButton: false).navigationBarBackButtonHidden(true)
+                        } label: {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .fill(.thinMaterial)
+                                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
+                                    .padding()
+                                WorkoutHistory(title: routine.name, image: "figure.run", date: selectedDateString, type: routine.type)
+                            }
+                            .padding(5)
                         }
-                        .padding(5)
                     }
                 }
                 let hasAny: Bool = !matches.isEmpty
-                if !hasAny {
+                if !hasAny || isEmpty(routines: matches) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(.ultraThinMaterial)
