@@ -98,38 +98,9 @@ struct SignUp: View {
             GoogleSignInButton(scheme: .dark, style: .wide, state: .normal) {
                 Task { @MainActor in
                     do {
-                        guard let rootController =  UIApplication.getTopViewController() else {
-                            errorMessage = "No root view controller found"
-                            return
-                        }
-
-                        let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootController)
-
-                        // Seed local fields from Google profile
-                        if let profile = result.user.profile {
-                            let mail = profile.email
-                            if email.isEmpty { email = mail }
-                            if let given = profile.givenName, firstName.isEmpty { firstName = given }
-                            if let family = profile.familyName, lastName.isEmpty { lastName = family }
-                            if username.isEmpty {
-                                if let base = mail.split(separator: "@").first {
-                                    username = String(base)
-                                }
-                            }
-                        }
-
-                        guard let idToken = result.user.idToken?.tokenString else {
-                            errorMessage = "No idToken found."
-                            return
-                        }
-
-                        let accessToken = result.user.accessToken.tokenString
-
-                        let session = try await supabase.auth.signInWithIdToken(credentials: OpenIDConnectCredentials(
-                                provider: .google,
-                                idToken: idToken,
-                                accessToken: accessToken
-                            )
+                        let session = try await supabase.auth.signInWithOAuth(
+                            provider: .google,
+                            redirectTo: URL(string: "myapp://auth-callback")!
                         )
 
                         print("Signed in with Google, user id: \(session.user.id)")

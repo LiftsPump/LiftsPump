@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SUPABASE_URL</key>
-	<string>$(SUPABASEURL)</string>
-	<key>SUPABASE_KEY</key>
-	<string>$(SUPABASEKEY)</string>
-	<key>GIDClientID</key>
-	<string>703159570131-fr7b2to938qri6p53ev640ft8pubolno.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -19,15 +13,21 @@
 			<string>com.google</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.703159570131-fr7b2to938qri6p53ev640ft8pubolno</string>
+				<string>com.googleusercontent.apps.703159570131-hikevjbnh0vop3iffqkb7dso9qme3o64</string>
 			</array>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>703159570131-hikevjbnh0vop3iffqkb7dso9qme3o64.apps.googleusercontent.com</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>SUPABASE_KEY</key>
+	<string>$(SUPABASEKEY)</string>
+	<key>SUPABASE_URL</key>
+	<string>$(SUPABASEURL)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Play-Bold.ttf</string>
