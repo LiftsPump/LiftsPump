@@ -109,10 +109,6 @@ struct TrainerScreen: View {
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
-                            NavigationLink { CoachSessionsView() } label: {
-                                hubTile(title: "1‑on‑1 Sessions", subtitle: "Book time with your coach", systemImage: "calendar.badge.clock", tint: Color.cyan)
-                                    .frame(width: 260)
-                            }
                             if !videos.isEmpty {
                                 NavigationLink { CoachVideosView(videos: videos) } label: {
                                     hubTile(title: "Videos", subtitle: "Coaching clips & tutorials", systemImage: "play.rectangle.fill", tint: Color.red)
@@ -129,76 +125,6 @@ struct TrainerScreen: View {
                             }
                         }
                         .padding(.horizontal)
-                    }
-                }
-
-                // Coach Blog (built-in)
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Text("Coach Blog")
-                            .font(Theme.Fonts.SubHeading2)
-                            .foregroundStyle(Theme.Colors.Primary1)
-                        Spacer()
-                        NavigationLink { CoachBlogView() } label: {
-                            HStack(spacing: 6) {
-                                Text("Open")
-                                    .font(Theme.Fonts.Body5)
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 13, weight: .bold))
-                            }
-                            .foregroundStyle(Theme.Colors.NeutralLight1)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Capsule())
-                        }
-                        .padding(.trailing)
-                    }
-                    .padding(.horizontal)
-
-                    // Larger blog cards
-                    VStack(spacing: 14) {
-                        ForEach(0..<2, id: \.self) { idx in
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                    .fill(.thinMaterial)
-                                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
-                                    .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
-                                HStack(alignment: .top, spacing: 14) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(Theme.Colors.Primary1.opacity(0.18))
-                                        Image(systemName: idx == 0 ? "text.append" : "lightbulb.fill")
-                                            .font(.system(size: 28, weight: .semibold))
-                                            .foregroundStyle(Theme.Colors.Primary1)
-                                    }
-                                    .frame(width: 64, height: 64)
-
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text(idx == 0 ? "Welcome to your plan" : "Tips for week \(idx + 1)")
-                                            .font(Theme.Fonts.SubHeading3)
-                                            .foregroundStyle(Theme.Colors.NeutralLight1)
-                                            .lineLimit(2)
-                                            .minimumScaleFactor(0.9)
-                                        Text("Short update from your coach. This will show a snippet of the post so you can decide to read more.")
-                                            .font(Theme.Fonts.Body4)
-                                            .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.95))
-                                            .lineLimit(3)
-                                            .minimumScaleFactor(0.9)
-                                        HStack(spacing: 8) {
-                                            Image(systemName: "calendar")
-                                            Text("Just now")
-                                                .font(Theme.Fonts.Body6)
-                                        }
-                                        .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.8))
-                                    }
-                                    Spacer()
-                                }
-                                .padding(18)
-                            }
-                            .padding(.horizontal)
-                            .frame(minHeight: 140)
-                        }
                     }
                 }
 

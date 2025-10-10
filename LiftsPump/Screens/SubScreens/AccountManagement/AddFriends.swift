@@ -44,7 +44,7 @@ struct AddFriends: View {
                     .frame(width: .infinity, height: 2)
                     .edgesIgnoringSafeArea(.horizontal)
                     .padding(.horizontal)
-                Person(image: "plus", action: "Add", text: "\(friend.first_name+" "+friend.last_name)", profileImage: "person.crop.circle")
+                Person(image: "plus", action: "Add", text: "\(friend.username+" ("+friend.first_name+" "+friend.last_name)", profileImage: "person.crop.circle")
                     .onTapGesture {
                         Task {
                             do {

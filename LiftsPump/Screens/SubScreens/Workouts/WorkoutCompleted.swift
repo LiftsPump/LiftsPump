@@ -24,6 +24,7 @@ struct WorkoutCompleted: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
     @State private var isPresented: Bool = false
     @State private var type = 1
@@ -31,6 +32,8 @@ struct WorkoutCompleted: View {
     @State private var showAccessory = false
     @State private var modalType: ModalPopUp?
     @StateObject private var timerthing = TimerManager()
+    @State private var selectedDateForSchedule: Date = Date()
+    @State private var scheduleCancelled: Bool = false
     @State private var routine: Routine
     @Binding var externalRoutine: Routine
     var plusButton: Bool
@@ -145,6 +148,25 @@ struct WorkoutCompleted: View {
                             .accessibilityLabel("Edit")
                         }
                     }
+                    if (routine.type == .preset) && ((routine.days ?? 0) > 0 || (routine.weekly ?? 0) > 0) {
+                        Button(action: {
+                            stopRecurring()
+                            showAccessory.toggle()
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "repeat")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .overlay {
+                                        Image(systemName: "rectangle.slash")
+                                            .font(.system(size: 32))
+                                    }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Theme.Colors.NeutralLight1)
+                        .accessibilityLabel("Stop recurring")
+                    }
+                    
                     Button(action: {
                         showAccessory.toggle()
                         modalType = .Ellipsis
@@ -282,11 +304,11 @@ struct WorkoutCompleted: View {
                 } .padding(.leading, 7)
                 if !(type == 4) {
                     HStack {
-                        Text("Collaborators:")
+                        /*Text("Collaborators:")
                             .font(Theme.Fonts.Body4)
                             .foregroundStyle(Theme.Colors.NeutralLight1)
                             .padding(.bottom, 0)
-                        Spacer()
+                        Spacer()*/
                     } .padding(.horizontal)
                 }
                 let sortedExerciseIndices = routine.exercises.indices.sorted { (lhs, rhs) in
@@ -318,10 +340,12 @@ struct WorkoutCompleted: View {
                                         .font(.system(size: 20))
                                         .padding(.trailing, -1)
                                 })
+                                .foregroundStyle(Theme.Colors.NeutralDark)
+                                .frame(width: 150, height: 36)
+                                .cornerRadius(4)
+                                .padding()
                         }
-                        .buttonStyle(.borderedProminent)
                         .tint(Theme.Colors.Primary1)
-                        .padding(.leading)
                         Spacer()
                     }
                 }
@@ -347,7 +371,7 @@ struct WorkoutCompleted: View {
                 case .Friends:
                     Friends()
                 case .Schedule:
-                    Friends()
+                    ScheduleWorkOut(selectedDate: $selectedDateForSchedule, isDismissed: $scheduleCancelled, routine: $routine)
                 }
             }
         }
@@ -372,6 +396,11 @@ struct WorkoutCompleted: View {
                 }
             }
         }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                timerthing.refresh()
+            }
+        }
     }
     private func resetCompleted(routineUpdate: Routine) {
         for exercise in routineUpdate.exercises {
@@ -388,35 +417,49 @@ struct WorkoutCompleted: View {
             selExercise = nil
         }
     }
-        private func addExercise(exercise: ExerciseTemplate) {
-            let nextExerciseOrder = (routine.exercises.compactMap { $0.order }.max() ?? routine.exercises.count) + 1
-            let newExercise = Exercise(
-                id: UUID(),
-                name: exercise.name,
-                eCode: exercise.id,
-                text: exercise.instructions?.first ?? "",
-                routine: routine,
-                routine_id: routine.id,
-                sets: [],
-                order: nextExerciseOrder
-            )
-            let newSet = ESet(
-                id: UUID(),
-                weight: 0,
-                reps: 0,
-                pr: false,
-                completed: false,
-                exercise_id: newExercise.id,
-                exercise: newExercise
-            )
-            newExercise.sets.append(newSet)
-            routine.exercises.append(newExercise)
-            SupaBaseManager.addExercise(exercise: newExercise)
+    private func stopRecurring() {
+        // Convert recurring preset into a single-occurrence date routine.
+        // Keep the current start date if present; otherwise, use today.
+        routine.days = nil
+        routine.weekly = nil
+        // If it was a template with a start date, make it a single-date routine
+        if routine.date == nil { routine.date = Date() }
+        routine.type = .date
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save context after stopping recurrence: \(error)")
         }
+        SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
+    }
+    private func addExercise(exercise: ExerciseTemplate) {
+        let nextExerciseOrder = (routine.exercises.compactMap { $0.order }.max() ?? routine.exercises.count) + 1
+        let newExercise = Exercise(
+            id: UUID(),
+            name: exercise.name,
+            eCode: exercise.id,
+            text: exercise.instructions?.first ?? "",
+            routine: routine,
+            routine_id: routine.id,
+            sets: [],
+            order: nextExerciseOrder
+        )
+        let newSet = ESet(
+            id: UUID(),
+            weight: 0,
+            reps: 0,
+            pr: false,
+            completed: false,
+            exercise_id: newExercise.id,
+            exercise: newExercise
+        )
+        newExercise.sets.append(newSet)
+        routine.exercises.append(newExercise)
+        SupaBaseManager.addExercise(exercise: newExercise)
+    }
 }
 
 #Preview {
     @Previewable @State var rout = Routine(id: UUID(), name: "Test", type: RoutineType.preset)
     WorkoutCompleted(externalRoutine: $rout, plusButton: true)
 }
-

@@ -23,7 +23,19 @@ struct CalendarScreen: View {
         
         switch routine.type {
         case .assigned:
-            return calendar.isDate(dayStart, inSameDayAs: dateStart)
+            if let d = routine.days, d > 0 {
+                // every N days starting from start
+                let comps = calendar.dateComponents([.day], from: dayStart, to: dateStart)
+                if let diff = comps.day, diff >= 0 { return diff % d == 0 }
+            }
+            if let w = routine.weekly, w > 0 {
+                // every N weeks on the same weekday as start
+                let comps = calendar.dateComponents([.weekOfYear], from: dayStart, to: dateStart)
+                if let weeks = comps.weekOfYear, weeks >= 0 {
+                    return (weeks % w == 0) && (calendar.component(.weekday, from: dayStart) == calendar.component(.weekday, from: dateStart))
+                }
+            }
+            return false
         case .date:
             return calendar.isDate(dayStart, inSameDayAs: dateStart)
         case .preset:
@@ -118,8 +130,8 @@ struct CalendarScreen: View {
                         }
                     }
                 }
-                let hasAny: Bool = !matches.isEmpty
-                if !hasAny || isEmpty(routines: matches) {
+                let hasAny: Bool = matches.isEmpty
+                if (!trainer && hasAny) || (trainer && isEmpty(routines: matches)) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(.ultraThinMaterial)

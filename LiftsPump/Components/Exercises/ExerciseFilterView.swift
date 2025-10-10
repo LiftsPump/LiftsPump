@@ -72,8 +72,8 @@ struct ExerciseFilterView: View {
                     .padding(.horizontal)
                 }
                 if selectedSection == .tools {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyVGrid(columns: [GridItem(.flexible(minimum: 100)), GridItem(.flexible(minimum: 80)), GridItem(.flexible(minimum: 100))], spacing: 12) {
+                    ScrollView() {
+                        LazyVGrid(columns: [GridItem(.flexible(minimum: 100)), GridItem(.flexible(minimum: 60)), GridItem(.flexible(minimum: 100))], spacing: 12) {
                             ForEach(availableTools, id: \.self) { tool in
                                 let active = isToolSelected(tool)
                                 Text(tool)

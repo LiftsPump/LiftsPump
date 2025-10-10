@@ -34,7 +34,7 @@ struct HomeScreen: View {
                                     .foregroundColor(Theme.Colors.NeutralLight1)
                                     .font(Theme.Fonts.Body5)
                                     .padding(4)
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 0, height: 25)
                                     .background(Theme.Colors.Primary1)
                                     .clipShape(Circle())
                                     .offset(x: 10),
