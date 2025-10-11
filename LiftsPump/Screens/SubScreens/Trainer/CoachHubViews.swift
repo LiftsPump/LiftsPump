@@ -241,7 +241,7 @@ struct CoachTiersView: View {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(t.name)
-                                            .font(Theme.Fonts.SubHeading5)
+                                            .font(Theme.Fonts.SubHeading2)
                                             .foregroundStyle(Theme.Colors.NeutralLight1)
                                             .lineLimit(1).minimumScaleFactor(0.8)
                                         HStack(spacing: 8) {
@@ -263,7 +263,7 @@ struct CoachTiersView: View {
                                     }
                                 }
                                 .padding(14)
-                            }
+                            } .frame(width: .infinity, height: 100)
                         }
                     }
                 }
@@ -295,7 +295,7 @@ struct CoachTiersView: View {
 
     private func pill(_ text: String) -> some View {
         Text(text)
-            .font(Theme.Fonts.Body7)
+            .font(Theme.Fonts.Body5)
             .padding(.horizontal, 8).padding(.vertical, 4)
             .background(.ultraThinMaterial)
             .clipShape(Capsule())
@@ -353,5 +353,5 @@ private func standardScaffold<Content: View>(title: String, @ViewBuilder content
 }
 
 #Preview {
-    NavigationStack { CoachRoutinesView() }
+    NavigationStack { CoachTiersView() }
 }

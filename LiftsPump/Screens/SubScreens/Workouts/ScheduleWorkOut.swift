@@ -157,6 +157,7 @@ struct ScheduleWorkOut: View {
                         routine.days = 1
                         routine.weekly = nil
                     }
+                    SupaBaseManager.saveRoutine(routine: routine)
                 } else {
                     // Single occurrence date-based routine
                     routine.type = .date

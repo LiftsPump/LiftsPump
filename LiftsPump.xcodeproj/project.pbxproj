@@ -19,7 +19,8 @@
 		E292C6EF2D533B1E007C82BC /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E292C6EE2D533B1E007C82BC /* GoogleSignIn */; };
 		E292C6F32D533E49007C82BC /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E292C6F22D533E49007C82BC /* GoogleSignInSwift */; };
 		E29C8B212DE786F100CF93FB /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = E29C8B202DE786F100CF93FB /* OpenAI */; };
-		E2A927282E8B8FF20005DA3A /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2A927272E8B8FF20005DA3A /* Config.xcconfig */; };
+		E2A2B5A32E99A59900EBA8B1 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */; };
+		E2A9EEBF2E99D81900FE3BF4 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E2A9EEBE2E99D81300FE3BF4 /* .gitignore */; };
 		E2B0B85F2E95ACAF00E2BE2D /* Config.example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */; };
 /* End PBXBuildFile section */
 
@@ -65,7 +66,8 @@
 		90C851072DA55E4200872CC2 /* WorkoutExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		90C851092DA55E4200872CC2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		90C8510B2DA55E4200872CC2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		E2A927272E8B8FF20005DA3A /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		E2A9EEBE2E99D81300FE3BF4 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.example.xcconfig; sourceTree = "<group>"; };
 		E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftsPump.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2F99EAD2C8D1CFD004D683F /* LiftsPumpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftsPumpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -163,8 +165,9 @@
 		E2F99E932C8D1CFB004D683F = {
 			isa = PBXGroup;
 			children = (
-				E2A927272E8B8FF20005DA3A /* Config.xcconfig */,
+				E2A9EEBE2E99D81300FE3BF4 /* .gitignore */,
 				E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */,
+				E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */,
 				E2F99E9E2C8D1CFB004D683F /* LiftsPump */,
 				E2F99EB02C8D1CFD004D683F /* LiftsPumpTests */,
 				E2F99EBA2C8D1CFD004D683F /* LiftsPumpUITests */,
@@ -354,8 +357,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2A2B5A32E99A59900EBA8B1 /* Config.xcconfig in Resources */,
+				E2A9EEBF2E99D81900FE3BF4 /* .gitignore in Resources */,
 				E2B0B85F2E95ACAF00E2BE2D /* Config.example.xcconfig in Resources */,
-				E2A927282E8B8FF20005DA3A /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,6 +437,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 63KYNCDHJ5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Workout/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Workout;
@@ -462,6 +467,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 63KYNCDHJ5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Workout/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Workout;
@@ -486,7 +492,7 @@
 		};
 		E2F99EBF2C8D1CFD004D683F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E2A927272E8B8FF20005DA3A /* Config.xcconfig */;
+			baseConfigurationReference = E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -552,7 +558,7 @@
 		};
 		E2F99EC02C8D1CFD004D683F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E2A927272E8B8FF20005DA3A /* Config.xcconfig */;
+			baseConfigurationReference = E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -611,7 +617,7 @@
 		};
 		E2F99EC22C8D1CFD004D683F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E2A927272E8B8FF20005DA3A /* Config.xcconfig */;
+			baseConfigurationReference = E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -621,6 +627,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"LiftsPump/Preview Content\"";
+				DEVELOPMENT_TEAM = 63KYNCDHJ5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -663,7 +670,7 @@
 		};
 		E2F99EC32C8D1CFD004D683F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E2A927272E8B8FF20005DA3A /* Config.xcconfig */;
+			baseConfigurationReference = E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -673,6 +680,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"LiftsPump/Preview Content\"";
+				DEVELOPMENT_TEAM = 63KYNCDHJ5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;

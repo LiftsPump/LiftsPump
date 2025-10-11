@@ -69,28 +69,34 @@ struct ExerciseScreen: View {
             
             ScrollView {
                 LazyVStack {
-                    @State var lastnum: Character?
-                    LetterSeperator(letter: viewModel.selectedExercises.first?.name.first?.uppercased() ?? "")
-                        .padding(.top)
-                    ForEach(viewModel.selectedExercises.indices, id: \.self) { index in
-                        let exercise = viewModel.selectedExercises[index]
-                        if let firstCharacter = exercise.name.first {
-                            let currentChar = String(firstCharacter).uppercased()
-                            if index > 0 && String(viewModel.selectedExercises[index-1].name.first ?? "#").uppercased() != currentChar {
-                                LetterSeperator(letter: currentChar)
+                    let items = viewModel.selectedExercises
+                    ForEach(items, id: \.id) { exercise in
+                        let currentLetter = String(exercise.name.first ?? "#").uppercased()
+                        let idx = items.firstIndex(where: { $0.id == exercise.id }) ?? 0
+                        if idx == 0 {
+                            LetterSeperator(letter: currentLetter)
+                                .padding(.top)
+                        } else {
+                            let prevLetter = String(items[idx-1].name.first ?? "#").uppercased()
+                            if prevLetter != currentLetter {
+                                LetterSeperator(letter: currentLetter)
                             }
                         }
                         ExcerciseCard(
                             exercise: Binding(
-                                get: { viewModel.selectedExercises[index] },
-                                set: { viewModel.selectedExercises[index] = $0 }
+                                get: { viewModel.selectedExercises.first(where: { $0.id == exercise.id }) ?? exercise },
+                                set: { newValue in
+                                    if let i = viewModel.selectedExercises.firstIndex(where: { $0.id == exercise.id }) {
+                                        viewModel.selectedExercises[i] = newValue
+                                    }
+                                }
                             ),
-                            selected: selectedExercises.contains(where: { $0.id == exercise.id }) // Check if already selected
+                            selected: selectedExercises.contains(where: { $0.id == exercise.id })
                         )
                         .onTapGesture {
                             showAccessory.toggle()
                             currentSelected = exercise
-                            isPresented = true // Set the presentation state
+                            isPresented = true
                         }
                     }
                 }

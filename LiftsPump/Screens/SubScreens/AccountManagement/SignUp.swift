@@ -35,10 +35,40 @@ struct SignUp: View {
     @State private var isSignInSuccessful = false
     @State private var isSSOSignInSuccessful = false
     @State private var errorMessage: String?
+    @State private var navigateToCreateUsername = false
+
+    private func populateNamesFromSession(_ session: Session) throws {
+        // Prefer provider metadata, do not overwrite if already set
+        if firstName.isEmpty {
+            if let given = session.user.userMetadata["given_name"]?.stringValue {
+                firstName = given
+            } else if let full = session.user.userMetadata["full_name"]?.stringValue {
+                firstName = full.split(separator: " ").first.map(String.init) ?? full
+            } else if let name = session.user.userMetadata["name"]?.stringValue {
+                firstName = name.split(separator: " ").first.map(String.init) ?? name
+            }
+        }
+        if lastName.isEmpty {
+            if let family = session.user.userMetadata["family_name"]?.stringValue {
+                lastName = family
+            } else if let full = session.user.userMetadata["full_name"]?.stringValue {
+                let parts = full.split(separator: " ")
+                if parts.count > 1 {
+                    lastName = parts.dropFirst().joined(separator: " ")
+                }
+            }
+        }
+        if email.isEmpty, let authEmail = session.user.email {
+            email = authEmail
+        }
+        if username.isEmpty, !email.isEmpty, let base = email.split(separator: "@").first {
+            username = String(base)
+        }
+    }
+
 
     var body: some View {
         VStack {
-            Spacer()
             Text("Create an account")
                 .foregroundStyle(Theme.Colors.NeutralLight1)
                 .font(Theme.Fonts.Heading6)
@@ -80,6 +110,9 @@ struct SignUp: View {
             NavigationLink(destination: Tab().navigationBarBackButtonHidden(true), isActive: $isSSOSignInSuccessful) {
                 EmptyView()
             }
+            NavigationLink(destination: CreateUsername().navigationBarBackButtonHidden(true), isActive: $navigateToCreateUsername) {
+                EmptyView()
+            }
 
             HStack {
                 Rectangle()
@@ -102,15 +135,18 @@ struct SignUp: View {
                             provider: .google,
                             redirectTo: URL(string: "myapp://auth-callback")!
                         )
-
                         print("Signed in with Google, user id: \(session.user.id)")
-                        let seededUsername = username.isEmpty ? (email.split(separator: "@").first.map(String.init) ?? "") : username
-                        let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: seededUsername, email: email, trainer: nil)
-                        try await supabase
-                            .from("profile")
-                            .upsert(profileData)
-                            .execute()
-                        isSSOSignInSuccessful = true
+
+                        // Populate local fields from provider metadata when available
+                        try? populateNamesFromSession(session)
+
+                        // Check if profile exists for this user; if not, navigate to username creation
+                        let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id, limit: 1)
+                        if existing.isEmpty {
+                            navigateToCreateUsername = true
+                        } else {
+                            isSSOSignInSuccessful = true
+                        }
                     } catch {
                         errorMessage = "Google sign-in failed: \(error.localizedDescription)"
                     }
@@ -148,18 +184,19 @@ struct SignUp: View {
                             if let lN = credential.fullName?.familyName {
                                 lastName = lN
                             }
-                            if username.isEmpty {
-                                if !email.isEmpty, let base = email.split(separator: "@").first { username = String(base) }
-                            }
 
                             print("Signed in with Apple, user id: \(session.user.id)")
-                            let seededUsername = username.isEmpty ? (email.split(separator: "@").first.map(String.init) ?? "") : username
-                            let profileData = Profile(first_name: firstName, last_name: lastName, phone_number: "", height: 0, weight: 0, dob: Date(), type: 1, last_synced: Date(timeIntervalSince1970: 0), username: seededUsername, email: email, trainer: nil)
-                            try await supabase
-                                .from("profile")
-                                .upsert(profileData)
-                                .execute()
-                            isSSOSignInSuccessful = true
+
+                            // Populate local fields from provider metadata when available
+                            try? populateNamesFromSession(session)
+
+                            // Check if profile exists for this user; if not, navigate to username creation
+                            let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id, limit: 1)
+                            if existing.isEmpty {
+                                navigateToCreateUsername = true
+                            } else {
+                                isSSOSignInSuccessful = true
+                            }
                         } catch {
                             errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
                         }
@@ -169,18 +206,6 @@ struct SignUp: View {
             .frame(height: 50)
             .padding(.horizontal)
             .signInWithAppleButtonStyle(.whiteOutline)
-
-            HStack {
-                Text("Already have an account?")
-                    .foregroundStyle(Theme.Colors.NeutralLight1)
-                    .font(Theme.Fonts.Body3)
-                NavigationLink(destination: SignIn()) {
-                    Text("Sign in")
-                        .foregroundStyle(Theme.Colors.Primary1)
-                        .font(Theme.Fonts.Body3)
-                }
-            }
-            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
@@ -191,6 +216,42 @@ struct SignUp: View {
             )
         )
     }
+
+    private func ensureProfileIfNew(user: UUID) async throws {
+        // Build a username from email if none provided
+        let seededUsername = username.isEmpty ? (email.split(separator: "@").first.map(String.init) ?? "") : username
+
+        // Check if a profile already exists for this email
+        let existing: [Profile] = try await supabase
+            .from("profile")
+            .select()
+            .eq("creator_id", value: user)
+            .limit(1)
+            .execute()
+            .value
+
+        // Only create if new
+        if existing.isEmpty {
+            let profileData = Profile(
+                first_name: firstName,
+                last_name: lastName,
+                phone_number: "",
+                height: 0,
+                weight: 0,
+                dob: Date(),
+                type: 1,
+                last_synced: Date(timeIntervalSince1970: 0),
+                username: seededUsername,
+                email: email,
+                trainer: nil
+            )
+            try await supabase
+                .from("profile")
+                .upsert(profileData)
+                .execute()
+        }
+    }
+
     func signUpWithEmail() {
         Task {
             do {
@@ -228,3 +289,4 @@ struct SignUp: View {
 #Preview {
     SignUp()
 }
+

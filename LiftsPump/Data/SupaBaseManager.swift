@@ -173,14 +173,14 @@ public class SupaBaseManager {
     private static var running: Bool = false
 
     private func applyProfile(_ profile: Profile) {
-        firstName = profile.first_name
-        lastName = profile.last_name
+        firstName = profile.first_name ?? ""
+        lastName = profile.last_name ?? ""
         email = profile.email ?? "" // Assuming phone_number is stored in EMAIL_KEY
         height = profile.height
         weight = profile.weight
         dob = profile.dob.timeIntervalSince1970
         last_synced = profile.last_synced?.timeIntervalSince1970 ?? 1
-        username = profile.username
+        username = profile.username ?? ""
         trainerId = profile.trainer?.uuidString ?? ""
     }
     private var modelContext: ModelContext
@@ -264,7 +264,19 @@ public class SupaBaseManager {
                             }
                         }
                         profile.last_synced = Date()
-                        SupaBaseManager.saveProfile(first_name: profile.first_name, last_name: profile.last_name, phone_number: "", height: profile.height, weight: profile.weight, dob: profile.dob, type: 1, last_synced: profile.last_synced ?? Date(), username: profile.username)
+                        SupaBaseManager.saveProfile(
+                            first_name: profile.first_name ?? "",
+                            last_name: profile.last_name ?? "",
+                            phone_number: profile.phone_number ?? "",
+                            height: profile.height,
+                            weight: profile.weight,
+                            dob: profile.dob,
+                            type: profile.type,
+                            last_synced: profile.last_synced ?? Date(),
+                            username: profile.username ?? "",
+                            email: profile.email ?? "",
+                            trainer: profile.trainer
+                        )
                     }
                 } catch {
                     print("Error with AI \(error)")
@@ -546,6 +558,34 @@ public class SupaBaseManager {
             print("Can't yield PR from id: \(error)")
             return []
         }
+    }
+    /// Fetch profiles for a given creator_id using JSON decoding
+    /// - Parameters:
+    ///   - creatorId: The Supabase auth user id (UUID) to filter by
+    ///   - limit: Optional limit
+    /// - Returns: An array of Profile rows
+    static func fetchProfiles(creatorId: UUID, limit: Int? = nil) async throws -> [Profile] {
+        // Build query
+        var query = supabase
+            .from("profile")
+            .select("*")
+            .eq("creator_id", value: creatorId)
+        if let l = limit {
+            query = query.limit(l) as! PostgrestFilterBuilder
+        }
+        // Execute
+        let response = try await query.execute()
+        // Decode
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .flexible([
+            "yyyy-MM-dd HH:mm:ss.SSS",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ssXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd"
+        ])
+        return try decoder.decode([Profile].self, from: response.data)
     }
     static func updateRoutine(routine: Routine, id: UUID) {
         Task {
