@@ -3,14 +3,13 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 @MainActor
 final class VideoPersonaViewModel: ObservableObject {
-    // Input
     @Published var youtubeURL: String = ""
     @Published var currentInput: String = ""
     
-    // UI state
     @Published var isProcessing: Bool = false
     @Published var statusMessage: String? = nil
     @Published var errorMessage: String? = nil
@@ -57,8 +56,8 @@ final class VideoPersonaViewModel: ObservableObject {
             appendSystemNote("Fetching transcript…")
             let transcript = try await youtube.fetchTranscript(for: url)
             appendSystemNote("Building persona with Gemini…")
-            let systemPrompt = llm.buildPersonaSystemPrompt(videoTitle: meta.title, channel: meta.channelName, transcript: transcript)
-            llm.setSystemPrompt(systemPrompt)
+            let systemPrompt = await llm.buildPersonaSystemPrompt(videoTitle: meta.title, channel: meta.channelName, transcript: transcript)
+            await llm.setSystemPrompt(systemPrompt)
             messages.append(ChatMessage(role: .assistant, text: "Hi, I'm \(personaDisplayName ?? "the presenter"). Ask me anything about this video!"))
             statusMessage = nil
         } catch {
@@ -90,3 +89,4 @@ final class VideoPersonaViewModel: ObservableObject {
         }
     }
 }
+
