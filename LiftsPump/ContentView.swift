@@ -14,14 +14,6 @@ struct ContentView: View {
                         .onAppear {
                             new = false
                         }
-                        .onOpenURL { url in
-                            Task { @MainActor in
-                                if !GIDSignIn.sharedInstance.handle(url) {
-                                    // Forward to ASAuthorizationAppleIDProvider for Apple Sign-In if needed
-                                    // Currently Apple Sign-In is handled automatically by AuthenticationServices
-                                }
-                            }
-                        }
                 }
             } else {
                 NavigationStack {
@@ -29,14 +21,6 @@ struct ContentView: View {
                         Tab()
                     } else {
                         SignUp().navigationBarBackButtonHidden(true)
-                            .onOpenURL { url in
-                                Task { @MainActor in
-                                    if !GIDSignIn.sharedInstance.handle(url) {
-                                        // Forward to ASAuthorizationAppleIDProvider for Apple Sign-In if needed
-                                        // Currently Apple Sign-In is handled automatically by AuthenticationServices
-                                    }
-                                }
-                            }
                     }
                 }
             }

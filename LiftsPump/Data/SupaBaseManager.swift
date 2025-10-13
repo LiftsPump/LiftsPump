@@ -250,6 +250,7 @@ public class SupaBaseManager {
                                 modelContext.delete(routine)
                             }
                         }
+                        try modelContext.save()
                         for routine in aiDecoded {
                             routine.type = .ai
                             routines.append(routine)

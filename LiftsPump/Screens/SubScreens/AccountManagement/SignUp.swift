@@ -206,6 +206,16 @@ struct SignUp: View {
             .frame(height: 50)
             .padding(.horizontal)
             .signInWithAppleButtonStyle(.whiteOutline)
+            HStack {
+                Text("Already have an account?")
+                    .foregroundStyle(Theme.Colors.NeutralLight1)
+                    .font(Theme.Fonts.Body3)
+                NavigationLink(destination: SignIn()) {
+                    Text("Sign in")
+                        .foregroundStyle(Theme.Colors.Primary1)
+                        .font(Theme.Fonts.Body3)
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(

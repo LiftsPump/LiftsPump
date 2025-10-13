@@ -76,6 +76,9 @@ public class PRManager {
                 let newWeight = maxSet.weight ?? 0
                 let currentDate = Date()
                 var exercisePRs = prData.dictionary[exerciseName] ?? []
+                if newWeight == 0 {
+                    return
+                }
                 if let latestPR = exercisePRs.last {
                     if newWeight > latestPR.value {
                         let newPR = PR(date: currentDate, value: newWeight, supaId: UUID(), confirmations: [])
