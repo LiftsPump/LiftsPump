@@ -20,6 +20,7 @@
 		E292C6F32D533E49007C82BC /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E292C6F22D533E49007C82BC /* GoogleSignInSwift */; };
 		E29C8B212DE786F100CF93FB /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = E29C8B202DE786F100CF93FB /* OpenAI */; };
 		E2A2B5A32E99A59900EBA8B1 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2A2B5A22E99A59900EBA8B1 /* Config.xcconfig */; };
+		E2A7A46D2EA4BD9F008EB459 /* LiveKitComponents in Frameworks */ = {isa = PBXBuildFile; productRef = E2A7A46C2EA4BD9F008EB459 /* LiveKitComponents */; };
 		E2A9EEBF2E99D81900FE3BF4 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E2A9EEBE2E99D81300FE3BF4 /* .gitignore */; };
 		E2B0B85F2E95ACAF00E2BE2D /* Config.example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E2B0B85E2E95ACAF00E2BE2D /* Config.example.xcconfig */; };
 /* End PBXBuildFile section */
@@ -127,6 +128,7 @@
 				E28286652D5069B200CBBCEA /* PostgREST in Frameworks */,
 				E28286632D5069B200CBBCEA /* Functions in Frameworks */,
 				E282866B2D5069B200CBBCEA /* Supabase in Frameworks */,
+				E2A7A46D2EA4BD9F008EB459 /* LiveKitComponents in Frameworks */,
 				E292C6F32D533E49007C82BC /* GoogleSignInSwift in Frameworks */,
 				E28286612D5069B200CBBCEA /* Auth in Frameworks */,
 				E28286692D5069B200CBBCEA /* Storage in Frameworks */,
@@ -241,6 +243,7 @@
 				E292C6EE2D533B1E007C82BC /* GoogleSignIn */,
 				E292C6F22D533E49007C82BC /* GoogleSignInSwift */,
 				E29C8B202DE786F100CF93FB /* OpenAI */,
+				E2A7A46C2EA4BD9F008EB459 /* LiveKitComponents */,
 			);
 			productName = MyFitrack;
 			productReference = E2F99E9C2C8D1CFB004D683F /* LiftsPump.app */;
@@ -331,6 +334,7 @@
 				E282865F2D5069B200CBBCEA /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				E292C6ED2D533B1E007C82BC /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				E29C8B1F2DE786F100CF93FB /* XCRemoteSwiftPackageReference "OpenAI" */,
+				E2A7A46B2EA4BD9F008EB459 /* XCRemoteSwiftPackageReference "components-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E2F99E9D2C8D1CFB004D683F /* Products */;
@@ -635,7 +639,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiftsPump/InfoSecond.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSContactsUsageDescription = "This app requires access to your contacts to find friends.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Liftspump requires your camera for certain features";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Liftspump requires access to your contacts to find friends.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Liftspump uses your microphone for certain features";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -664,6 +670,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				UIBackgroundModes = audio;
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
@@ -688,7 +695,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiftsPump/InfoSecond.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSContactsUsageDescription = "This app requires access to your contacts to find friends.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Liftspump requires your camera for certain features";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Liftspump requires access to your contacts to find friends.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Liftspump uses your microphone for certain features";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -717,6 +726,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				UIBackgroundModes = audio;
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
@@ -889,6 +899,14 @@
 				minimumVersion = 0.4.3;
 			};
 		};
+		E2A7A46B2EA4BD9F008EB459 /* XCRemoteSwiftPackageReference "components-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/livekit/components-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.5;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -936,6 +954,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E29C8B1F2DE786F100CF93FB /* XCRemoteSwiftPackageReference "OpenAI" */;
 			productName = OpenAI;
+		};
+		E2A7A46C2EA4BD9F008EB459 /* LiveKitComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A7A46B2EA4BD9F008EB459 /* XCRemoteSwiftPackageReference "components-swift" */;
+			productName = LiveKitComponents;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

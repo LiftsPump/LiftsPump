@@ -106,9 +106,9 @@ struct ExerciseDetails: View {
             
             if selectedTab == .about {
                 ScrollView {
-                    VideoPlayer(player: player)
+                    /*VideoPlayer(player: player)
                         .frame(width: 350, height: 200, alignment: .center)
-                        .padding()
+                        .padding()*/
                     HStack {
                         Text("Instructions")
                             .font(Theme.Fonts.SubHeading7)

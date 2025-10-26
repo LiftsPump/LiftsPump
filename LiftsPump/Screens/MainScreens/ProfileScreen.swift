@@ -15,6 +15,7 @@ struct ProfileScreen: View {
     @AppStorage("EMAIL_KEY") var email: String = ""
     @State private var showAccessory = false
     @State private var isLoggedOut = false
+    @State private var isPresented = false
 
     var body: some View {
         ScrollView {
@@ -46,6 +47,10 @@ struct ProfileScreen: View {
                 NavigationLink(destination: PrivacyScreen()) {
                     Selectors(text: "Privacy", image: "lock.fill")
                 }
+                Selectors(text: "Delete account", image: "trash.fill")
+                    .onTapGesture {
+                        withAnimation { isPresented = true }
+                    }
                 Selectors(text: "Help & Support", image: "questionmark")
                     .onTapGesture {
                         showAccessory.toggle()
@@ -80,6 +85,29 @@ struct ProfileScreen: View {
         .background(Theme.Colors.NeutralDark)
         .syncOnScroll()
         .sensoryFeedback(.selection, trigger: showAccessory)
+        .popUp(
+            isPresented: $isPresented,
+            title: "Delete your account",
+            message: "Are you sure you want to delete your account? You can't get your data back.",
+            yesLabel: "Delete",
+            noLabel: "Cancel",
+            onYes: {
+                // TODO: Implement account deletion. Requires a secure backend or Admin API.
+                // For now, sign out and clear local keys.
+                Task {
+                    do {
+                        try await supabase.auth.signOut()
+                        isLoggedOut = true
+                        firstName = ""
+                        lastName = ""
+                        email = ""
+                    } catch {
+                        print("Sign out failed: \(error)")
+                    }
+                }
+            },
+            onNo: {}
+        )
     }
 }
 

@@ -1,6 +1,8 @@
 import SwiftUI
 import AppIntents
 import SwiftData
+import LiveKit
+import LiveKitComponents
 
 struct TrainerScreen: View {
     @AppStorage("TRAINER_NAME_KEY") var trainerName: String = "Ahmed"
@@ -8,6 +10,10 @@ struct TrainerScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query var routines: [Routine]
     @State private var selectedDate: Date = Date()
+    @StateObject private var room: Room = Room()
+    @State private var isCalling: Bool = false
+    @State private var isConnectingCall: Bool = false
+    @State private var callError: String? = nil
 
     private var videos: [String] {
         if let data = trainerVideosJson.data(using: .utf8),
@@ -96,6 +102,21 @@ struct TrainerScreen: View {
                             .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.8))
                     }
                     Spacer()
+                    VStack(spacing: 8) {
+                        Button(action: {
+                            Task { await startCall() }
+                        }) {
+                            Image(systemName: "phone.fill")
+                                .font(Theme.Fonts.SubHeading2)
+                                .foregroundStyle(isCalling ? Theme.Colors.NeutralLight1 : Theme.Colors.Primary1.opacity(0.85))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                        }
+                        Text("Call")
+                            .font(Theme.Fonts.Body1)
+                            .foregroundStyle(isCalling ? Theme.Colors.NeutralLight1 : Theme.Colors.Primary1.opacity(0.85))
+                    }
+                    .accessibilityElement(children: .combine)
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
@@ -152,10 +173,90 @@ struct TrainerScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.Colors.NeutralDark)
+        .overlay(
+            Group {
+                if isCalling {
+                    ZStack {
+                        CallOverlay()
+                            .ignoresSafeArea()
+
+                        VStack(spacing: 16) {
+                            // Status / error
+                            if isConnectingCall {
+                                ProgressView("Connecting to your coach…")
+                                    .tint(.white)
+                                    .foregroundStyle(.white)
+                            }
+                            if let callError {
+                                Text(callError)
+                                    .font(Theme.Fonts.Body3)
+                                    .foregroundStyle(.red)
+                            }
+
+                            // Remote video (if any participants publish video)
+                            ScrollView {
+                                LazyVStack {
+                                    ForEachParticipant { _ in
+                                        VStack {
+                                            ForEachTrack(filter: .video) { trackReference in
+                                                VideoTrackView(trackReference: trackReference)
+                                                    .frame(maxWidth: 600, maxHeight: 400)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+
+                            Spacer(minLength: 12)
+
+                            // Hangup button (X)
+                            Button(action: {
+                                Task { await endCall() }
+                            }) {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(14)
+                                    .background(Circle().fill(Color.red.opacity(0.9)))
+                            }
+                            .accessibilityLabel("Hang up")
+                        }
+                        .padding()
+                    }
+                    .environmentObject(room)
+                    .transition(.opacity)
+                }
+            }
+        )
         .syncOnScroll(modelContext: modelContext)
+    }
+
+    private func startCall() async {
+        if isCalling || isConnectingCall { return }
+        isCalling = true
+        isConnectingCall = true
+        callError = nil
+        do {
+            try await LiveKitCallService.connect(room: room)
+        } catch {
+            callError = "Failed to connect: \(error.localizedDescription)"
+            // If connect fails, close overlay after showing error briefly
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                isCalling = false
+            }
+        }
+        isConnectingCall = false
+    }
+
+    private func endCall() async {
+        await LiveKitCallService.disconnect(room: room)
+        isCalling = false
     }
 }
 
 #Preview {
     TrainerScreen()
 }
+

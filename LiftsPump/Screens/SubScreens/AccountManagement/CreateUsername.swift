@@ -38,22 +38,22 @@ struct CreateUsername: View {
                 HStack {
                     NumberTextbox(title: "Height (In)", placeHolder: "74\"", info: $height)
                     NumberTextbox(title: "Weight (Lb)", placeHolder: "170", info: $weight)
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Birth date (optional)")
-                        .font(Theme.Fonts.Body4)
-                        .foregroundStyle(Theme.Colors.NeutralLight1)
-                        .padding(.horizontal, 10)
-                    DatePicker("Birth date", selection: Binding(
-                        get: { Date(timeIntervalSince1970: dob) },
-                        set: { dob = $0.timeIntervalSince1970 }
-                    ), displayedComponents: .date)
-                        .datePickerStyle(.compact)
-                        .labelsHidden()
-                        .padding(10)
-                        .frame(width: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.green))
-                        .scaleEffect(0.9)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Birth date (optional)")
+                            .font(Theme.Fonts.Body4)
+                            .foregroundStyle(Theme.Colors.NeutralLight1)
+                            .padding(.horizontal, 10)
+                        DatePicker("Birth date", selection: Binding(
+                            get: { Date(timeIntervalSince1970: dob) },
+                            set: { dob = $0.timeIntervalSince1970 }
+                        ), displayedComponents: .date)
+                            .datePickerStyle(.compact)
+                            .labelsHidden()
+                            .padding(10)
+                            .frame(width: 100)
+                            .background(RoundedRectangle(cornerRadius: 8).stroke(Color.green))
+                            .scaleEffect(0.9)
+                    }
                 }
                 Button(action: {
                     Task {

@@ -10,17 +10,19 @@ struct SettingsScreen: View {
     ]
 
     var body: some View {
-        Form {
-            Section(header: Text("Appearance")) {
-                Picker("Appearance", selection: $appearance) {
-                    ForEach(options, id: \.value) { opt in
-                        Text(opt.title).tag(opt.value)
+        ScrollView {
+            Form {
+                Section(header: Text("Appearance")) {
+                    Picker("Appearance", selection: $appearance) {
+                        ForEach(options, id: \.value) { opt in
+                            Text(opt.title).tag(opt.value)
+                        }
                     }
+                    .pickerStyle(.segmented)
                 }
-                .pickerStyle(.segmented)
             }
-        }
-        .navigationTitle("Settings")
+            .navigationTitle("Settings")
+        } .background(Theme.Colors.NeutralDark)
     }
 }
 

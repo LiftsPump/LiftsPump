@@ -5,15 +5,14 @@ struct PrivacyScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Privacy")
-                    .font(.title)
-                    .bold()
-                Text("We value your privacy. This is a placeholder for your privacy information. Add details about data collection, usage, and controls.")
-                Link("View full Privacy Policy", destination: URL(string: "https://example.com/privacy")!)
+                    .font(Theme.Fonts.Heading1)
+                Text("We value your privacy. For the full privacy policy please open the link below:")
+                    .font(Theme.Fonts.Body1)
+                Link("View full Privacy Policy", destination: URL(string: "https://liftspump.com/privacy-policy")!)
             }
             .padding()
         }
-        .navigationTitle("Privacy")
-        .background(Color(.systemBackground))
+        .background(Color(Theme.Colors.NeutralDark))
     }
 }
 

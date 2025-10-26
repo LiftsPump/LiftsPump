@@ -35,5 +35,9 @@
 		<string>SourceSans3-Regular.ttf</string>
 		<string>SourceSans3-SemiBold.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>

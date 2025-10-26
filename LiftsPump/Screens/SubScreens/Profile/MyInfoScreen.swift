@@ -34,7 +34,6 @@ struct MyInfoScreen: View {
                 }
                 
                 InfoTextboxes(title: "Email Address", placeHolder: "Email", info: $email)
-                InfoTextboxes(title: "Username", placeHolder: "username", info: $username)
                 InfoTextboxes(title: "Password", placeHolder: "Password", info: $randomString)
                 InfoTextboxes(title: "Country/Region", placeHolder: "United States", info: $randomString)
                 HStack{
