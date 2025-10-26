@@ -65,7 +65,6 @@ struct MyInfoScreen: View {
             }
         } .background(Theme.Colors.NeutralDark)
             .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: BackButton())
     }
 }
 

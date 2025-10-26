@@ -14,6 +14,8 @@ struct TrainerScreen: View {
     @State private var isCalling: Bool = false
     @State private var isConnectingCall: Bool = false
     @State private var callError: String? = nil
+    @StateObject private var agentService = AgentService()
+    @State private var showAgentWorkout: Bool = false
 
     private var videos: [String] {
         if let data = trainerVideosJson.data(using: .utf8),
@@ -104,7 +106,9 @@ struct TrainerScreen: View {
                     Spacer()
                     VStack(spacing: 8) {
                         Button(action: {
-                            Task { await startCall() }
+                            Task {
+                                await startCall()
+                            }
                         }) {
                             Image(systemName: "phone.fill")
                                 .font(Theme.Fonts.SubHeading2)
@@ -173,6 +177,19 @@ struct TrainerScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.Colors.NeutralDark)
+        .fullScreenCover(isPresented: $showAgentWorkout) {
+            WorkoutCompleted(
+                externalRoutine: Binding(
+                    get: { agentService.AgentRoutine },
+                    set: { agentService.AgentRoutine = $0 }
+                ),
+                plusButton: false
+            )
+            .environmentObject(agentService)
+            .background(Theme.Colors.NeutralDark)
+        }
+        .syncOnScroll(modelContext: modelContext)
+        // Call overlay sits on top of everything, including WorkoutCompleted
         .overlay(
             Group {
                 if isCalling {
@@ -193,7 +210,7 @@ struct TrainerScreen: View {
                                     .foregroundStyle(.red)
                             }
 
-                            // Remote video (if any participants publish video)
+                            // Remote video
                             ScrollView {
                                 LazyVStack {
                                     ForEachParticipant { _ in
@@ -226,11 +243,12 @@ struct TrainerScreen: View {
                         .padding()
                     }
                     .environmentObject(room)
+                    .environmentObject(agentService)
                     .transition(.opacity)
+                    .zIndex(999)
                 }
             }
         )
-        .syncOnScroll(modelContext: modelContext)
     }
 
     private func startCall() async {
@@ -238,6 +256,13 @@ struct TrainerScreen: View {
         isCalling = true
         isConnectingCall = true
         callError = nil
+        do {
+            try await agentService.startAgent()
+            print("AgentService started from TrainerScreen call.")
+            await MainActor.run { showAgentWorkout = true }
+        } catch {
+            await MainActor.run { callError = "Agent failed: \(error.localizedDescription)" }
+        }
         do {
             try await LiveKitCallService.connect(room: room)
         } catch {
@@ -252,6 +277,7 @@ struct TrainerScreen: View {
 
     private func endCall() async {
         await LiveKitCallService.disconnect(room: room)
+        await agentService.stopAgent()
         isCalling = false
     }
 }
@@ -259,4 +285,3 @@ struct TrainerScreen: View {
 #Preview {
     TrainerScreen()
 }
-

@@ -43,8 +43,7 @@ struct HomeScreen: View {
                 }
             }.padding()
             HStack {
-                NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.created).navigationBarBackButtonHidden(true)
-                    .navigationBarItems(leading: BackButton())) {
+                NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.created).navigationBarBackButtonHidden(true)) {
                     Text("View your workouts")
                         .foregroundStyle(Color.white)
                         .font(.system(size: 20, weight: .bold))
@@ -57,20 +56,17 @@ struct HomeScreen: View {
             }.padding(.top , 18)
                 .padding(.bottom, 3)
             HStack {
-                NavigationLink(destination: WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)
-                    .navigationBarItems(leading: BackButton())) {
+                NavigationLink(destination: WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)) {
                         StatView(stat: DataMethods.completedRoutines(routines: routines), image: "checkmark.circle")
                 }
                 Spacer()
                 VStack{
-                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)
-                        .navigationBarItems(leading: BackButton())) {
+                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)) {
                             HalfStatView(image: "flame", stat: DataMethods.userStreak(routines: routines), subText: "days in a row!", title: "Your streak")
                             .padding(.bottom, 8)
                     }
                     Spacer()
-                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.prs).navigationBarBackButtonHidden(true)
-                        .navigationBarItems(leading: BackButton()))  {
+                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.prs).navigationBarBackButtonHidden(true))  {
                             HalfStatView(image: "figure.strengthtraining.traditional", stat: DataMethods.getPRsConfirmed(modelContext: modelContext), subText: "PRs confirmed!", title: "Your records")
                             .padding(.top, 8)
                     }

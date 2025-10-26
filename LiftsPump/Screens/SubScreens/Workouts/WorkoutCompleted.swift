@@ -35,6 +35,7 @@ struct WorkoutCompleted: View {
     @State private var selectedDateForSchedule: Date = Date()
     @State private var scheduleCancelled: Bool = false
     @State private var routine: Routine
+    @EnvironmentObject private var agentService: AgentService
     @Binding var externalRoutine: Routine
     var plusButton: Bool
     
@@ -74,8 +75,20 @@ struct WorkoutCompleted: View {
                 }
             }
             VStack {
+                if agentService.isRunning {
+                    HStack {
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(.yellow)
+                        Text("Live agent is running — editing is temporarily disabled")
+                            .font(Theme.Fonts.Body5)
+                            .foregroundStyle(Theme.Colors.NeutralLight1)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 6)
+                }
                 HStack {
-                    if (type == 1) {
+                    if (type == 1 && !agentService.isRunning) {
                         TextField("", text: $routine.name)
                             .foregroundStyle(Theme.Colors.Primary1)
                             .font(Theme.Fonts.SubHeading2)
@@ -102,7 +115,7 @@ struct WorkoutCompleted: View {
                         .accessibilityLabel("Share")
                     }
                     
-                    if (type == 1) {
+                    if (type == 1 && !agentService.isRunning) {
                         Button(action: {
                             try? modelContext.save()
                             SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
@@ -115,7 +128,7 @@ struct WorkoutCompleted: View {
                         .buttonStyle(.plain)
                         .accessibilityLabel("Save routine")
                     }
-                    if (type == 2 || type == 3) {
+                    if ((type == 2 || type == 3) && !agentService.isRunning) {
                         if routine.type == .ai {
                             Button(action: {
                                 let newRoutine = routine.copy()
@@ -276,7 +289,7 @@ struct WorkoutCompleted: View {
                                     timerView
                                 }
                             }
-                        } else if (type == 2 && routine.type != .ai) {
+                        } else if (type == 2 && routine.type != .ai && !agentService.isRunning) {
                             VStack {
                                 HStack {
                                     Spacer()
@@ -320,7 +333,7 @@ struct WorkoutCompleted: View {
                     ExcerciseInfoCard(editMode: type == 1, exercise: $routine.exercises[exerciseIndex], active: $type)
                 }
                 .padding(.bottom)
-                if (type == 1) {
+                if (type == 1 && !agentService.isRunning) {
                     HStack {
                         Button {
                             showAccessory.toggle()
@@ -463,3 +476,4 @@ struct WorkoutCompleted: View {
     @Previewable @State var rout = Routine(id: UUID(), name: "Test", type: RoutineType.preset)
     WorkoutCompleted(externalRoutine: $rout, plusButton: true)
 }
+

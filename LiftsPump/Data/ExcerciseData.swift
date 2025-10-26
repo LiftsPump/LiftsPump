@@ -110,7 +110,7 @@ class Routine: Identifiable, Codable {
 @Model
 class Exercise: Identifiable, Codable {
     enum CodingKeys: CodingKey {
-        case id, name, eCode, text, sets, routine_id, order
+        case id, name, eCode, text, sets, routine_id, agent_routine_id, order
     }
     @Attribute(.unique) var id: UUID
     var name: String
@@ -123,12 +123,14 @@ class Exercise: Identifiable, Codable {
     var routine: Routine?
     var sets: [ESet] = []
     var routine_id: UUID?
+    var agent_routine_id: UUID?
 
     init(id: UUID, name: String,
          eCode: String = "",
          text: String? = nil,
          routine: Routine? = nil,
          routine_id: UUID? = nil,
+         agent_routine_id: UUID? = nil,
          sets: [ESet] = [],
          order: Int = 0) {
         self.id = id
@@ -137,6 +139,7 @@ class Exercise: Identifiable, Codable {
         self.text = text
         self.routine = routine
         self.routine_id = routine_id
+        self.agent_routine_id = agent_routine_id
         self.sets = sets
         self.order = order
     }
@@ -151,6 +154,7 @@ class Exercise: Identifiable, Codable {
             text: self.text,
             routine: nil, // Do not copy the routine to avoid circular references
             routine_id: routine_id,
+            agent_routine_id: agent_routine_id,
             sets: copiedSets,
             order: order ?? 0
         )
@@ -163,6 +167,7 @@ class Exercise: Identifiable, Codable {
         text = try container.decodeIfPresent(String.self, forKey: .text)
         sets = try container.decodeIfPresent([ESet].self, forKey: .sets) ?? []
         routine_id = try container.decodeIfPresent(UUID.self, forKey: .routine_id)
+        agent_routine_id = try container.decodeIfPresent(UUID.self, forKey: .agent_routine_id)
         order = try container.decodeIfPresent(Int.self, forKey: .order)
     }
     func encode(to encoder: Encoder) throws {
@@ -173,6 +178,7 @@ class Exercise: Identifiable, Codable {
         try container.encodeIfPresent(text, forKey: .text)
         //try container.encode(sets, forKey: .sets)
         try container.encodeIfPresent(routine_id, forKey: .routine_id)
+        try container.encodeIfPresent(agent_routine_id, forKey: .agent_routine_id)
         try container.encodeIfPresent(order, forKey: .order)
     }
 }
@@ -246,3 +252,4 @@ class ESet: Identifiable, Codable {
         try container.encodeIfPresent(order, forKey: .order)
     }
 }
+
