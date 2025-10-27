@@ -11,6 +11,8 @@ import GoogleSignIn
 
 @main
 struct LiftsPump: App {
+    @StateObject var agentService = AgentService()
+    
     var sharedModelContainer: ModelContainer = {
             let schema = Schema([
                 Routine.self,
@@ -25,6 +27,7 @@ struct LiftsPump: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(agentService)
                 .modelContainer(sharedModelContainer)
                 .onOpenURL { url in
                     Task { @MainActor in

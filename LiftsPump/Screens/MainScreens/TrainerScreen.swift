@@ -14,7 +14,7 @@ struct TrainerScreen: View {
     @State private var isCalling: Bool = false
     @State private var isConnectingCall: Bool = false
     @State private var callError: String? = nil
-    @StateObject private var agentService = AgentService()
+    @EnvironmentObject private var agentService: AgentService
     @State private var showAgentWorkout: Bool = false
 
     private var videos: [String] {
@@ -77,118 +77,143 @@ struct TrainerScreen: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 20) {
-                // Header
-                HStack(spacing: 16) {
-                    ZStack {
-                        Circle()
-                            .fill(LinearGradient(
-                                colors: [Theme.Colors.Primary1.opacity(0.35), Theme.Colors.PurpleGradient.opacity(0.35)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                            .frame(width: 56, height: 56)
-                        Text(trainerInitials.uppercased())
-                            .font(Theme.Fonts.SubHeading3)
-                            .foregroundStyle(Theme.Colors.NeutralLight1)
-                    }
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(trainerName.isEmpty ? "Your Coach" : trainerName)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                            .font(Theme.Fonts.Heading2)
-                            .foregroundStyle(Theme.Colors.Primary1)
-                        Text(assignedRoutines.isEmpty ? "No plans assigned yet" : "\(assignedRoutines.count) plan(s) assigned to you")
-                            .font(Theme.Fonts.Body4)
-                            .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.8))
-                    }
-                    Spacer()
-                    VStack(spacing: 8) {
-                        Button(action: {
-                            Task {
-                                await startCall()
-                            }
-                        }) {
-                            Image(systemName: "phone.fill")
-                                .font(Theme.Fonts.SubHeading2)
-                                .foregroundStyle(isCalling ? Theme.Colors.NeutralLight1 : Theme.Colors.Primary1.opacity(0.85))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
+        ZStack {
+            // Main trainer content
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Header
+                    HStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(
+                                    colors: [Theme.Colors.Primary1.opacity(0.35), Theme.Colors.PurpleGradient.opacity(0.35)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 56, height: 56)
+                            Text(trainerInitials.uppercased())
+                                .font(Theme.Fonts.SubHeading3)
+                                .foregroundStyle(Theme.Colors.NeutralLight1)
                         }
-                        Text("Call")
-                            .font(Theme.Fonts.Body1)
-                            .foregroundStyle(isCalling ? Theme.Colors.NeutralLight1 : Theme.Colors.Primary1.opacity(0.85))
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(trainerName.isEmpty ? "Your Coach" : trainerName)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                                .font(Theme.Fonts.Heading2)
+                                .foregroundStyle(Theme.Colors.Primary1)
+                            Text(assignedRoutines.isEmpty ? "No plans assigned yet" : "\(assignedRoutines.count) plan(s) assigned to you")
+                                .font(Theme.Fonts.Body4)
+                                .foregroundStyle(Theme.Colors.NeutralLight1.opacity(0.8))
+                        }
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Button(action: {
+                                Task {
+                                    await startCall()
+                                }
+                            }) {
+                                Image(systemName: "phone.fill")
+                                    .font(Theme.Fonts.SubHeading2)
+                                    .foregroundStyle(isCalling ? Theme.Colors.NeutralLight1 : Theme.Colors.Primary1.opacity(0.85))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                            }
+                            Text("Call")
+                                .font(Theme.Fonts.Body1)
+                                .foregroundStyle(isCalling ? Theme.Colors.NeutralLight1 : Theme.Colors.Primary1.opacity(0.85))
+                        }
+                        .accessibilityElement(children: .combine)
                     }
-                    .accessibilityElement(children: .combine)
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
 
-                // Coach Hub quick actions (client view) – horizontal tiles
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Quick actions")
-                        .font(Theme.Fonts.SubHeading2)
-                        .foregroundStyle(Theme.Colors.Primary1)
-                        .padding(.horizontal)
+                    // Coach Hub quick actions (client view) – horizontal tiles
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Quick actions")
+                            .font(Theme.Fonts.SubHeading2)
+                            .foregroundStyle(Theme.Colors.Primary1)
+                            .padding(.horizontal)
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            if !videos.isEmpty {
-                                NavigationLink { CoachVideosView(videos: videos) } label: {
-                                    hubTile(title: "Videos", subtitle: "Coaching clips & tutorials", systemImage: "play.rectangle.fill", tint: Color.red)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                if !videos.isEmpty {
+                                    NavigationLink { CoachVideosView(videos: videos) } label: {
+                                        hubTile(title: "Videos", subtitle: "Coaching clips & tutorials", systemImage: "play.rectangle.fill", tint: Color.red)
+                                            .frame(width: 260)
+                                    }
+                                }
+                                NavigationLink { CoachExercisesView() } label: {
+                                    hubTile(title: "Custom Exercises", subtitle: "Exclusive movements & form", systemImage: "list.bullet.rectangle.portrait", tint: Color.orange)
+                                        .frame(width: 260)
+                                }
+                                NavigationLink { CoachTiersView() } label: {
+                                    hubTile(title: "Membership Tiers", subtitle: "Manage your access level", systemImage: "person.3.sequence", tint: Color.indigo)
                                         .frame(width: 260)
                                 }
                             }
-                            NavigationLink { CoachExercisesView() } label: {
-                                hubTile(title: "Custom Exercises", subtitle: "Exclusive movements & form", systemImage: "list.bullet.rectangle.portrait", tint: Color.orange)
-                                    .frame(width: 260)
-                            }
-                            NavigationLink { CoachTiersView() } label: {
-                                hubTile(title: "Membership Tiers", subtitle: "Manage your access level", systemImage: "person.3.sequence", tint: Color.indigo)
-                                    .frame(width: 260)
-                            }
+                            .padding(.horizontal)
+                        }
+                    }
+
+                    // Schedule (calendar) — bottom
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Your Schedule")
+                                .font(Theme.Fonts.SubHeading2)
+                                .foregroundStyle(Theme.Colors.Primary1)
+                            Spacer()
                         }
                         .padding(.horizontal)
-                    }
-                }
 
-                // Schedule (calendar) — bottom
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Your Schedule")
-                            .font(Theme.Fonts.SubHeading2)
-                            .foregroundStyle(Theme.Colors.Primary1)
-                        Spacer()
+                        CalendarScreen(selectedDate: $selectedDate, trainer: true)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(.ultraThinMaterial)
+                                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .padding(.horizontal)
                     }
-                    .padding(.horizontal)
-
-                    CalendarScreen(selectedDate: $selectedDate, trainer: true)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(.ultraThinMaterial)
-                                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.Primary1.opacity(0.12), lineWidth: 1))
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .padding(.horizontal)
                 }
             }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.NeutralDark)
-        .fullScreenCover(isPresented: $showAgentWorkout) {
-            WorkoutCompleted(
-                externalRoutine: Binding(
-                    get: { agentService.AgentRoutine },
-                    set: { agentService.AgentRoutine = $0 }
-                ),
-                plusButton: false
-            )
-            .environmentObject(agentService)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.Colors.NeutralDark)
+            .syncOnScroll(modelContext: modelContext)
+            .allowsHitTesting(!showAgentWorkout)
+
+            // WorkoutCompleted layer on top of TrainerScreen
+            if showAgentWorkout {
+                ZStack {
+                    WorkoutCompleted(
+                        externalRoutine: Binding(
+                            get: { agentService.AgentRoutine },
+                            set: { agentService.AgentRoutine = $0 }
+                        ),
+                        plusButton: false
+                    )
+                    .background(Theme.Colors.NeutralDark)
+
+                    // Close button in top-right
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: { showAgentWorkout = false }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 28, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .shadow(radius: 2)
+                            }
+                            .accessibilityLabel("Close workout")
+                        }
+                        .padding([.top, .trailing], 16)
+                        Spacer()
+                    }
+                }
+                .transition(.opacity)
+                .zIndex(10)
+            }
         }
-        .syncOnScroll(modelContext: modelContext)
         // Call overlay sits on top of everything, including WorkoutCompleted
         .overlay(
             Group {
@@ -210,22 +235,6 @@ struct TrainerScreen: View {
                                     .foregroundStyle(.red)
                             }
 
-                            // Remote video
-                            ScrollView {
-                                LazyVStack {
-                                    ForEachParticipant { _ in
-                                        VStack {
-                                            ForEachTrack(filter: .video) { trackReference in
-                                                VideoTrackView(trackReference: trackReference)
-                                                    .frame(maxWidth: 600, maxHeight: 400)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                            }
-                                        }
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-
                             Spacer(minLength: 12)
 
                             // Hangup button (X)
@@ -243,7 +252,6 @@ struct TrainerScreen: View {
                         .padding()
                     }
                     .environmentObject(room)
-                    .environmentObject(agentService)
                     .transition(.opacity)
                     .zIndex(999)
                 }

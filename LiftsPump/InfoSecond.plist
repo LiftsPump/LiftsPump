@@ -16,6 +16,16 @@
 				<string>com.googleusercontent.apps.703159570131-hikevjbnh0vop3iffqkb7dso9qme3o64</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>liftspump</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>liftspump</string>
+			</array>
+		</dict>
 	</array>
 	<key>GIDClientID</key>
 	<string>703159570131-hikevjbnh0vop3iffqkb7dso9qme3o64.apps.googleusercontent.com</string>

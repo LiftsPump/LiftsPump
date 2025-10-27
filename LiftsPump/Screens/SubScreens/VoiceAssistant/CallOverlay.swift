@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LiveKit
 
 // MARK: - Model
 private struct Star: Identifiable {
@@ -22,6 +23,11 @@ private struct Star: Identifiable {
 private struct BreathingStarField: View {
     @State private var stars: [Star] = []
     @State private var patchSpeed: Double = 0.2 // cycles per second across the field
+
+    // Intensity controls
+    var speedMultiplier: Double = 1.0   // multiplies patch sweeping speed
+    var sizeScale: CGFloat = 1.0        // scales star size
+    var brightnessBoost: Double = 1.0   // multiplies opacity when on
 
     // timeline start reference
     @State private var startTime: Date = Date()
@@ -40,7 +46,7 @@ private struct BreathingStarField: View {
 
                 // t drives flicker/breathe. patchT drives patch sweep.
                 let t = elapsed
-                let patchT = elapsed * patchSpeed
+                let patchT = elapsed * patchSpeed * speedMultiplier
 
                 let w = geo.size.width
                 let h = geo.size.height
@@ -93,14 +99,12 @@ private struct BreathingStarField: View {
 
                         // Optional smoothing using patchInfluence so patches still sweep.
                         // When off, alpha = 0. When on, brighten using patchInfluence.
-                        let patchBoost = 0.5 + 0.5 * patchInfluence
-                        let alpha = isOn
-                            ? min(1.0, s.baseOpacity * patchBoost)
-                            : 0.0
+                        let alphaBase = isOn ? min(1.0, s.baseOpacity * (0.5 + 0.5 * patchInfluence)) : 0.0
+                        let alpha = min(1.0, alphaBase * brightnessBoost)
 
                         Circle()
                             .fill(Color.white)
-                            .frame(width: s.size, height: s.size)
+                            .frame(width: s.size * sizeScale, height: s.size * sizeScale)
                             .position(x: px, y: py)
                             .opacity(alpha)
                             .shadow(color: Color.white.opacity(alpha), radius: 6)
@@ -145,6 +149,8 @@ private struct VoiceCapsule: View {
     let index: Int
     let total: Int
 
+    var isActive: Bool = true
+
     @State private var startTime = Date()
 
     // visual tuning
@@ -163,7 +169,8 @@ private struct VoiceCapsule: View {
             let phase = Double(index) * 0.6
 
             // normalized 0...1 bounce using abs(sin)
-            let bounce = abs(sin((2 * .pi / period) * (t + phase)))
+            let rawBounce = abs(sin((2 * .pi / period) * (t + phase)))
+            let bounce = isActive ? rawBounce : 0.0
 
             // map bounce to height
             let h = minHeight + CGFloat(bounce) * (maxHeight - minHeight)
@@ -177,20 +184,35 @@ private struct VoiceCapsule: View {
 }
 
 struct CallOverlay: View {
+    @EnvironmentObject private var room: Room
+
+    private var userSpeaking: Bool {
+        room.localParticipant.isSpeaking ?? false
+    }
+    private var agentSpeaking: Bool {
+        // consider any remote participant speaking as the agent speaking
+        room.remoteParticipants.values.contains { $0.isSpeaking }
+    }
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
                 .opacity(0.8)
 
-            BreathingStarField()
-                .ignoresSafeArea()
-                .opacity(0.9)
-                .blendMode(.screen)
+            BreathingStarField(
+                speedMultiplier: agentSpeaking ? 2.2 : 1.0,
+                sizeScale: agentSpeaking ? 1.6 : 1.0,
+                brightnessBoost: agentSpeaking ? 1.8 : 1.0
+            )
+            .ignoresSafeArea()
+            .opacity(0.9)
+            .blendMode(.screen)
+            .animation(.easeInOut(duration: 0.25), value: agentSpeaking)
 
             // voice activity bars
             HStack(spacing: 6) {
                 ForEach(0..<5) { i in
-                    VoiceCapsule(index: i, total: 5)
+                    VoiceCapsule(index: i, total: 5, isActive: userSpeaking)
                 }
             }
             .padding(12)
@@ -203,10 +225,12 @@ struct CallOverlay: View {
                     )
                     .shadow(color: Color.white.opacity(0.3), radius: 16)
             )
+            .animation(.easeInOut(duration: 0.2), value: userSpeaking)
         }
     }
 }
 
 #Preview {
     CallOverlay()
+        .environmentObject(Room())
 }
