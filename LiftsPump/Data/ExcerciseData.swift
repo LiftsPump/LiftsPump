@@ -14,6 +14,7 @@ enum RoutineType: String, Codable {
     case date
     case custom
     case ai
+    case agent
     case assigned
     case trainer
 }
@@ -85,7 +86,7 @@ class Routine: Identifiable, Codable {
         name = try container.decode(String.self, forKey: .name)
         picture = try container.decodeIfPresent(String.self, forKey: .picture)
         text = try container.decodeIfPresent(String.self, forKey: .text)
-        type = try container.decodeIfPresent(RoutineType.self, forKey: .type) ?? .ai
+        type = try container.decodeIfPresent(RoutineType.self, forKey: .type) ?? .agent
         days = try container.decodeIfPresent(Int.self, forKey: .days)
         weekly = try container.decodeIfPresent(Int.self, forKey: .weekly)
         date = try container.decodeIfPresent(Date.self, forKey: .date)

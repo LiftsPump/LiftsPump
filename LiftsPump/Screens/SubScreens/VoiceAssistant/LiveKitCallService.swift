@@ -1,6 +1,7 @@
 import Foundation
 import Supabase
 import LiveKit
+import AVFAudio
 
 public enum LiveKitCallService {
     // LiveKit WebSocket URL
@@ -70,6 +71,8 @@ public enum LiveKitCallService {
     public static func connect(room: Room) async throws {
         let tokenResponse = try await fetchLiveKitToken()
         let token = tokenResponse.token
+        try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.mixWithOthers])
+        try AVAudioSession.sharedInstance().setActive(true)
         try await room.connect(
             url: wsURL,
             token: token,

@@ -8,6 +8,7 @@ struct TypeTag: View {
         case .preset:   return "Preset"
         case .assigned: return "Assigned"
         case .ai:       return "AI"
+        case .agent:    return "Agent"
         case .trainer:  return "Trainer"
         case .custom:   return "Custom"
         case .date:     return "Scheduled"
@@ -15,11 +16,11 @@ struct TypeTag: View {
     }
 
     private func symbolName(for type: RoutineType) -> String {
-        // choose stable symbols (iOS 16+ friendly)
         switch type {
         case .preset:   return "book.closed"
         case .assigned: return "checkmark.circle"
         case .ai:       return "wand.and.stars"
+        case .agent:    return "bolt.horizontal.circle"
         case .trainer:  return "person.fill"
         case .custom:   return "paintbrush"
         case .date:     return "calendar"
@@ -31,6 +32,7 @@ struct TypeTag: View {
         case .preset:   return Theme.Colors.Primary1
         case .assigned: return .orange
         case .ai:       return .purple
+        case .agent:    return .yellow
         case .trainer:  return .teal
         case .custom:   return .indigo
         case .date:     return Theme.Colors.NeutralGray1
@@ -56,6 +58,7 @@ struct TypeTag: View {
         TypeTag(type: .preset)
         TypeTag(type: .assigned)
         TypeTag(type: .ai)
+        TypeTag(type: .agent)
         TypeTag(type: .trainer)
         TypeTag(type: .custom)
         TypeTag(type: .date)

@@ -35,7 +35,7 @@ struct CalendarScreen: View {
                     return (weeks % w == 0) && (calendar.component(.weekday, from: dayStart) == calendar.component(.weekday, from: dateStart))
                 }
             }
-            return false
+            return calendar.isDate(dayStart, inSameDayAs: dateStart)
         case .date:
             return calendar.isDate(dayStart, inSameDayAs: dateStart)
         case .preset:

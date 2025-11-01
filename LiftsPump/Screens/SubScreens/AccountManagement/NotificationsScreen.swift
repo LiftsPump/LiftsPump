@@ -101,6 +101,7 @@ struct NotificationsScreen: View {
             
         } .background(Theme.Colors.NeutralDark)
             .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading: BackButton())
     }
 }
 

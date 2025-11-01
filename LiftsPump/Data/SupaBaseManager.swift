@@ -245,14 +245,14 @@ public class SupaBaseManager {
                             .trimmingCharacters(in: .whitespacesAndNewlines)
                         let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
                         for routine in currentRoutines {
-                            if routine.type == .ai {
+                            if routine.type == .agent {
                                 SupaBaseManager.deleteRoutine(routine: routine)
                                 modelContext.delete(routine)
                             }
                         }
                         try modelContext.save()
                         for routine in aiDecoded {
-                            routine.type = .ai
+                            routine.type = .agent
                             routines.append(routine)
                             SupaBaseManager.saveRoutine(routine: routine)
                             for exercise in routine.exercises {
@@ -319,34 +319,13 @@ public class SupaBaseManager {
             trainerVideos = "[]"
         }
 
-        // Merge data
-        for routine in routines {
-            for exercise in exercises {
-                if exercise.routine_id == routine.id {
-                    let copyE = exercise.copy()
-                    copyE.routine = routine
-
-                    for set in sets {
-                        if set.exercise_id == exercise.id {
-                            let copy = set.copy()
-                            copy.exercise = copyE  // should be copyE, not exercise
-                            copyE.sets.append(copy)
-                        }
-                    }
-
-                    routine.exercises.append(copyE)  // append only once
-                }
-            }
-        }
-
-
-        // Mirror cloud deletions locally (except .ai routines) and reset PRData
+        // Mirror cloud deletions locally (except .agent routines) and reset PRData
         do {
             // Build cloud ID sets
-            let cloudRoutineIDs = Set(routines.filter { $0.type != .ai }.map { $0.id })
-            // Delete local routines that no longer exist in cloud (excluding .ai)
+            let cloudRoutineIDs = Set(routines.filter { $0.type != .agent }.map { $0.id })
+            // Delete local routines that no longer exist in cloud (excluding .agent)
             let localRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-            for r in localRoutines where r.type != .ai && !cloudRoutineIDs.contains(r.id) {
+            for r in localRoutines where r.type != .agent && !cloudRoutineIDs.contains(r.id) {
                 modelContext.delete(r)
             }
             // Reset PRData to avoid duplicates; a fresh PRData will be inserted below
@@ -560,33 +539,29 @@ public class SupaBaseManager {
             return []
         }
     }
-    /// Fetch profiles for a given creator_id using JSON decoding
+    /// Fetch only creator_id fields for a given creator_id filter.
     /// - Parameters:
     ///   - creatorId: The Supabase auth user id (UUID) to filter by
     ///   - limit: Optional limit
-    /// - Returns: An array of Profile rows
-    static func fetchProfiles(creatorId: UUID, limit: Int? = nil) async throws -> [Profile] {
+    /// - Returns: An array of UUIDs (creator_id)
+    static func fetchProfiles(creatorId: UUID, limit: Int? = nil) async throws -> [UUID] {
+        // Decode only creator_id to avoid strict Profile requirements
+        struct CreatorIdRow: Decodable {
+            let creator_id: UUID
+        }
         // Build query
         var query = supabase
             .from("profile")
-            .select("*")
+            .select("creator_id")
             .eq("creator_id", value: creatorId)
         if let l = limit {
             query = query.limit(l) as! PostgrestFilterBuilder
         }
         // Execute
         let response = try await query.execute()
-        // Decode
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .flexible([
-            "yyyy-MM-dd HH:mm:ss.SSS",
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX",
-            "yyyy-MM-dd'T'HH:mm:ssXXXXX",
-            "yyyy-MM-dd'T'HH:mm:ss",
-            "yyyy-MM-dd"
-        ])
-        return try decoder.decode([Profile].self, from: response.data)
+        // Decode just the creator_id field
+        let rows = try JSONDecoder().decode([CreatorIdRow].self, from: response.data)
+        return rows.map { $0.creator_id }
     }
     static func updateRoutine(routine: Routine, id: UUID) {
         Task {

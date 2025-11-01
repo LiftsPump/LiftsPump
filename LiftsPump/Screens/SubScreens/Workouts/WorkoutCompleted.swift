@@ -32,6 +32,7 @@ struct WorkoutCompleted: View {
     @State private var showAccessory = false
     @State private var modalType: ModalPopUp?
     @StateObject private var timerthing = TimerManager()
+    @State private var showEndConfirm: Bool = false
     @State private var selectedDateForSchedule: Date = Date()
     @State private var scheduleCancelled: Bool = false
     @State private var routine: Routine
@@ -129,7 +130,7 @@ struct WorkoutCompleted: View {
                         .accessibilityLabel("Save routine")
                     }
                     if ((type == 2 || type == 3) && !agentService.isRunning) {
-                        if routine.type == .ai {
+                        if routine.type == .agent {
                             Button(action: {
                                 let newRoutine = routine.copy()
                                 newRoutine.type = .preset
@@ -251,30 +252,8 @@ struct WorkoutCompleted: View {
                                     .buttonStyle(.plain)
                                     .accessibilityLabel("Pause workout")
                                     Button(action: {
-                                        let prManager = PRManager(context: modelContext)
-                                        prManager.checkForPRs(routine: routine)
                                         showAccessory.toggle()
-                                        timerthing.toggleTimer(startOrStop: true)
-                                        let newRoutine = routine.copy()
-                                        newRoutine.type = .date
-                                        newRoutine.date = Date()
-                                        newRoutine.duration = timerthing.elapsedTime
-                                        newRoutine.id = UUID()
-                                        for exercise in newRoutine.exercises {
-                                            exercise.id = UUID()
-                                            exercise.routine_id = newRoutine.id
-                                            for set in exercise.sets {
-                                                set.id = UUID()
-                                                set.exercise_id = exercise.id
-                                            }
-                                        }
-                                        modelContext.insert(newRoutine)
-                                        resetCompleted(routineUpdate: routine)
-                                        routine = newRoutine
-                                        externalRoutine = newRoutine
-                                        SupaBaseManager.saveRoutine(routine: newRoutine)
-                                        try? modelContext.save()
-                                        withAnimation { type = 4 }
+                                        showEndConfirm = true
                                     }) {
                                         GeneralButton(text: "End", color: Theme.Colors.Red, image: "xmark")
                                             .frame(width: 115)
@@ -289,7 +268,7 @@ struct WorkoutCompleted: View {
                                     timerView
                                 }
                             }
-                        } else if (type == 2 && routine.type != .ai && !agentService.isRunning) {
+                        } else if (type == 2 && routine.type != .agent && !agentService.isRunning) {
                             VStack {
                                 HStack {
                                     Spacer()
@@ -413,6 +392,36 @@ struct WorkoutCompleted: View {
             if newPhase == .active {
                 timerthing.refresh()
             }
+        }
+        .alert("End workout?", isPresented: $showEndConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Confirm", role: .destructive) {
+                let prManager = PRManager(context: modelContext)
+                prManager.checkForPRs(routine: routine)
+                timerthing.toggleTimer(startOrStop: true)
+                let newRoutine = routine.copy()
+                newRoutine.type = .date
+                newRoutine.date = Date()
+                newRoutine.duration = timerthing.elapsedTime
+                newRoutine.id = UUID()
+                for exercise in newRoutine.exercises {
+                    exercise.id = UUID()
+                    exercise.routine_id = newRoutine.id
+                    for set in exercise.sets {
+                        set.id = UUID()
+                        set.exercise_id = exercise.id
+                    }
+                }
+                modelContext.insert(newRoutine)
+                resetCompleted(routineUpdate: routine)
+                routine = newRoutine
+                externalRoutine = newRoutine
+                SupaBaseManager.saveRoutine(routine: newRoutine)
+                try? modelContext.save()
+                withAnimation { type = 4 }
+            }
+        } message: {
+            Text("This will save your workout as a dated routine and sync it to Supabase.")
         }
     }
     private func resetCompleted(routineUpdate: Routine) {

@@ -14,6 +14,7 @@ struct BackButton: View {
             }) {
                 HStack {
                     Image(systemName: "chevron.left")
+                        .aspectRatio(contentMode: .fit)
                     .foregroundColor(Theme.Colors.NeutralLight1)
                 Text("Back")
                         .foregroundStyle(Theme.Colors.NeutralLight1)

@@ -5,11 +5,44 @@ import Supabase
 
 struct SignIn: View {
     @AppStorage("EMAIL_KEY") var email: String = ""
+    @AppStorage("FIRSTNAME_KEY") var firstName: String = ""
+    @AppStorage("LASTNAME_KEY") var lastName: String = ""
+    @AppStorage("USERNAME_KEY") var username: String = ""
     @State var result: Result<Void, Error>?
     @State var password: String = ""
     @State private var isSignInSuccessful = false
     @State private var errorMessage: String?
+    @State private var isSSOSignInSuccessful = false
+    @State private var navigateToCreateUsername = false
     @Environment(\.modelContext) private var modelContext
+
+    private func populateNamesFromSession(_ session: Session) throws {
+        if firstName.isEmpty {
+            if let given = session.user.userMetadata["given_name"]?.stringValue {
+                firstName = given
+            } else if let full = session.user.userMetadata["full_name"]?.stringValue {
+                firstName = full.split(separator: " ").first.map(String.init) ?? full
+            } else if let name = session.user.userMetadata["name"]?.stringValue {
+                firstName = name.split(separator: " ").first.map(String.init) ?? name
+            }
+        }
+        if lastName.isEmpty {
+            if let family = session.user.userMetadata["family_name"]?.stringValue {
+                lastName = family
+            } else if let full = session.user.userMetadata["full_name"]?.stringValue {
+                let parts = full.split(separator: " ")
+                if parts.count > 1 {
+                    lastName = parts.dropFirst().joined(separator: " ")
+                }
+            }
+        }
+        if email.isEmpty, let authEmail = session.user.email {
+            email = authEmail
+        }
+        if username.isEmpty, !email.isEmpty, let base = email.split(separator: "@").first {
+            username = String(base)
+        }
+    }
 
     var body: some View {
         VStack {
@@ -51,6 +84,12 @@ struct SignIn: View {
             NavigationLink(destination: Tab().navigationBarBackButtonHidden(true), isActive: $isSignInSuccessful) {
                 EmptyView()
             }
+            NavigationLink(destination: Tab().navigationBarBackButtonHidden(true), isActive: $isSSOSignInSuccessful) {
+                EmptyView()
+            }
+            NavigationLink(destination: CreateUsername().navigationBarBackButtonHidden(true), isActive: $navigateToCreateUsername) {
+                EmptyView()
+            }
 
             HStack {
                 Rectangle()
@@ -67,35 +106,69 @@ struct SignIn: View {
             }
             .padding(.vertical)
             
-            Button(action: {
-                Task {
-                    //await googleSignIn()
+            GoogleSignInButton(scheme: .dark, style: .wide, state: .normal) {
+                Task { @MainActor in
+                    do {
+                        let session = try await supabase.auth.signInWithOAuth(
+                            provider: .google,
+                            redirectTo: URL(string: "myapp://auth-callback")!
+                        )
+                        try? populateNamesFromSession(session)
+                        let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id)
+                        if existing.isEmpty {
+                            navigateToCreateUsername = true
+                        } else {
+                            isSSOSignInSuccessful = true
+                        }
+                    } catch {
+                        errorMessage = "Google sign-in failed: \(error.localizedDescription)"
+                    }
                 }
-            }) {
-                HStack {
-                    GoogleSignInButton(scheme: .dark, style: .wide, state: .normal, action: {})
-                    
-                }
-                .frame(maxWidth: .infinity)
-                .cornerRadius(8)
-                .frame(height: 50)
             }
+            .frame(height: 50)
             .padding(.horizontal)
+            
             SignInWithAppleButton(
                 onRequest: { request in
                     request.requestedScopes = [.fullName, .email]
                 },
                 onCompletion: { result in
-                    switch result {
-                    case .success(let authorization):
-                        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                            let userIdentifier = appleIDCredential.user
-                            let fullName = appleIDCredential.fullName
-                            print("Apple Sign-In ID: \(userIdentifier)")
-                            isSignInSuccessful = true
+                    Task {
+                        do {
+                            guard let credential = try result.get().credential as? ASAuthorizationAppleIDCredential else {
+                                return
+                            }
+                            guard let idToken = credential.identityToken
+                                .flatMap({ String(data: $0, encoding: .utf8) }) else {
+                                return
+                            }
+
+                            let session = try await supabase.auth.signInWithIdToken(
+                                credentials: .init(
+                                    provider: .apple, idToken: idToken
+                                )
+                            )
+                            if let newEmail = credential.email {
+                                email = newEmail
+                            }
+                            if let fN = credential.fullName?.givenName {
+                                firstName = fN
+                            }
+                            if let lN = credential.fullName?.familyName {
+                                lastName = lN
+                            }
+
+                            try? populateNamesFromSession(session)
+
+                            let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id, limit: 1)
+                            if existing.isEmpty {
+                                navigateToCreateUsername = true
+                            } else {
+                                isSSOSignInSuccessful = true
+                            }
+                        } catch {
+                            errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
                         }
-                    case .failure(let error):
-                        errorMessage = "Apple Sign-In failed: \(error.localizedDescription)"
                     }
                 }
             )

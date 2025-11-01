@@ -141,7 +141,7 @@ struct SignUp: View {
                         try? populateNamesFromSession(session)
 
                         // Check if profile exists for this user; if not, navigate to username creation
-                        let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id, limit: 1)
+                        let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id)
                         if existing.isEmpty {
                             navigateToCreateUsername = true
                         } else {
@@ -191,7 +191,7 @@ struct SignUp: View {
                             try? populateNamesFromSession(session)
 
                             // Check if profile exists for this user; if not, navigate to username creation
-                            let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id, limit: 1)
+                            let existing = try await SupaBaseManager.fetchProfiles(creatorId: session.user.id)
                             if existing.isEmpty {
                                 navigateToCreateUsername = true
                             } else {

@@ -56,17 +56,17 @@ struct HomeScreen: View {
             }.padding(.top , 18)
                 .padding(.bottom, 3)
             HStack {
-                NavigationLink(destination: WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)) {
+                NavigationLink(destination: WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true).navigationBarItems(leading: BackButton())) {
                         StatView(stat: DataMethods.completedRoutines(routines: routines), image: "checkmark.circle")
                 }
                 Spacer()
                 VStack{
-                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true)) {
+                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.history).navigationBarBackButtonHidden(true).navigationBarItems(leading: BackButton())) {
                             HalfStatView(image: "flame", stat: DataMethods.userStreak(routines: routines), subText: "days in a row!", title: "Your streak")
                             .padding(.bottom, 8)
                     }
                     Spacer()
-                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.prs).navigationBarBackButtonHidden(true))  {
+                    NavigationLink(destination:     WorkoutScreen(defaultTab: WorkoutTab.prs).navigationBarBackButtonHidden(true).navigationBarItems(leading: BackButton()))  {
                             HalfStatView(image: "figure.strengthtraining.traditional", stat: DataMethods.getPRsConfirmed(modelContext: modelContext), subText: "PRs confirmed!", title: "Your records")
                             .padding(.top, 8)
                     }

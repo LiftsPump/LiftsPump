@@ -115,7 +115,7 @@ struct Friends: View {
                     Person(
                         image: "plus",
                         action: "Add",
-                        text: "\(friend.first_name + " " + friend.last_name)",
+                        text: "\(friend.username) (\(friend.first_name + " " + friend.last_name))",
                         profileImage: "person.crop.circle",
                         onTap: {
                             Task {
