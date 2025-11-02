@@ -100,7 +100,7 @@ extension DateFormatter {
 
 @MainActor
 final class AgentService: ObservableObject {
-    @Published var AgentRoutine: Routine = Routine(id: UUID(), name: "", type: .ai)
+    @Published var AgentRoutine: Routine = Routine(id: UUID(), name: "", type: .agent)
     @Published var agentCompleted: Bool = false
     
     private var currentSessionId: UUID?

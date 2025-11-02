@@ -252,7 +252,7 @@ public class SupaBaseManager {
                         }
                         try modelContext.save()
                         for routine in aiDecoded {
-                            routine.type = .agent
+                            routine.type = .ai
                             routines.append(routine)
                             SupaBaseManager.saveRoutine(routine: routine)
                             for exercise in routine.exercises {
@@ -318,14 +318,34 @@ public class SupaBaseManager {
             trainerName = ""
             trainerVideos = "[]"
         }
+        
+        // Merge data
+        for routine in routines {
+            for exercise in exercises {
+                if exercise.routine_id == routine.id {
+                    let copyE = exercise.copy()
+                    copyE.routine = routine
+
+                    for set in sets {
+                        if set.exercise_id == exercise.id {
+                            let copy = set.copy()
+                            copy.exercise = copyE  // should be copyE, not exercise
+                            copyE.sets.append(copy)
+                        }
+                    }
+
+                    routine.exercises.append(copyE)  // append only once
+                }
+            }
+        }
 
         // Mirror cloud deletions locally (except .agent routines) and reset PRData
         do {
             // Build cloud ID sets
-            let cloudRoutineIDs = Set(routines.filter { $0.type != .agent }.map { $0.id })
+            let cloudRoutineIDs = Set(routines.filter { $0.type != .ai }.map { $0.id })
             // Delete local routines that no longer exist in cloud (excluding .agent)
             let localRoutines = try modelContext.fetch(FetchDescriptor<Routine>())
-            for r in localRoutines where r.type != .agent && !cloudRoutineIDs.contains(r.id) {
+            for r in localRoutines where r.type != .ai && !cloudRoutineIDs.contains(r.id) {
                 modelContext.delete(r)
             }
             // Reset PRData to avoid duplicates; a fresh PRData will be inserted below

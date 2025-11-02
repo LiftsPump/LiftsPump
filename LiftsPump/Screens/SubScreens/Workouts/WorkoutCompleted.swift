@@ -32,7 +32,6 @@ struct WorkoutCompleted: View {
     @State private var showAccessory = false
     @State private var modalType: ModalPopUp?
     @StateObject private var timerthing = TimerManager()
-    @State private var showEndConfirm: Bool = false
     @State private var selectedDateForSchedule: Date = Date()
     @State private var scheduleCancelled: Bool = false
     @State private var routine: Routine
@@ -117,20 +116,58 @@ struct WorkoutCompleted: View {
                     }
                     
                     if (type == 1 && !agentService.isRunning) {
-                        Button(action: {
-                            try? modelContext.save()
-                            SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
-                            withAnimation { type += 1 }
-                            showAccessory.toggle()
-                        }) {
-                            GeneralButton(text: "Save", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
-                                .frame(width: 100)
+                        if routine.type == .agent {
+                            Button(action: {
+                                let newRoutine = routine.copy()
+                                newRoutine.date = Date()
+                                newRoutine.type = .date
+                                modelContext.insert(newRoutine)
+                                routine = newRoutine
+                                externalRoutine = newRoutine
+                                SupaBaseManager.saveRoutine(routine: newRoutine)
+                                try? modelContext.save()
+                                dismiss()
+                                showAccessory.toggle()
+                            }) {
+                                GeneralButton(text: "Approve", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
+                                    .frame(width: 100)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Add routine")
+                        } else {
+                            Button(action: {
+                                try? modelContext.save()
+                                SupaBaseManager.updateRoutine(routine: routine, id: routine.id)
+                                withAnimation { type += 1 }
+                                showAccessory.toggle()
+                            }) {
+                                GeneralButton(text: "Save", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
+                                    .frame(width: 100)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Save routine")
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Save routine")
                     }
                     if ((type == 2 || type == 3) && !agentService.isRunning) {
                         if routine.type == .agent {
+                            Button(action: {
+                                let newRoutine = routine.copy()
+                                newRoutine.date = Date()
+                                newRoutine.type = .date
+                                modelContext.insert(newRoutine)
+                                routine = newRoutine
+                                externalRoutine = newRoutine
+                                SupaBaseManager.saveRoutine(routine: newRoutine)
+                                try? modelContext.save()
+                                dismiss()
+                                showAccessory.toggle()
+                            }) {
+                                GeneralButton(text: "Approve", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
+                                    .frame(width: 100)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Add routine")
+                        } else if (routine.type == .ai) {
                             Button(action: {
                                 let newRoutine = routine.copy()
                                 newRoutine.type = .preset
@@ -139,7 +176,7 @@ struct WorkoutCompleted: View {
                                 externalRoutine = newRoutine
                                 SupaBaseManager.saveRoutine(routine: newRoutine)
                                 try? modelContext.save()
-                                withAnimation { type = 2 }
+                                dismiss()
                                 showAccessory.toggle()
                             }) {
                                 GeneralButton(text: "Add", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
@@ -252,8 +289,30 @@ struct WorkoutCompleted: View {
                                     .buttonStyle(.plain)
                                     .accessibilityLabel("Pause workout")
                                     Button(action: {
+                                        let prManager = PRManager(context: modelContext)
+                                        prManager.checkForPRs(routine: routine)
                                         showAccessory.toggle()
-                                        showEndConfirm = true
+                                        timerthing.toggleTimer(startOrStop: true)
+                                        let newRoutine = routine.copy()
+                                        newRoutine.type = .date
+                                        newRoutine.date = Date()
+                                        newRoutine.duration = timerthing.elapsedTime
+                                        newRoutine.id = UUID()
+                                        for exercise in newRoutine.exercises {
+                                            exercise.id = UUID()
+                                            exercise.routine_id = newRoutine.id
+                                            for set in exercise.sets {
+                                                set.id = UUID()
+                                                set.exercise_id = exercise.id
+                                            }
+                                        }
+                                        modelContext.insert(newRoutine)
+                                        resetCompleted(routineUpdate: routine)
+                                        routine = newRoutine
+                                        externalRoutine = newRoutine
+                                        SupaBaseManager.saveRoutine(routine: newRoutine)
+                                        try? modelContext.save()
+                                        withAnimation { type = 4 }
                                     }) {
                                         GeneralButton(text: "End", color: Theme.Colors.Red, image: "xmark")
                                             .frame(width: 115)
@@ -393,36 +452,6 @@ struct WorkoutCompleted: View {
                 timerthing.refresh()
             }
         }
-        .alert("End workout?", isPresented: $showEndConfirm) {
-            Button("Cancel", role: .cancel) { }
-            Button("Confirm", role: .destructive) {
-                let prManager = PRManager(context: modelContext)
-                prManager.checkForPRs(routine: routine)
-                timerthing.toggleTimer(startOrStop: true)
-                let newRoutine = routine.copy()
-                newRoutine.type = .date
-                newRoutine.date = Date()
-                newRoutine.duration = timerthing.elapsedTime
-                newRoutine.id = UUID()
-                for exercise in newRoutine.exercises {
-                    exercise.id = UUID()
-                    exercise.routine_id = newRoutine.id
-                    for set in exercise.sets {
-                        set.id = UUID()
-                        set.exercise_id = exercise.id
-                    }
-                }
-                modelContext.insert(newRoutine)
-                resetCompleted(routineUpdate: routine)
-                routine = newRoutine
-                externalRoutine = newRoutine
-                SupaBaseManager.saveRoutine(routine: newRoutine)
-                try? modelContext.save()
-                withAnimation { type = 4 }
-            }
-        } message: {
-            Text("This will save your workout as a dated routine and sync it to Supabase.")
-        }
     }
     private func resetCompleted(routineUpdate: Routine) {
         for exercise in routineUpdate.exercises {
@@ -445,8 +474,6 @@ struct WorkoutCompleted: View {
         routine.days = nil
         routine.weekly = nil
         // If it was a template with a start date, make it a single-date routine
-        if routine.date == nil { routine.date = Date() }
-        routine.type = .date
         do {
             try modelContext.save()
         } catch {
