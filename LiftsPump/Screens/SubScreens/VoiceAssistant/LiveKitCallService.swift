@@ -79,6 +79,7 @@ public enum LiveKitCallService {
             connectOptions: ConnectOptions(enableMicrophone: true)
         )
         try await room.localParticipant.setCamera(enabled: false)
+        try await room.localParticipant.sendText("Hello lets get started start the session, routine, and tell the user the first exercise and set to go and do!", for: "")
     }
 
     /// Disconnects the provided LiveKit Room, ignoring any errors.

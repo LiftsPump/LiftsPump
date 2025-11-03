@@ -35,6 +35,9 @@ struct FirstOnboarding: View {
                 Circle()
                     .fill(Theme.Colors.NeutralGray1)
                     .frame(width: 10, height: 10)
+                Circle()
+                    .fill(Theme.Colors.NeutralGray1)
+                    .frame(width: 10, height: 10)
                 Spacer()
             }
             NavigationLink(destination: SecondOnboarding().navigationBarBackButtonHidden(true)) {

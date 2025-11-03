@@ -36,9 +36,12 @@ struct ThirdOnboarding: View {
                 Circle()
                     .fill(Theme.Colors.Primary1)
                     .frame(width: 10, height: 10)
+                Circle()
+                    .fill(Theme.Colors.NeutralGray1)
+                    .frame(width: 10, height: 10)
                 Spacer()
             }
-            NavigationLink(destination: SignUp().navigationBarBackButtonHidden(true)) {
+            NavigationLink(destination: FourthOnboarding().navigationBarBackButtonHidden(true)) {
                 onboardButton()
                     .padding(.vertical)
             }
@@ -60,3 +63,4 @@ struct ThirdOnboarding: View {
 #Preview {
     ThirdOnboarding()
 }
+

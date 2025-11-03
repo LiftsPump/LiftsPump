@@ -190,25 +190,10 @@ struct TrainerScreen: View {
                             get: { agentService.AgentRoutine },
                             set: { agentService.AgentRoutine = $0 }
                         ),
-                        plusButton: false
+                        plusButton: false,
+                        closeButton: { showAgentWorkout = false }
                     )
                     .background(Theme.Colors.NeutralDark)
-
-                    // Close button in top-right
-                    VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: { showAgentWorkout = false }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 28, weight: .bold))
-                                    .foregroundStyle(.white)
-                                    .shadow(radius: 2)
-                            }
-                            .accessibilityLabel("Close workout")
-                        }
-                        .padding([.top, .trailing], 16)
-                        Spacer()
-                    }
                 }
                 .transition(.opacity)
                 .zIndex(10)

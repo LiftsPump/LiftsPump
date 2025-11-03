@@ -38,11 +38,13 @@ struct WorkoutCompleted: View {
     @EnvironmentObject private var agentService: AgentService
     @Binding var externalRoutine: Routine
     var plusButton: Bool
+    var closeButton: (() -> Void)?
     
-    init(externalRoutine: Binding<Routine>, plusButton: Bool) {
+    init(externalRoutine: Binding<Routine>, plusButton: Bool, closeButton: (() -> Void)? = nil) {
         self._externalRoutine = externalRoutine
         self._routine = State(initialValue: externalRoutine.wrappedValue)
         self.plusButton = plusButton
+        self.closeButton = closeButton
     }
     private func dateFormatter() -> DateFormatter {
         let formatter = DateFormatter()
@@ -118,6 +120,8 @@ struct WorkoutCompleted: View {
                     if (type == 1 && !agentService.isRunning) {
                         if routine.type == .agent {
                             Button(action: {
+                                let prManager = PRManager(context: modelContext)
+                                prManager.checkForPRs(routine: routine)
                                 let newRoutine = routine.copy()
                                 newRoutine.date = Date()
                                 newRoutine.type = .date
@@ -126,7 +130,9 @@ struct WorkoutCompleted: View {
                                 externalRoutine = newRoutine
                                 SupaBaseManager.saveRoutine(routine: newRoutine)
                                 try? modelContext.save()
-                                dismiss()
+                                if (closeButton != nil) {
+                                    closeButton!()
+                                }
                                 showAccessory.toggle()
                             }) {
                                 GeneralButton(text: "Approve", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
@@ -149,25 +155,7 @@ struct WorkoutCompleted: View {
                         }
                     }
                     if ((type == 2 || type == 3) && !agentService.isRunning) {
-                        if routine.type == .agent {
-                            Button(action: {
-                                let newRoutine = routine.copy()
-                                newRoutine.date = Date()
-                                newRoutine.type = .date
-                                modelContext.insert(newRoutine)
-                                routine = newRoutine
-                                externalRoutine = newRoutine
-                                SupaBaseManager.saveRoutine(routine: newRoutine)
-                                try? modelContext.save()
-                                dismiss()
-                                showAccessory.toggle()
-                            }) {
-                                GeneralButton(text: "Approve", color: Theme.Colors.Primary1, image: "square.and.arrow.down.fill")
-                                    .frame(width: 100)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("Add routine")
-                        } else if (routine.type == .ai) {
+                        if (routine.type == .ai) {
                             Button(action: {
                                 let newRoutine = routine.copy()
                                 newRoutine.type = .preset

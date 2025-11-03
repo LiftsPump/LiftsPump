@@ -96,6 +96,13 @@ struct ProfileScreen: View {
                 // For now, sign out and clear local keys.
                 Task {
                     do {
+                        try await supabase.functions
+                          .invoke(
+                            "delete-account",
+                            options: FunctionInvokeOptions(
+                              body: ["name": "Functions"]
+                            )
+                          )
                         try await supabase.auth.signOut()
                         isLoggedOut = true
                         firstName = ""
