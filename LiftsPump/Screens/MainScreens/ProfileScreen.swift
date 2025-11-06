@@ -41,6 +41,9 @@ struct ProfileScreen: View {
                 NavigationLink(destination: Friends().navigationBarBackButtonHidden(true)) {
                     Selectors(text: "My friends", image: "person.2.fill")
                 }
+                NavigationLink(destination: Weight().navigationBarBackButtonHidden(true)) {
+                    Selectors(text: "My weight", image: "scalemass.fill")
+                }
                 NavigationLink(destination: SettingsScreen()) {
                     Selectors(text: "Settings", image: "gearshape.fill")
                 }

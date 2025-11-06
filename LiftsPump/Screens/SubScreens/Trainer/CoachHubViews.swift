@@ -98,7 +98,7 @@ struct CoachExercisesView: View {
                 .order("created_at", ascending: false)
                 .execute()
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .flexible(["yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX","yyyy-MM-dd'T'HH:mm:ssXXXXX","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"])    
+            decoder.dateDecodingStrategy = .flexible(["yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX","yyyy-MM-dd'T'HH:mm:ssXXXXX","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"])
             exercises = try decoder.decode([CustomExerciseRow].self, from: resp.data)
             loading = false
         } catch {
@@ -245,7 +245,7 @@ struct CoachTiersView: View {
                                             .foregroundStyle(Theme.Colors.NeutralLight1)
                                             .lineLimit(1).minimumScaleFactor(0.8)
                                         HStack(spacing: 8) {
-                                            if let price = t.price { pill("$\(price)/mo") }
+                                            if let price = t.price { pill("\(formatCentsUSD(price))/mo") }
                                             if let key = t.key { pill(key) }
                                             if let active = t.active { pill(active ? "Active" : "Inactive") }
                                         }
@@ -284,13 +284,18 @@ struct CoachTiersView: View {
                 .order("price")
                 .execute()
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .flexible(["yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX","yyyy-MM-dd'T'HH:mm:ssXXXXX","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"])    
+            decoder.dateDecodingStrategy = .flexible(["yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX","yyyy-MM-dd'T'HH:mm:ssXXXXX","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"])
             tiers = try decoder.decode([TierRow].self, from: resp.data)
             loading = false
         } catch {
             self.error = error.localizedDescription
             loading = false
         }
+    }
+
+    private func formatCentsUSD(_ cents: Int) -> String {
+        let dollars = Double(cents) / 100.0
+        return dollars.formatted(.currency(code: "USD"))
     }
 
     private func pill(_ text: String) -> some View {

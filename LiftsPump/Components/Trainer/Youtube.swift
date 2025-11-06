@@ -31,6 +31,7 @@ struct YouTubeView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
+        config.allowsPictureInPictureMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.scrollView.isScrollEnabled = false
@@ -41,11 +42,11 @@ struct YouTubeView: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
         let html = """
-        <html><head><meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width"></head>
-        <body style="margin:0;background-color:transparent;">
-        <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/\(videoID)?playsinline=1&modestbranding=1&rel=0&controls=1&showinfo=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <html><head><meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width\"></head>
+        <body style=\"margin:0;background-color:transparent;\">
+        <iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/\(videoID)?playsinline=1&modestbranding=1&rel=0&controls=1&origin=https%3A%2F%2Fliftspump.com\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen referrerpolicy=\"origin\"></iframe>
         </body></html>
         """
-        uiView.loadHTMLString(html, baseURL: nil)
+        uiView.loadHTMLString(html, baseURL: URL(string: "https://liftspump.com"))
     }
 }
