@@ -245,7 +245,7 @@ public class SupaBaseManager {
                             .trimmingCharacters(in: .whitespacesAndNewlines)
                         let aiDecoded = try JSONDecoder().decode([Routine].self, from: rawValue.data(using: .utf8) ?? Data())
                         for routine in currentRoutines {
-                            if routine.type == .agent {
+                            if routine.type == .ai {
                                 SupaBaseManager.deleteRoutine(routine: routine)
                                 modelContext.delete(routine)
                             }
@@ -283,13 +283,7 @@ public class SupaBaseManager {
                     print("Error with AI \(error)")
                 }
             }
-        Task {
-            do {
-                await processAIRoutines()
-            } catch {
-                print("Error with AI \(error)")
-            }
-        }
+        await processAIRoutines()
 
         applyProfile(profile)
 

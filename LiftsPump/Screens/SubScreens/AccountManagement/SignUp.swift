@@ -133,7 +133,7 @@ struct SignUp: View {
                     do {
                         let session = try await supabase.auth.signInWithOAuth(
                             provider: .google,
-                            redirectTo: URL(string: "myapp://auth-callback")!
+                            redirectTo: URL(string: "liftspump://auth-callback")!
                         )
                         print("Signed in with Google, user id: \(session.user.id)")
 
