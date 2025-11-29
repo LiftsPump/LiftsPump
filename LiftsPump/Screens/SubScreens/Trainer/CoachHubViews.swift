@@ -1,5 +1,6 @@
 import SwiftUI
 import Supabase
+import WebKit
 
 struct CoachRoutinesView: View {
     var body: some View {
@@ -216,11 +217,17 @@ struct CoachBlogView: View {
     }
 }
 
+struct PortalDestination: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
 struct CoachTiersView: View {
     @AppStorage("TRAINER_ID_KEY") private var trainerId: String = ""
     @State private var tiers: [TierRow] = []
     @State private var loading = true
     @State private var error: String? = nil
+    @State private var portalDestination: PortalDestination?
 
     var body: some View {
         standardScaffold(title: "Membership Tiers") {
@@ -252,7 +259,9 @@ struct CoachTiersView: View {
                                     }
                                     Spacer()
                                     Button {
-                                        // Hook to purchase / manage subscription here
+                                        if let url = URL(string: "https://dashboard.liftspump.com/api/stripe/portal?mode=customer") {
+                                            portalDestination = PortalDestination(url: url)
+                                        }
                                     } label: {
                                         Text("Manage")
                                             .font(Theme.Fonts.Body6)
@@ -263,11 +272,15 @@ struct CoachTiersView: View {
                                     }
                                 }
                                 .padding(14)
-                            } .frame(width: .infinity, height: 100)
+                            } .frame(height: 100)
                         }
                     }
                 }
                 .padding(.horizontal)
+                .sheet(item: $portalDestination) { dest in
+                    PortalWebView(url: dest.url, token: supabase.auth.currentSession?.accessToken ?? "")
+                        .ignoresSafeArea()
+                }
             }
         }
         .task { await fetchTiers() }
@@ -292,7 +305,6 @@ struct CoachTiersView: View {
             loading = false
         }
     }
-
     private func formatCentsUSD(_ cents: Int) -> String {
         let dollars = Double(cents) / 100.0
         return dollars.formatted(.currency(code: "USD"))
@@ -359,4 +371,25 @@ private func standardScaffold<Content: View>(title: String, @ViewBuilder content
 
 #Preview {
     NavigationStack { CoachTiersView() }
+}
+struct PortalWebView: UIViewRepresentable {
+    let url: URL
+    let token: String
+    
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        var request = URLRequest(url:url)
+        
+        if !token.isEmpty {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        webView.load(request)
+        
+        return webView
+    }
+    
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        
+    }
 }

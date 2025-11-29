@@ -254,7 +254,6 @@ public class SupaBaseManager {
                         for routine in aiDecoded {
                             routine.type = .ai
                             routines.append(routine)
-                            SupaBaseManager.saveRoutine(routine: routine)
                             for exercise in routine.exercises {
                                 exercise.routine_id = routine.id
                                 exercises.append(exercise)
@@ -263,6 +262,7 @@ public class SupaBaseManager {
                                     sets.append(set)
                                 }
                             }
+                            SupaBaseManager.saveRoutine(routine: routine)
                         }
                         profile.last_synced = Date()
                         SupaBaseManager.saveProfile(

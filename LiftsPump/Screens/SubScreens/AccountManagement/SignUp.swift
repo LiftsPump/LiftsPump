@@ -133,7 +133,7 @@ struct SignUp: View {
                     do {
                         let session = try await supabase.auth.signInWithOAuth(
                             provider: .google,
-                            redirectTo: URL(string: "liftspump://auth-callback")!
+                            redirectTo: URL(string: "myapp://auth-callback")!
                         )
                         print("Signed in with Google, user id: \(session.user.id)")
 
@@ -206,6 +206,25 @@ struct SignUp: View {
             .frame(height: 50)
             .padding(.horizontal)
             .signInWithAppleButtonStyle(.whiteOutline)
+            Button(action: {
+                signInAnonymously()
+            }) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(Theme.Colors.Red)
+                Text("Continue Anonymously")
+                    .font(Theme.Fonts.SubHeading7)
+            } .foregroundStyle(Theme.Colors.NeutralDark)
+                .frame(maxWidth: .infinity, minHeight: 50)
+                .background(Theme.Colors.Primary1.opacity(0.8))
+                .cornerRadius(8)
+            .padding(.horizontal)
+            HStack() {
+                Text("Dangerous!!! data may be lost")
+                    .foregroundStyle(Theme.Colors.Red)
+                    .font(Theme.Fonts.Body3)
+            }
+            .padding(.bottom, 15)
+            .padding(.top, -3)
             HStack {
                 Text("Already have an account?")
                     .foregroundStyle(Theme.Colors.NeutralLight1)
@@ -284,6 +303,18 @@ struct SignUp: View {
         }
     }
 
+    func signInAnonymously() {
+        Task {
+            do {
+                let session = try await supabase.auth.signInAnonymously()
+                print("Anonymous user id: \(session.user.id)")
+                isSSOSignInSuccessful = true
+            } catch {
+                errorMessage = "Anonymous sign-in failed: \(error.localizedDescription)"
+            }
+        }
+    }
+
     func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
         return try await withThrowingTaskGroup(of: T.self) { group in
             group.addTask { try await operation() }
@@ -299,4 +330,3 @@ struct SignUp: View {
 #Preview {
     SignUp()
 }
-
